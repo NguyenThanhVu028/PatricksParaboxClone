@@ -1,12 +1,11 @@
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 public class MainCube : MonoBehaviour
 {
     [SerializeField] float size = 9;
-    //[SerializeField] float unitSize = 1;
-    [Header("Cameras")] 
+    [Header("Cameras")]
     [SerializeField] Camera miniCubeCam;
+    [SerializeField] MainCamera mainCamera;
     [Header("Surrounding Renderers")]
     [SerializeField] Renderer frontSurroundings;
     [SerializeField] Renderer backSurroundings;
@@ -21,6 +20,8 @@ public class MainCube : MonoBehaviour
 
     public float Size { get => size; }
     public float SurroundingSizeMultiplier { get => surroundingSizeMultiplier; }
+    public Renderer FrontSurroundings { get => frontSurroundings; }
+    public Renderer BackSurroundings { get => backSurroundings; }
     public EnterableCube MiniCube { get => miniCube; }
     public RenderTexture MiniCubeCamRTex
     {
@@ -42,7 +43,7 @@ public class MainCube : MonoBehaviour
     {
         SetUpMaterials();
         SetUpCameras();
-        SetUpSurroundings();
+        //SetUpSurroundings();
         SetUpColliders();
     }
     private void OnValidate()
@@ -51,37 +52,27 @@ public class MainCube : MonoBehaviour
         if (size % 2 == 0) Debug.LogWarning("Main cube: " + name + " size should be an odd number to avoid glitches");
     }
 
-    public void SetMiniCube(EnterableCube miniCube)
+    private void Update()
+    {
+        UpdateSurroundings();
+    }
+
+    public void AssignMiniCube(EnterableCube miniCube)
     {
         this.miniCube = miniCube;
     }
-    //public void SetMiniCubeCamOutput(RenderTexture renderTexture)
-    //{
-    //    if (miniCubeCam != null)
-    //    {
-    //        miniCubeCam.targetTexture = renderTexture;
-    //    }
-    //}
-    public void HideFrontSurroundings()
+    public void SetFrontSurroundingsVisibility(bool isVisible)
     {
-        if (frontSurroundings != null) frontSurroundings.enabled = false;
+        if (frontSurroundings != null) frontSurroundings.enabled = isVisible;
     }
-    public void ShowFrontSurroundings()
+    public void SetBackSurroundingsVisibility(bool isVisible)
     {
-        if (frontSurroundings != null) frontSurroundings.enabled = true;
-    }
-    public void HideBackSurroundings()
-    {
-        if (backSurroundings != null) backSurroundings.enabled = false;
-    }
-    public void ShowBackSurroundings()
-    {
-        if (backSurroundings != null) backSurroundings.enabled = true;
+        if (backSurroundings != null) backSurroundings.enabled = isVisible;
     }
 
     private void SetUpMaterials()
     {
-        if (frontSurroundings != null )
+        if (frontSurroundings != null)
         {
             frontSurroundings.material.SetTexture("_MainTex", miniCube.FrontSurroundingCamRTex);
             frontSurroundings.material.renderQueue = frontSurroundingsRenderQueue;
@@ -113,6 +104,19 @@ public class MainCube : MonoBehaviour
         {
             boxCollider2D.offset = Vector2.zero;
             boxCollider2D.size = Vector2.one * size;
+        }
+    }
+    private void UpdateSurroundings()
+    {
+        if (mainCamera == null) return;
+        if (mainCamera.TargetMainCube == this) return; // Main camera will update the surroundings of its target main cube
+        if (frontSurroundings != null)
+        {
+
+        }
+        if (backSurroundings != null)
+        {
+
         }
     }
 }

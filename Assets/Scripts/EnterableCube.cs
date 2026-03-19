@@ -36,7 +36,6 @@ public class EnterableCube : Cube
             return frontSurroundingCam.targetTexture;
         }
     }
-
     public RenderTexture BackSurroundingCamRTex
     {
         get
@@ -51,6 +50,7 @@ public class EnterableCube : Cube
             return backSurroundingCam.targetTexture;
         }
     }
+    public MainCube MainCube { get => mainCube; }
 
     protected override void AdditionalStart()
     {
@@ -62,7 +62,7 @@ public class EnterableCube : Cube
 
         if (mainCube != null)
         {
-            mainCube.SetMiniCube(this);
+            mainCube.AssignMiniCube(this);
             mainCube.Init();
         }
     }
@@ -220,8 +220,8 @@ public class EnterableCube : Cube
     {
         if (cam == backSurroundingCam || cam == frontSurroundingCam)
         {
-            if (mainCube != null) mainCube.HideFrontSurroundings();
-            if (mainCube != null) mainCube.HideBackSurroundings();
+            if (mainCube != null) mainCube.SetFrontSurroundingsVisibility(false);
+            if (mainCube != null) mainCube.SetBackSurroundingsVisibility(false);
 
             if (cam == frontSurroundingCam && cubeRenderer != null) cubeRenderer.enabled = false;
         }
@@ -230,8 +230,8 @@ public class EnterableCube : Cube
     {
         if (cam == backSurroundingCam || cam == frontSurroundingCam)
         {
-            if (mainCube != null) mainCube.ShowFrontSurroundings();
-            if (mainCube != null) mainCube.ShowBackSurroundings();
+            if (mainCube != null) mainCube.SetFrontSurroundingsVisibility(true);
+            if (mainCube != null) mainCube.SetFrontSurroundingsVisibility(true);
 
             if (cam == frontSurroundingCam && cubeRenderer != null) cubeRenderer.enabled = true;
         }
