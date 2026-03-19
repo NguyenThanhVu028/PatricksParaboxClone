@@ -14,7 +14,43 @@ public class EnterableCube : Cube
     [SerializeField] Camera frontSurroundingCam;
     [SerializeField] Camera backSurroundingCam;
 
+    [Header("Renderings")]
+    [SerializeField] int frontSurroundingCamRTexRes = 1080;
+    [SerializeField] int frontSurroundingCamRTexDepth = 32;
+    [SerializeField] int backSurroundingCamRTexRes = 1080;
+    [SerializeField] int backSurroundingCamRTexDepth = 32;
+
     private Renderer cubeRenderer;
+
+    public RenderTexture FrontSurroundingCamRTex
+    {
+        get
+        {
+            if (frontSurroundingCam == null) return null;
+            if (frontSurroundingCam.targetTexture == null)
+            {
+                RenderTexture renderTexture = new RenderTexture(frontSurroundingCamRTexRes, frontSurroundingCamRTexRes, frontSurroundingCamRTexDepth);
+                renderTexture.filterMode = FilterMode.Point;
+                frontSurroundingCam.targetTexture = renderTexture;
+            }
+            return frontSurroundingCam.targetTexture;
+        }
+    }
+
+    public RenderTexture BackSurroundingCamRTex
+    {
+        get
+        {
+            if (backSurroundingCam == null) return null;
+            if (backSurroundingCam.targetTexture == null)
+            {
+                RenderTexture renderTexture = new RenderTexture(backSurroundingCamRTexRes, backSurroundingCamRTexRes, backSurroundingCamRTexDepth);
+                renderTexture.filterMode = FilterMode.Point;
+                backSurroundingCam.targetTexture = renderTexture;
+            }
+            return backSurroundingCam.targetTexture;
+        }
+    }
 
     protected override void AdditionalStart()
     {
@@ -42,15 +78,15 @@ public class EnterableCube : Cube
         if (mainCube == null) Debug.LogWarning("Cube: " + name + " is missing a main map reference");
     }
 
-    public void SetFrontSurroundingsCamOutput(RenderTexture renderTexture)
-    {
-        if (frontSurroundingCam != null) frontSurroundingCam.targetTexture = renderTexture;
-    }
+    //public void SetFrontSurroundingsCamOutput(RenderTexture renderTexture)
+    //{
+    //    if (frontSurroundingCam != null) frontSurroundingCam.targetTexture = renderTexture;
+    //}
 
-    public void SetBackSurroundingsCamOutput(RenderTexture renderTexture)
-    {
-        if (backSurroundingCam != null) backSurroundingCam.targetTexture = renderTexture;
-    }
+    //public void SetBackSurroundingsCamOutput(RenderTexture renderTexture)
+    //{
+    //    if (backSurroundingCam != null) backSurroundingCam.targetTexture = renderTexture;
+    //}
 
     public bool Enter(CubeMovement targetCube, Vector2 direction)
     {
@@ -203,14 +239,9 @@ public class EnterableCube : Cube
 
     private void SetUpMaterials()
     {
-        if (cubeRenderer != null)
+        if (cubeRenderer != null && mainCube != null)
         {
-            RenderTexture renderTexture = new RenderTexture(1080, 1080, 32);
-            renderTexture.filterMode = FilterMode.Point;
-
-            if (mainCube != null) mainCube.SetMiniCubeCamOutput(renderTexture);
-
-            cubeRenderer.material.SetTexture("_MainTex", renderTexture);
+            cubeRenderer.material.SetTexture("_MainTex", mainCube.MiniCubeCamRTex);
         }
     }
     private void SetUpCameras()

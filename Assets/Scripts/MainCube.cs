@@ -12,6 +12,8 @@ public class MainCube : MonoBehaviour
     [SerializeField] Renderer backSurroundings;
     [SerializeField] float surroundingSizeMultiplier = 5f;
     [Header("Renderings")]
+    [SerializeField] int miniCubeCamRTexRes = 1080;
+    [SerializeField] int miniCubeCamRTexDepth = 32;
     [SerializeField] int frontSurroundingsRenderQueue = 3001;
     [SerializeField] int backSurroundingsRenderQueue = 3000;
 
@@ -20,7 +22,21 @@ public class MainCube : MonoBehaviour
     public float Size { get => size; }
     public float SurroundingSizeMultiplier { get => surroundingSizeMultiplier; }
     public EnterableCube MiniCube { get => miniCube; }
+    public RenderTexture MiniCubeCamRTex
+    {
+        get
+        {
+            if (miniCubeCam == null) return null;
+            if (miniCubeCam.targetTexture == null)
+            {
+                RenderTexture renderTexture = new RenderTexture(miniCubeCamRTexRes, miniCubeCamRTexRes, miniCubeCamRTexDepth);
+                renderTexture.filterMode = FilterMode.Point;
 
+                miniCubeCam.targetTexture = renderTexture;
+            }
+            return miniCubeCam.targetTexture;
+        }
+    }
 
     public void Init()
     {
@@ -39,13 +55,13 @@ public class MainCube : MonoBehaviour
     {
         this.miniCube = miniCube;
     }
-    public void SetMiniCubeCamOutput(RenderTexture renderTexture)
-    {
-        if (miniCubeCam != null)
-        {
-            miniCubeCam.targetTexture = renderTexture;
-        }
-    }
+    //public void SetMiniCubeCamOutput(RenderTexture renderTexture)
+    //{
+    //    if (miniCubeCam != null)
+    //    {
+    //        miniCubeCam.targetTexture = renderTexture;
+    //    }
+    //}
     public void HideFrontSurroundings()
     {
         if (frontSurroundings != null) frontSurroundings.enabled = false;
@@ -65,24 +81,14 @@ public class MainCube : MonoBehaviour
 
     private void SetUpMaterials()
     {
-        if (frontSurroundings != null)
+        if (frontSurroundings != null )
         {
-            RenderTexture renderTexture = new RenderTexture(1080, 1080, 32);
-            renderTexture.filterMode = FilterMode.Point;
-
-            if (miniCube != null) miniCube.SetFrontSurroundingsCamOutput(renderTexture);
-
-            frontSurroundings.material.SetTexture("_MainTex", renderTexture);
+            frontSurroundings.material.SetTexture("_MainTex", miniCube.FrontSurroundingCamRTex);
             frontSurroundings.material.renderQueue = frontSurroundingsRenderQueue;
         }
         if (backSurroundings != null)
         {
-            RenderTexture renderTexture = new RenderTexture(1080, 1080, 32);
-            renderTexture.filterMode = FilterMode.Point;
-
-            if (miniCube != null) miniCube.SetBackSurroundingsCamOutput(renderTexture);
-
-            backSurroundings.material.SetTexture("_MainTex", renderTexture);
+            backSurroundings.material.SetTexture("_MainTex", miniCube.BackSurroundingCamRTex);
             backSurroundings.material.renderQueue = backSurroundingsRenderQueue;
         }
     }
