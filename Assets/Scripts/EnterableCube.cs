@@ -36,7 +36,6 @@ public class EnterableCube : Cube
             return frontSurroundingCam.targetTexture;
         }
     }
-
     public RenderTexture BackSurroundingCamRTex
     {
         get
@@ -51,6 +50,7 @@ public class EnterableCube : Cube
             return backSurroundingCam.targetTexture;
         }
     }
+    public MainCube MainCube { get => mainCube; }
 
     protected override void AdditionalStart()
     {

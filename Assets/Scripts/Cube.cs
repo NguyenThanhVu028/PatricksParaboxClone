@@ -7,6 +7,9 @@ public class Cube : MonoBehaviour
     [SerializeField] protected LayerMask mainCubeLayerMask; // The layer mask for detecting main cubes
     // The cube which this cube is currently inside of, if any 
     [SerializeField] protected EnterableCube parentCube = null;
+
+    public EnterableCube ParentCube { get => parentCube; }
+
     private void Start()
     {
         CompulsoryStart();

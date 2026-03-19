@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Cube))]
 public class CubeMovement : MonoBehaviour
 {
     [SerializeField] bool allowMovement = true;
@@ -47,19 +48,6 @@ public class CubeMovement : MonoBehaviour
         }
     }
 
-    private bool CheckTargetReached()
-    {
-        // Check if the cube has reached the minimun distance from the target or has passed it.
-        return Vector2.Distance(transform.position, targetPosition) < minDistance ||
-            ((previousPosition.x - targetPosition.x) * (transform.position.x - targetPosition.x) < 0) ||
-            ((previousPosition.y - targetPosition.y) * (transform.position.y - targetPosition.y) < 0);
-    }
-
-    private RaycastHit2D[] CheckHit(Vector2 direction)
-    {
-        return Physics2D.RaycastAll((Vector2)transform.position, direction.normalized, moveUnit/*, obstacleLayer*/);
-    }
-
     public bool Move(Vector2 direction, float speed = -1)
     {
         if (!allowMovement) return false;
@@ -77,10 +65,11 @@ public class CubeMovement : MonoBehaviour
          * Check hit:
          * - If there is an obstacle, the cube cannot move.
          * - If there is another cube, try to push it. If failed, try to enter it. If both failed, the cube cannot move.
-         * - Move normally if there is nothing or only ignorable objects are detected in the way.
+         * - If there is nothing or only ignorable objects are detected in the way, check if this cube is moving out of its parent
+         * - All things considered, move normally.
          */
         var rayCastHits = CheckHit(direction);
-        foreach(var hit in rayCastHits)
+        foreach (var hit in rayCastHits)
         {
             if (hit.collider.gameObject == gameObject) continue; // Skip the cube itself
 
@@ -100,8 +89,8 @@ public class CubeMovement : MonoBehaviour
                     if (cubeMovement.IsMoving || cubeMovement.IsCoolingDown) return false;
                     if (cubeMovement.Move(direction, this.speed))
                     {
-                        NormalMove(direction); 
-                        return true;            
+                        NormalMove(direction);
+                        return true;
                     }
                 }
 
@@ -119,8 +108,27 @@ public class CubeMovement : MonoBehaviour
             }
         }
 
+        if (isMovingOut(direction))
+        {
+            Debug.Log("Is moving out");
+            return false;
+        }
+
         NormalMove(direction);
         return true;
+    }
+
+    private bool CheckTargetReached()
+    {
+        // Check if the cube has reached the minimun distance from the target or has passed it.
+        return Vector2.Distance(transform.position, targetPosition) < minDistance ||
+            ((previousPosition.x - targetPosition.x) * (transform.position.x - targetPosition.x) < 0) ||
+            ((previousPosition.y - targetPosition.y) * (transform.position.y - targetPosition.y) < 0);
+    }
+
+    private RaycastHit2D[] CheckHit(Vector2 direction)
+    {
+        return Physics2D.RaycastAll((Vector2)transform.position, direction.normalized, moveUnit/*, obstacleLayer*/);
     }
 
     private void NormalMove(Vector2 direction)
@@ -128,5 +136,15 @@ public class CubeMovement : MonoBehaviour
         previousPosition = transform.position;
         targetPosition = (Vector2)transform.position + direction.normalized * moveUnit;
         isMoving = true;
+    }
+
+    private bool isMovingOut(Vector2 direction)
+    {
+        Cube cube = GetComponent<Cube>();
+        if (cube.ParentCube == null || cube.ParentCube.MainCube == null) return false;
+        Vector2 targetPosition = (Vector2)transform.position + direction.normalized * moveUnit;
+        if ((Mathf.Abs(targetPosition.x - cube.ParentCube.MainCube.transform.position.x) > cube.ParentCube.MainCube.Size * 0.5f) ||
+            (Mathf.Abs(targetPosition.y - cube.ParentCube.MainCube.transform.position.y) > cube.ParentCube.MainCube.Size * 0.5f)) return true;
+        return false;
     }
 }
