@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01fcc334bab9bff4eb1e3dbe34ec5682, type: 3}
+  m_Name: FloorRuleTile
+  m_EditorClassIdentifier: 
+  defaultTile: {fileID: 2800000, guid: be0e13a49caf41c4dbd81b84ef0fc8d4, type: 3}
+  tilingRules:
+  - ruleName: Top Left
+    tileText: {fileID: 0}
+  - ruleName: Left
+    tileText: {fileID: 0}
+  - ruleName: Bottom Left
+    tileText: {fileID: 0}
+  - ruleName: Bottom
+    tileText: {fileID: 0}
+  - ruleName: Bottom Right
+    tileText: {fileID: 0}
+  - ruleName: Right
+    tileText: {fileID: 0}
+  - ruleName: Top Right
+    tileText: {fileID: 0}
+  - ruleName: Top
+    tileText: {fileID: 0}
