@@ -12,21 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01fcc334bab9bff4eb1e3dbe34ec5682, type: 3}
   m_Name: FloorRuleTile
   m_EditorClassIdentifier: 
-  defaultTile: {fileID: 2800000, guid: be0e13a49caf41c4dbd81b84ef0fc8d4, type: 3}
-  tilingRules:
-  - ruleName: Top Left
-    tileText: {fileID: 0}
-  - ruleName: Left
-    tileText: {fileID: 0}
-  - ruleName: Bottom Left
-    tileText: {fileID: 0}
-  - ruleName: Bottom
-    tileText: {fileID: 0}
-  - ruleName: Bottom Right
-    tileText: {fileID: 0}
-  - ruleName: Right
-    tileText: {fileID: 0}
-  - ruleName: Top Right
-    tileText: {fileID: 0}
-  - ruleName: Top
-    tileText: {fileID: 0}
+  defaultTile: {fileID: 2800000, guid: 02ace0b2ae698254b9ec0db27a6deea9, type: 3}
+  tilingRules: []
