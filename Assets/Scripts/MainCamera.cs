@@ -1,86 +1,79 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Camera))]
 public class MainCamera : MonoBehaviour
 {
-    //[SerializeField] EnterableCube targetCube;
-    //private Camera cam;
-    //public Camera Camera
-    //{
-    //    get
-    //    {
-    //        if (cam == null) cam = GetComponent<Camera>();
-    //        return cam;
-    //    }
-    //}
+    public enum MainCameraRenderMode { SingleCube, MultipleCubes };
 
-    //public EnterableCube TargetCube { get => targetCube; }
-    //public MainCube TargetMainCube { get => targetCube.MainCube; }
-    //public Vector2 WorldSpaceSize
-    //{
-    //    get
-    //    {
-    //        return new Vector2(Camera.orthographicSize * 2.0f * ((float)Screen.width / Screen.height), Camera.orthographicSize * 2.0f);
-    //    }
-    //}
+    [SerializeField] MainCameraRenderMode renderMode = MainCameraRenderMode.SingleCube;
 
-    //private void Start()
-    //{
-    //    cam = GetComponent<Camera>();
-    //    GetVirtualRenderingRect();
-    //}
+    [Header("Single Cube mode")]
+    [SerializeField] Cube targetCube;
+    [SerializeField] Rect renderPosition;
+    [SerializeField] bool renderParents = true; // Used for SingleCube mode
+    [SerializeField] int numberOfParentsToTraverse = 3;
 
-    //private void Update()
-    //{
-    //    if (targetCube == null || targetCube.MainCube == null) return;
-    //    UpdateTargetCubeSurroundings();
-    //}
+    [Header("Multiple Cubes mode")]
+    [SerializeField] List<CubeRenderDetail> cubesToRender = new();
 
-    //public Rect GetVirtualRenderingRect()
-    //{
-    //    Rect rect = new Rect(0, 0, 0, 0);
-    //    if (targetCube == null) return rect;
-    //    if (targetCube.MainCube == null) return rect;
+    private void Update()
+    {
+        switch (renderMode)
+        {
+            case MainCameraRenderMode.SingleCube:
+                RenderSingleCube();
+                break;
+            case MainCameraRenderMode.MultipleCubes:
+                RenderMultipleCubes();
+                break;
+        }
+    }
 
-    //    float ratio = 1.0f / targetCube.MainCube.Size;
-    //    //Debug.Log("Camera size: " + mainCamSize);
-    //    Vector2 mainCamBottomLeftLeftPoint = (Vector2)transform.position + new Vector2(-WorldSpaceSize.x * 0.5f, -WorldSpaceSize.y * 0.5f);
-    //    //Debug.Log("Main cam bottom left: " + mainCamBottomLeftLeftPoint);
-    //    rect.position = (Vector2)targetCube.transform.position + (mainCamBottomLeftLeftPoint - (Vector2)targetCube.MainCube.transform.position) * ratio;
-    //    rect.size = WorldSpaceSize * ratio;
-    //    //Debug.Log("Virtual rendering rect: " + rect);
+    private void RenderMultipleCubes()
+    {
+        // Not render parents by default
+        foreach (var cubeRenderDetail in cubesToRender)
+        {
+            if (cubeRenderDetail == null || cubeRenderDetail.TargetCube == null) return;
+            cubeRenderDetail.TargetCube.Draw(cubeRenderDetail.RenderPosition);
+        }
+    }
 
-    //    return rect;
-    //}
+    private void RenderSingleCube()
+    {
+        if (targetCube == null) return;
+        targetCube.Draw(renderPosition);
+    }
 
-    //[ContextMenu("Focus on cube")]
-    //public void FocusOnCube()
-    //{
-    //    if (targetCube == null) return;
-    //    if (targetCube.MainCube == null) return;
-    //    transform.position = new Vector3(targetCube.MainCube.transform.position.x, targetCube.MainCube.transform.position.y, transform.position.z);
-    //    Camera.orthographicSize = targetCube.MainCube.Size * 0.5f + 1.0f;
-    //}
+    // This function can only be used in SingleCube mode
+    [ContextMenu("Focus On Target Cube")]
+    public void FocusOnTargetCube()
+    {
+        if (renderMode != MainCameraRenderMode.SingleCube) return;
+        if (targetCube == null) return;
 
-    //private void UpdateTargetCubeSurroundings()
-    //{
-    //    if (targetCube.MainCube.FrontSurroundings != null)
-    //    {
-    //        targetCube.MainCube.FrontSurroundings.gameObject.transform.localScale = WorldSpaceSize;
-    //        targetCube.MainCube.FrontSurroundings.gameObject.transform.position = new Vector3(
-    //            transform.position.x,
-    //            transform.position.y,
-    //            targetCube.MainCube.FrontSurroundings.gameObject.transform.position.z
-    //            );
-    //    }
-    //    if (targetCube.MainCube.BackSurroundings != null)
-    //    {
-    //        targetCube.MainCube.BackSurroundings.gameObject.transform.localScale = WorldSpaceSize;
-    //        targetCube.MainCube.BackSurroundings.gameObject.transform.position = new Vector3(
-    //            transform.position.x,
-    //            transform.position.y,
-    //            targetCube.MainCube.BackSurroundings.gameObject.transform.position.z
-    //            );
-    //    }
-    //}
+        renderPosition.position = Vector2.zero;
+        if (targetCube is EnterableCube enterableCube)
+        {
+            int tiling = enterableCube.Tiling;
+            float halfRenderZoneSize = (Camera.main.orthographicSize / (tiling * 0.5f + 1)) * (tiling * 0.5f);
+            renderPosition.width = renderPosition.height = halfRenderZoneSize * 2;
+        }
+        else
+        {
+            renderPosition.width = renderPosition.height = Camera.main.orthographicSize / 3.0f;
+        }
+    }
+
+    [Serializable]
+    public class CubeRenderDetail
+    {
+        [SerializeField] Cube targetCube;
+        [SerializeField] Rect renderPosition;
+
+        public Cube TargetCube { get => targetCube; }
+        public Rect RenderPosition { get => renderPosition; }
+    }
 }

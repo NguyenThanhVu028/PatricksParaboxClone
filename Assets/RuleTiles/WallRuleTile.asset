@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01fcc334bab9bff4eb1e3dbe34ec5682, type: 3}
   m_Name: WallRuleTile
   m_EditorClassIdentifier: 
-  defaultTile: {fileID: 2800000, guid: 1f63a7432f5385743a32b5897830d98d, type: 3}
+  defaultTexture: {fileID: 2800000, guid: 1f63a7432f5385743a32b5897830d98d, type: 3}
   tilingRules:
   - ruleName: Top Left
     tileText: {fileID: 2800000, guid: be0e13a49caf41c4dbd81b84ef0fc8d4, type: 3}

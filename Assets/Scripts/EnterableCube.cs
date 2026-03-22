@@ -14,71 +14,76 @@ public class EnterableCube : Cube
     [Min(1)]
     [SerializeField] int wallFloorSubdivision = 2; // Wall and floor tiles might smaller than a cube
     [SerializeField] CustomRuleTile wallRuleTile;
-    [SerializeField] Texture2D floorTile;
+    [SerializeField] Texture2D floorTexture;
     [Header("Rendering")]
     [SerializeField] Material tileMat;
     [SerializeField] Mesh tileMesh;
 
-    private MaterialPropertyBlock matPropBlock;
-    private readonly int MainTexID = Shader.PropertyToID("_MainTex");
-    private readonly int ColorID = Shader.PropertyToID("_Color");
 
-    // This grid contains id of tiles, used to design walls and floors
-    // 0: floor
-    // 1: wall
+    // This grid is used to mark position of the walls
     //[SerializeField]
     int[,] rawWallsGrid = new int[,]
     {
         { 1, 1, 1, 1, 1, 1, 1, 1, 1 },
         { 1, 0, 1, 1, 0, 0, 1, 0, 1 },
         { 1, 0, 0, 0, 0, 0, 0, 0, 1 },
-        { 1, 0, 0, 0, 0, 1, 0, 0, 1 },
-        { 1, 0, 0, 0, 0, 0, 0, 0, 1 },
-        { 1, 0, 0, 0, 0, 0, 0, 0, 1 },
+        { 1, 0, 1, 0, 1, 1, 0, 0, 1 },
+        { 1, 0, 1, 0, 1, 1, 0, 0, 1 },
+        { 1, 0, 1, 0, 0, 1, 0, 0, 1 },
         { 1, 0, 1, 0, 0, 0, 0, 0, 1 },
         { 1, 0, 0, 0, 0, 0, 0, 0, 1 },
         { 1, 1, 1, 1, 1, 1, 1, 1, 1 }
     };
 
-    // This grid contains id of cubes that can be instantiated by cube manager
+    // This grid contains id of cubes that can be instantiated by cube manager (normal cube, ...)
     [SerializeField]
     int[,] supportCubesGrid = new int[,]
     {
-        { 0, 0, 0, 0 },
-        { 0, 0, 0, 0 },
-        { 0, 0, 1, 0 },
-        { 0, 0, 0, 0 }
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 1, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 1, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0 }
     };
 
     // This grid contains id of cubes that cannot be instantiated (enterable cubes, ...)
     [SerializeField]
     int[,] cubesGrid = new int[,]
     {
-        { 0, 0, 0, 0 },
-        { 0, 0, 0, 0 },
-        { 0, 1, 0, 0 },
-        { 0, 0, 0, 0 }
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 1, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0 }
     };
 
     // This is the actual walls and floors grid that will be drawn on screen
     private int[,] subdividedWallsGrid;
 
+    public int Tiling { get => tiling; }
+
     private void Start()
     {
-        matPropBlock = new();
         SubdivideWallsGrid();
         InitChildrenCubes();
     }
 
     private void Update()
     {
-        Draw(new Rect(0, 0, 10, 10));
+        //Draw(new Rect(0, 0, 10, 10));
     }
 
     public override void Draw(Rect position)
     {
-        //base.Draw(position);
-        DrawWallsAndFloors(position);
+        DrawWallsAndFloor(position);
         DrawChildrenCubes(position);
     }
 
@@ -105,53 +110,56 @@ public class EnterableCube : Cube
     // Unverified
     private void InitChildrenCubes()
     {
-        CubesManager cubesManager = CubesManager.Instance;
-        if (cubesManager == null)
-        {
-            Debug.LogWarning("Can't init children cubes of " + name + ", CubesManager not found!");
-            return;
-        }
+        //CubesManager cubesManager = CubesManager.Instance;
+        //if (cubesManager == null)
+        //{
+        //    Debug.LogWarning("Can't init children cubes of " + name + ", CubesManager not found!");
+        //    return;
+        //}
 
-        float cubeRelativeSize = 1.0f / tiling;
-        Vector2 topLeftRelativePosition = new Vector2((-tiling * 0.5f + 0.5f) / tiling, (tiling * 0.5f - 0.5f) / tiling);
+        //float cubeRelativeSize = 1.0f / tiling;
+        //Vector2 topLeftRelativePosition = new Vector2((-tiling * 0.5f + 0.5f) / tiling, (tiling * 0.5f - 0.5f) / tiling);
         
-        // Init cubes that need to be instantiated
-        for (int i = 0; i < supportCubesGrid.GetLength(0); i++){
-            for(int j = 0; j < supportCubesGrid.GetLength(1); j++)
-            {
-                var cube = cubesManager.GetCubePrefab(supportCubesGrid[i, j]);
-                if (cube == null) continue;
+        //// Init cubes that need to be instantiated
+        //for (int i = 0; i < supportCubesGrid.GetLength(0); i++){
+        //    for(int j = 0; j < supportCubesGrid.GetLength(1); j++)
+        //    {
+        //        var cube = cubesManager.GetCubePrefab(supportCubesGrid[i, j]);
+        //        if (cube == null) continue;
 
-                cube.RelativeSize = new(cubeRelativeSize, cubeRelativeSize);
-                cube.RelativePosition = new(topLeftRelativePosition.x + i * cubeRelativeSize, topLeftRelativePosition.y - j * cubeRelativeSize);
+        //        cube.RelativeSize = new(cubeRelativeSize, cubeRelativeSize);
+        //        cube.RelativePosition = new(topLeftRelativePosition.x + i * cubeRelativeSize, topLeftRelativePosition.y - j * cubeRelativeSize);
 
-                cube.transform.SetParent(this.gameObject.transform);
-            }
-        }
+        //        cube.transform.SetParent(this.gameObject.transform);
+        //    }
+        //}
 
-        // Init other cubes
-        for (int i = 0; i < cubesGrid.GetLength(0); i++)
-        {
-            for (int j = 0; j < cubesGrid.GetLength(1); j++)
-            {
-                var cube = cubesManager.GetCubeInScene(cubesGrid[i, j]);
-                if (cube == null) continue;
+        //// Init other cubes
+        //for (int i = 0; i < cubesGrid.GetLength(0); i++)
+        //{
+        //    for (int j = 0; j < cubesGrid.GetLength(1); j++)
+        //    {
+        //        var cube = cubesManager.GetCubeInScene(cubesGrid[i, j]);
+        //        if (cube == null) continue;
 
-                cube.RelativeSize = new(cubeRelativeSize, cubeRelativeSize);
-                cube.RelativePosition = new(topLeftRelativePosition.x + i * cubeRelativeSize, topLeftRelativePosition.y - j * cubeRelativeSize);
+        //        cube.RelativeSize = new(cubeRelativeSize, cubeRelativeSize);
+        //        cube.RelativePosition = new(topLeftRelativePosition.x + i * cubeRelativeSize, topLeftRelativePosition.y - j * cubeRelativeSize);
 
-                cube.transform.SetParent(this.gameObject.transform);
-            }
-        }
+        //        cube.transform.SetParent(this.gameObject.transform);
+        //    }
+        //}
     }
 
-    private void DrawWallsAndFloors(Rect position)
+    private void DrawWallsAndFloor(Rect position)
     {
-        if (wallRuleTile == null || floorTile == null)
+        if (wallRuleTile == null || floorTexture == null)
         {
-            Debug.LogWarning($"Cube: {name} is missing wall or floor tile reference.");
+            Debug.LogWarning($"Enterable cube: {name} is missing wall or floor tile reference.");
             return;
         }
+
+        // Draw floor
+        CustomRenderer.RenderTexture(tileMesh, tileMat, floorTexture, Color.cyan, position.position, position.size);
 
         Vector2 tileSize = new Vector2(position.width / (tiling * wallFloorSubdivision), position.height / (tiling * wallFloorSubdivision));
         Vector2 startingPosition = new(position.x - position.width * 0.5f + tileSize.x * 0.5f, position.y + position.height * 0.5f - tileSize.y * 0.5f);
@@ -161,41 +169,19 @@ public class EnterableCube : Cube
             for (int column = 0; column < subdividedWallsGrid.GetLength(1); column++)
             {
                 Vector2 tilePosition = new(startingPosition.x + tileSize.x * column, startingPosition.y - tileSize.y * row);
-                Matrix4x4 matrix = Matrix4x4.TRS(tilePosition, Quaternion.identity, tileSize);
-
-                // Draw floors
-                matPropBlock.SetTexture(MainTexID, floorTile);
-                matPropBlock.SetColor(ColorID, Color.green);
-                RenderParams rp = new RenderParams(tileMat);
-                rp.matProps = matPropBlock;
-                Graphics.RenderMesh(rp, tileMesh, 0, matrix);
 
                 // Draw walls
                 if (subdividedWallsGrid[row, column] == 1)
                 {
-                    var wallTex = wallRuleTile.GetTile(subdividedWallsGrid, row, column);
-                    matPropBlock.SetTexture(MainTexID, wallTex);
-                    matPropBlock.SetColor(ColorID, Color.green);
-                    rp = new RenderParams(tileMat);
-                    rp.matProps = matPropBlock;
-                    Graphics.RenderMesh(rp, tileMesh, 0, matrix);
+                    var wallTex = wallRuleTile.GetTexture(subdividedWallsGrid, row, column);
+                    CustomRenderer.RenderTexture(tileMesh, tileMat, wallTex, Color.cyan, tilePosition, tileSize);
                 }
             }
         }
     }
-
     private void DrawChildrenCubes(Rect position)
     {
 
     }
 
-    [Serializable]
-    public class RuleTileDetail
-    {
-        [SerializeField] int id;
-        [SerializeField] CustomRuleTile ruleTile;
-
-        public int ID { get => id; }
-        public CustomRuleTile RuleTile { get => ruleTile; }
-    }
 }
