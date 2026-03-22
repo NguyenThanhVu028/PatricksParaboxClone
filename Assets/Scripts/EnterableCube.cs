@@ -7,17 +7,14 @@ using UnityEngine.UI;
 
 public class EnterableCube : Cube
 {
-    [Header("Cube properties")]
+    [Header("Enterable cube properties")]
     [SerializeField] bool isReversed = false;
-    [Header("Tiles")]
+    [Header("Tiling")]
     [SerializeField] int tiling = 9;
     [Min(1)]
     [SerializeField] int wallFloorSubdivision = 2; // Wall and floor tiles might smaller than a cube
     [SerializeField] CustomRuleTile wallRuleTile;
     [SerializeField] Texture2D floorTexture;
-    [Header("Rendering")]
-    [SerializeField] Material tileMat;
-    [SerializeField] Mesh tileMesh;
 
 
     // This grid is used to mark position of the walls
@@ -158,8 +155,11 @@ public class EnterableCube : Cube
             return;
         }
 
+        Color cubeColor = Color.white;
+        if (colorPalette != null) cubeColor = colorPalette.GetColor(color);
+
         // Draw floor
-        CustomRenderer.RenderTexture(tileMesh, tileMat, floorTexture, Color.cyan, position.position, position.size);
+        CustomRenderer.RenderTexture(tileMesh, tileMat, floorTexture, cubeColor, position.position, position.size);
 
         Vector2 tileSize = new Vector2(position.width / (tiling * wallFloorSubdivision), position.height / (tiling * wallFloorSubdivision));
         Vector2 startingPosition = new(position.x - position.width * 0.5f + tileSize.x * 0.5f, position.y + position.height * 0.5f - tileSize.y * 0.5f);
@@ -174,7 +174,7 @@ public class EnterableCube : Cube
                 if (subdividedWallsGrid[row, column] == 1)
                 {
                     var wallTex = wallRuleTile.GetTexture(subdividedWallsGrid, row, column);
-                    CustomRenderer.RenderTexture(tileMesh, tileMat, wallTex, Color.cyan, tilePosition, tileSize);
+                    CustomRenderer.RenderTexture(tileMesh, tileMat, wallTex, cubeColor, tilePosition, tileSize);
                 }
             }
         }
