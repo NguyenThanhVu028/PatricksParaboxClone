@@ -1,24 +1,34 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Cube))]
 public class CubeMovement : MonoBehaviour
 {
-    //[SerializeField] bool allowMovement = true;
+    [SerializeField] bool movable = true;
     //[SerializeField] float cubeSize = 1f;
     //[SerializeField] float defaultSpeed = 12f;
     //[SerializeField] float enterExitSpeed = 5f;
     //[SerializeField] float moveUnit = 1f;
-    //[SerializeField] float minDistance = 0.01f;
-    //[SerializeField] float coolDownTime = 0.075f;
+    [SerializeField] float minDistance = 0.01f;
+    [SerializeField] float coolDownTime = 0.075f;
     //[SerializeField] LayerMask obstacleLayer;
 
     //protected float speed = 0f;
-    //protected bool isMoving = false;
-    //protected Vector2 targetPosition = Vector2.zero;
-    //protected Vector2 previousPosition = Vector2.zero;
-    //protected float coolDownTimer = 0f;
+    //[SerializeField] protected bool isMoving = false;
+    protected Vector2 targetRPos = Vector2.zero;
+    protected Vector2 previousRPos = Vector2.zero;
+    protected Vector2 targetRScl = Vector2.zero;
+    protected Vector2 previousRScl = Vector2.zero;
+    protected float coolDownTimer = 0f;
 
-    //public bool IsMoving { get => isMoving; }
-    //public bool IsCoolingDown { get => coolDownTimer > 0; }
+    public bool IsMoving
+    {
+        get 
+        {
+            if (!movable) return false;
+            return false; 
+        }
+    }
+    public bool IsCoolingDown { get => coolDownTimer > 0; }
     //public float EnterExitSpeed { get => enterExitSpeed; }
     //public LayerMask ObstacleLayer { get => obstacleLayer; }
 

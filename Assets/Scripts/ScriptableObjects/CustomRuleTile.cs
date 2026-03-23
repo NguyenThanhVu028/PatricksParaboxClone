@@ -182,7 +182,7 @@ public class CustomRuleTile : ScriptableObject
     {
         [SerializeField] string ruleName;
         [SerializeField] Texture2D tileText;
-        [SerializeField] bool includeNullValue = false; // If true, treat null value as -1
+        [SerializeField] bool acceptNullValue = false; // If true, treat null value as -1
         [SerializeField] int[,] rule = new int[3, 3];
         public Texture2D Texture { get => tileText; }
 
@@ -191,11 +191,6 @@ public class CustomRuleTile : ScriptableObject
             this.ruleName = ruleName;
             this.tileText = tileText;
             this.rule = rule;
-        }
-
-        public void FillGrid(int[,] grid, int targetValue)
-        {
-
         }
 
         public bool CheckSuitable(int[,] grid, int row, int column, int dirGridRow, int dirGridCol)
@@ -211,17 +206,17 @@ public class CustomRuleTile : ScriptableObject
              * - If the rule value in the given direction is equal to 0, then the target neighbor is always suitable no mattter its value.
              */
 
-            if (dirGridRow < 0 || dirGridRow >= rule.GetLength(0)) { Debug.Log("In valid row value!"); return false; }
-            if (dirGridCol < 0 || dirGridCol >= rule.GetLength(1)) { Debug.Log("In valid col value!"); return false; }
+            if (dirGridRow < 0 || dirGridRow >= rule.GetLength(0)) { Debug.Log("In valid row value for direction grid!"); return false; }
+            if (dirGridCol < 0 || dirGridCol >= rule.GetLength(1)) { Debug.Log("In valid col value for direction grid!"); return false; }
 
-            int topLeftColumn = column - 1, topLeftRow = row - 1;
+            int topLeftColumn = column - 1, topLeftRow = row - 1; // In the 3x3 grid
 
             // If the checking direction if out of bounds
             if (topLeftColumn + dirGridCol < 0 || topLeftColumn + dirGridCol >= grid.GetLength(1) ||
                 topLeftRow + dirGridRow < 0 || topLeftRow + dirGridRow >= grid.GetLength(0))
             {
                 if (rule[dirGridRow, dirGridCol] == 1) return false;
-                if (rule[dirGridRow, dirGridCol] == -1 && !includeNullValue) return false;
+                if (rule[dirGridRow, dirGridCol] == -1 && !acceptNullValue) return false;
                 return true;
             }
 

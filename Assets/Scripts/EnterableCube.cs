@@ -9,6 +9,7 @@ public class EnterableCube : Cube
 {
     [Header("Enterable cube properties")]
     [SerializeField] bool isReversed = false;
+    [SerializeField] List<Cube> childCubes = new();
     [Header("Tiling")]
     [SerializeField] int tiling = 9;
     [Min(1)]
@@ -42,8 +43,8 @@ public class EnterableCube : Cube
         { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
         { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
         { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 1, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 1, 0, 0, 1, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 1, 0 },
         { 0, 0, 0, 0, 0, 0, 0, 0, 0 }
     };
 
@@ -70,7 +71,7 @@ public class EnterableCube : Cube
     private void Start()
     {
         SubdivideWallsGrid();
-        InitChildrenCubes();
+        InitChildCubes();
     }
 
     private void Update()
@@ -81,7 +82,7 @@ public class EnterableCube : Cube
     public override void Draw(Rect position)
     {
         DrawWallsAndFloor(position);
-        DrawChildrenCubes(position);
+        DrawChildCubes(position);
     }
 
     private void SubdivideWallsGrid()
@@ -105,49 +106,29 @@ public class EnterableCube : Cube
     }
 
     // Unverified
-    private void InitChildrenCubes()
+    private void InitChildCubes()
     {
-        //CubesManager cubesManager = CubesManager.Instance;
-        //if (cubesManager == null)
-        //{
-        //    Debug.LogWarning("Can't init children cubes of " + name + ", CubesManager not found!");
-        //    return;
-        //}
+        CubesManager cubesManager = CubesManager.Instance;
+        if (cubesManager == null ) { Debug.LogWarning("No cubes manager is found in this scene to spawn cubes!"); return; }
 
-        //float cubeRelativeSize = 1.0f / tiling;
-        //Vector2 topLeftRelativePosition = new Vector2((-tiling * 0.5f + 0.5f) / tiling, (tiling * 0.5f - 0.5f) / tiling);
-        
-        //// Init cubes that need to be instantiated
-        //for (int i = 0; i < supportCubesGrid.GetLength(0); i++){
-        //    for(int j = 0; j < supportCubesGrid.GetLength(1); j++)
-        //    {
-        //        var cube = cubesManager.GetCubePrefab(supportCubesGrid[i, j]);
-        //        if (cube == null) continue;
+        // Init support cubes
+        for(int row = 0; row < supportCubesGrid.GetLength(0); row++)
+        {
+            for(int column = 0; column < supportCubesGrid.GetLength(1); column++)
+            {
+                var supportCube = cubesManager.GetCubePrefab(supportCubesGrid[row, column]);
+                if (supportCube == null) continue;
 
-        //        cube.RelativeSize = new(cubeRelativeSize, cubeRelativeSize);
-        //        cube.RelativePosition = new(topLeftRelativePosition.x + i * cubeRelativeSize, topLeftRelativePosition.y - j * cubeRelativeSize);
+                supportCube.RelativeSize = new Vector2(1.0f / supportCubesGrid.GetLength(1), 1.0f / supportCubesGrid.GetLength(0));
+                supportCube.RelativePosition = Relativity.RPosFromGridTile(supportCubesGrid.GetLength(1), supportCubesGrid.GetLength(0), row, column);
 
-        //        cube.transform.SetParent(this.gameObject.transform);
-        //    }
-        //}
-
-        //// Init other cubes
-        //for (int i = 0; i < cubesGrid.GetLength(0); i++)
-        //{
-        //    for (int j = 0; j < cubesGrid.GetLength(1); j++)
-        //    {
-        //        var cube = cubesManager.GetCubeInScene(cubesGrid[i, j]);
-        //        if (cube == null) continue;
-
-        //        cube.RelativeSize = new(cubeRelativeSize, cubeRelativeSize);
-        //        cube.RelativePosition = new(topLeftRelativePosition.x + i * cubeRelativeSize, topLeftRelativePosition.y - j * cubeRelativeSize);
-
-        //        cube.transform.SetParent(this.gameObject.transform);
-        //    }
-        //}
+                supportCube.Parent = this;
+                childCubes.Add(supportCube);
+            }
+        }
     }
 
-    private void DrawWallsAndFloor(Rect position)
+    public void DrawWallsAndFloor(Rect position)
     {
         if (wallRuleTile == null || floorTexture == null)
         {
@@ -159,7 +140,7 @@ public class EnterableCube : Cube
         if (colorPalette != null) cubeColor = colorPalette.GetColor(color);
 
         // Draw floor
-        CustomRenderer.RenderTexture(tileMesh, tileMat, floorTexture, cubeColor, position.position, position.size);
+        CustomRenderer.RenderTexture(cubeMesh, cubeMat, floorTexture, cubeColor, position.position, position.size);
 
         Vector2 tileSize = new Vector2(position.width / (tiling * wallFloorSubdivision), position.height / (tiling * wallFloorSubdivision));
         Vector2 startingPosition = new(position.x - position.width * 0.5f + tileSize.x * 0.5f, position.y + position.height * 0.5f - tileSize.y * 0.5f);
@@ -174,14 +155,17 @@ public class EnterableCube : Cube
                 if (subdividedWallsGrid[row, column] == 1)
                 {
                     var wallTex = wallRuleTile.GetTexture(subdividedWallsGrid, row, column);
-                    CustomRenderer.RenderTexture(tileMesh, tileMat, wallTex, cubeColor, tilePosition, tileSize);
+                    CustomRenderer.RenderTexture(cubeMesh, cubeMat, wallTex, cubeColor, tilePosition, tileSize);
                 }
             }
         }
     }
-    private void DrawChildrenCubes(Rect position)
+    private void DrawChildCubes(Rect position)
     {
-
+        foreach(var childCube in childCubes)
+        {
+            if (childCube == null) continue;
+            childCube.Draw(Relativity.CRectFromPRect(position, childCube.RelativeSize, childCube.RelativePosition));
+        }
     }
-
 }

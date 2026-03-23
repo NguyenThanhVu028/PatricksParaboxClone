@@ -119,6 +119,54 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &59677697
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 59677699}
+  - component: {fileID: 59677698}
+  m_Layer: 0
+  m_Name: CubesManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &59677698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 59677697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 851b49742b6212d41829f156560feea0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cubePrefabs:
+  - id: 1
+    cube: {fileID: 3330600575587197656, guid: a9d5fe7847b3a894fa714f95f94030dc, type: 3}
+  cubesInScene: []
+--- !u!4 &59677699
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 59677697}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.2363218, y: -1.0916843, z: -9.969411}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &697996018
 GameObject:
   m_ObjectHideFlags: 0
@@ -231,12 +279,14 @@ MonoBehaviour:
   isBlockage: 1
   colorPalette: {fileID: 11400000, guid: 37ff109e4e0da694b8a3a4b1caa63d91, type: 2}
   color: 0
-  tileMat: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  tileMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+  cubeMat: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  cubeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+  parent: {fileID: 0}
   relativeSize: {x: 1, y: 1}
   relativePosition: {x: 0, y: 0}
   isMoving: 0
   isReversed: 0
+  childCubes: []
   tiling: 9
   wallFloorSubdivision: 2
   wallRuleTile: {fileID: 11400000, guid: 2d82bc5300df33a458823857725fba15, type: 2}
@@ -422,5 +472,6 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1443054880}
-  - {fileID: 697996021}
   - {fileID: 1013356208}
+  - {fileID: 697996021}
+  - {fileID: 59677699}
