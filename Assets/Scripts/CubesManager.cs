@@ -27,6 +27,7 @@ public class CubesManager : MonoBehaviour
             if (cube == null) continue;
             if (cube.ID == id)
             {
+                if (cube.Cube == null) return null;
                 return Instantiate(cube.Cube);
             }
         }

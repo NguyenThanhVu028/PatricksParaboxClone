@@ -7,6 +7,6 @@ public class SimpleCube : Cube
     {
         Color cubeColor = Color.white;
         if (colorPalette != null) cubeColor = colorPalette.GetColor(color);
-        CustomRenderer.RenderTexture(cubeMesh, cubeMat, cubeText, cubeColor, position.position, position.size);
+        CustomRenderer2D.RenderTexture(cubeMesh, cubeMat, cubeText, cubeColor, position.position, position.size);
     }
 }

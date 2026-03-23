@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4745218084157380791}
   - component: {fileID: 3330600575587197656}
   m_Layer: 0
-  m_Name: SupportCube
+  m_Name: SimpleCube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -41,7 +41,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2601011977459787844}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff0a454b84bc34d47a9988411453fe1b, type: 3}
+  m_Script: {fileID: 11500000, guid: 1a79d719644dad549ac1ae04a95e3ce0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   isPlayer: 0
@@ -53,5 +53,4 @@ MonoBehaviour:
   parent: {fileID: 0}
   relativeSize: {x: 1, y: 1}
   relativePosition: {x: 0, y: 0}
-  isMoving: 0
   cubeText: {fileID: 2800000, guid: 753d0c0b2358102429171bdb7fca0273, type: 3}

@@ -74,13 +74,11 @@ public class EnterableCube : Cube
         InitChildCubes();
     }
 
-    private void Update()
-    {
-        //Draw(new Rect(0, 0, 10, 10));
-    }
-
     public override void Draw(Rect position)
     {
+        Vector2 rectSizeInPixel = CustomRenderer2D.ConvertScaleToPixel(position.size);
+        if (rectSizeInPixel.x < minPixelToRender || rectSizeInPixel.y < minPixelToRender) return; // Don't draw if the requested rectangle is too small (To avoid infinite rendering)
+
         DrawWallsAndFloor(position);
         DrawChildCubes(position);
     }
@@ -93,7 +91,6 @@ public class EnterableCube : Cube
         {
             for(int rawGridColumn = 0; rawGridColumn < rawWallsGrid.GetLength(1); rawGridColumn++)
             {
-                Debug.Log($"Raw row: {rawGridRow}, raw column: {rawGridColumn}");
                 for(int subdivisionRow = 0; subdivisionRow < wallFloorSubdivision; subdivisionRow++)
                 {
                     for (int subDivisionColumn = 0; subDivisionColumn < wallFloorSubdivision; subDivisionColumn++)
@@ -140,7 +137,7 @@ public class EnterableCube : Cube
         if (colorPalette != null) cubeColor = colorPalette.GetColor(color);
 
         // Draw floor
-        CustomRenderer.RenderTexture(cubeMesh, cubeMat, floorTexture, cubeColor, position.position, position.size);
+        CustomRenderer2D.RenderTexture(cubeMesh, cubeMat, floorTexture, cubeColor, position.position, position.size);
 
         Vector2 tileSize = new Vector2(position.width / (tiling * wallFloorSubdivision), position.height / (tiling * wallFloorSubdivision));
         Vector2 startingPosition = new(position.x - position.width * 0.5f + tileSize.x * 0.5f, position.y + position.height * 0.5f - tileSize.y * 0.5f);
@@ -155,7 +152,7 @@ public class EnterableCube : Cube
                 if (subdividedWallsGrid[row, column] == 1)
                 {
                     var wallTex = wallRuleTile.GetTexture(subdividedWallsGrid, row, column);
-                    CustomRenderer.RenderTexture(cubeMesh, cubeMat, wallTex, cubeColor, tilePosition, tileSize);
+                    CustomRenderer2D.RenderTexture(cubeMesh, cubeMat, wallTex, cubeColor, tilePosition, tileSize);
                 }
             }
         }

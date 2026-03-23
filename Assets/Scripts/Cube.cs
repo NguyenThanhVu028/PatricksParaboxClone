@@ -8,6 +8,7 @@ public class Cube : MonoBehaviour
     [SerializeField] protected ColorPalette colorPalette;
     [SerializeField] protected ColorPalette.ColorEnum color;
     [Header("Rendering")]
+    [SerializeField] protected int minPixelToRender = 2; // Don't render if the rectangle size is smaller than this value
     [SerializeField] protected Material cubeMat;
     [SerializeField] protected Mesh cubeMesh;
     [Header("Cube stats")]
