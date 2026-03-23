@@ -18,6 +18,10 @@ public class MainCamera : MonoBehaviour
     [Header("Multiple Cubes mode")]
     [SerializeField] List<CubeRenderDetail> cubesToRender = new();
 
+    [Header("Gizmos")]
+    [SerializeField] bool useGizmos = true;
+    [SerializeField] Color cubeRenderPositionColor = Color.yellow;
+
     private void Update()
     {
         switch (renderMode)
@@ -65,6 +69,13 @@ public class MainCamera : MonoBehaviour
         {
             renderPosition.width = renderPosition.height = Camera.main.orthographicSize / 3.0f;
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (!useGizmos) return;
+        Gizmos.color = cubeRenderPositionColor;
+        Gizmos.DrawWireCube(renderPosition.position, renderPosition.size);
     }
 
     [Serializable]

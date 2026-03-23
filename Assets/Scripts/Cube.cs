@@ -4,6 +4,7 @@ public class Cube : MonoBehaviour
 {
     [Header("General Info")]
     [SerializeField] protected bool isPlayer = false;
+    [SerializeField] protected bool canBePlayer = false;
     [SerializeField] protected bool isBlockage = true; // If false, a cube can move into it right away without trying to push or enter it
     [SerializeField] protected ColorPalette colorPalette;
     [SerializeField] protected ColorPalette.ColorEnum color;
@@ -19,6 +20,7 @@ public class Cube : MonoBehaviour
     public Vector2 RelativeSize { get => relativeSize; set => relativeSize = value; }
     public Vector2 RelativePosition { get => relativePosition; set => relativePosition = value; }
     public bool IsBlockage { get => isBlockage; }
+    public bool IsPlayer { get => isPlayer; }
     public Cube Parent { get => parent; set => parent = value; }
 
     public virtual void Draw(Rect position)

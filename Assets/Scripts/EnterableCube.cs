@@ -43,8 +43,8 @@ public class EnterableCube : Cube
         { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
         { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
         { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 1, 0, 0, 1, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 1, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
         { 0, 0, 0, 0, 0, 0, 0, 0, 0 }
     };
 
@@ -113,11 +113,12 @@ public class EnterableCube : Cube
         {
             for(int column = 0; column < supportCubesGrid.GetLength(1); column++)
             {
-                var supportCube = cubesManager.GetCubePrefab(supportCubesGrid[row, column]);
+                var supportCube = cubesManager.GetCubeInScene(supportCubesGrid[row, column]);
                 if (supportCube == null) continue;
 
                 supportCube.RelativeSize = new Vector2(1.0f / supportCubesGrid.GetLength(1), 1.0f / supportCubesGrid.GetLength(0));
                 supportCube.RelativePosition = Relativity.RPosFromGridTile(supportCubesGrid.GetLength(1), supportCubesGrid.GetLength(0), row, column);
+                Debug.Log("RPos: " + supportCube.RelativePosition);
 
                 supportCube.Parent = this;
                 childCubes.Add(supportCube);
