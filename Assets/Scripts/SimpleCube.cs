@@ -3,7 +3,7 @@ using UnityEngine;
 public class SimpleCube : Cube
 {
     [SerializeField] Texture2D cubeText;
-    public override void Draw(Rect position)
+    protected override void DrawCube(Rect position)
     {
         Color cubeColor = Color.white;
         if (colorPalette != null) cubeColor = colorPalette.GetColor(color);

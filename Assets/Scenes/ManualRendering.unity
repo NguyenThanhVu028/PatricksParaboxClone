@@ -153,7 +153,7 @@ MonoBehaviour:
     cube: {fileID: 504882124}
   cubesInScene:
   - id: 1
-    cube: {fileID: 504882124}
+    cube: {fileID: 0}
 --- !u!4 &59677699
 Transform:
   m_ObjectHideFlags: 0
@@ -293,7 +293,7 @@ MonoBehaviour:
   isBlockage: 1
   colorPalette: {fileID: 11400000, guid: 37ff109e4e0da694b8a3a4b1caa63d91, type: 2}
   color: 0
-  minPixelToRender: 10
+  minPixelToRender: 2
   cubeMat: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   cubeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   parent: {fileID: 0}
@@ -574,7 +574,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   renderMode: 0
-  targetCube: {fileID: 0}
+  targetCube: {fileID: 1013356207}
   renderPosition:
     serializedVersion: 2
     x: 0

@@ -74,11 +74,8 @@ public class EnterableCube : Cube
         InitChildCubes();
     }
 
-    public override void Draw(Rect position)
+    protected override void DrawCube(Rect position)
     {
-        Vector2 rectSizeInPixel = CustomRenderer2D.ConvertScaleToPixel(position.size);
-        if (rectSizeInPixel.x < minPixelToRender || rectSizeInPixel.y < minPixelToRender) return; // Don't draw if the requested rectangle is too small (To avoid infinite rendering)
-
         DrawWallsAndFloor(position);
         DrawChildCubes(position);
     }
