@@ -25,7 +25,7 @@ public class Cube : MonoBehaviour
 
     public virtual void Draw(Rect position)
     {
-        Vector2 rectSizeInPixel = CustomRenderer2D.ConvertScaleToPixel(position.size);
+        Vector2 rectSizeInPixel = CustomTextureRenderer2D.ConvertScaleToPixel(position.size);
         if (rectSizeInPixel.x < minPixelToRender || rectSizeInPixel.y < minPixelToRender) return; // Don't draw if the requested rectangle is too small (To avoid infinite rendering)
 
         DrawCube(position);

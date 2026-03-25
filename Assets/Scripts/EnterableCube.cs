@@ -1,9 +1,7 @@
-using System;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEditorInternal;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.UI;
+using static UnityEngine.Rendering.DebugUI.Table;
 
 public class EnterableCube : Cube
 {
@@ -39,9 +37,9 @@ public class EnterableCube : Cube
     {
         { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
         { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 1, 5, 6, 7, 0, 0, 0, 0 },
+        { 0, 2, 4, 8, 0, 0, 0, 0, 0 },
+        { 0, 3, 0, 0, 0, 0, 0, 0, 0 },
         { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
         { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
         { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -64,7 +62,10 @@ public class EnterableCube : Cube
     };
 
     // This is the actual walls and floors grid that will be drawn on screen
-    private int[,] subdividedWallsGrid;
+    protected int[,] subdividedWallsGrid;
+
+    Dictionary<Texture2D, List<Vector2Int>> wallTilesTexture = new(); // This dictionary stores precalculated texture for each wall tile
+    protected CustomMeshInstancedDrawer customMeshInstancedDrawer;
 
     public int Tiling { get => tiling; }
 
@@ -72,6 +73,7 @@ public class EnterableCube : Cube
     {
         SubdivideWallsGrid();
         InitChildCubes();
+        CalculateWallsTexture();
     }
 
     protected override void DrawCube(Rect position)
@@ -97,8 +99,29 @@ public class EnterableCube : Cube
                 }
             }
         }
-    }
 
+        customMeshInstancedDrawer = new(tiling * wallFloorSubdivision * tiling * wallFloorSubdivision);
+    }
+    public void CalculateWallsTexture()
+    {
+        wallTilesTexture.Clear();
+
+        for (int row = 0; row < subdividedWallsGrid.GetLength(0); row++)
+        {
+            for (int column = 0; column < subdividedWallsGrid.GetLength(1); column++)
+            {
+                // Draw walls
+                if (subdividedWallsGrid[row, column] == 1)
+                {
+                    var wallTex = wallRuleTile.GetTexture(subdividedWallsGrid, row, column);
+                    //CustomTextureRenderer2D.RenderTexture(cubeMesh, cubeMat, wallTex, cubeColor, tilePosition, tileSize);
+
+                    if (!wallTilesTexture.ContainsKey(wallTex)) wallTilesTexture.Add(wallTex, new());
+                    wallTilesTexture[wallTex].Add(new Vector2Int(row, column));
+                }
+            }
+        }
+    }
     // Unverified
     private void InitChildCubes()
     {
@@ -115,7 +138,6 @@ public class EnterableCube : Cube
 
                 supportCube.RelativeSize = new Vector2(1.0f / supportCubesGrid.GetLength(1), 1.0f / supportCubesGrid.GetLength(0));
                 supportCube.RelativePosition = Relativity.RPosFromGridTile(supportCubesGrid.GetLength(1), supportCubesGrid.GetLength(0), row, column);
-                Debug.Log("RPos: " + supportCube.RelativePosition);
 
                 supportCube.Parent = this;
                 childCubes.Add(supportCube);
@@ -125,6 +147,7 @@ public class EnterableCube : Cube
 
     public void DrawWallsAndFloor(Rect position)
     {
+        if (subdividedWallsGrid == null) return;
         if (wallRuleTile == null || floorTexture == null)
         {
             Debug.LogWarning($"Enterable cube: {name} is missing wall or floor tile reference.");
@@ -135,25 +158,71 @@ public class EnterableCube : Cube
         if (colorPalette != null) cubeColor = colorPalette.GetColor(color);
 
         // Draw floor
-        CustomRenderer2D.RenderTexture(cubeMesh, cubeMat, floorTexture, cubeColor, position.position, position.size);
+        CustomTextureRenderer2D.RenderTexture(cubeMesh, cubeMat, floorTexture, cubeColor, position.position, position.size);
 
+        // Draw walls
         Vector2 tileSize = new Vector2(position.width / (tiling * wallFloorSubdivision), position.height / (tiling * wallFloorSubdivision));
         Vector2 startingPosition = new(position.x - position.width * 0.5f + tileSize.x * 0.5f, position.y + position.height * 0.5f - tileSize.y * 0.5f);
 
-        for (int row = 0; row < subdividedWallsGrid.GetLength(0); row++)
+        Dictionary<Texture2D, List<Vector2>> positionsToDraw = new();
+        foreach (var entry in wallTilesTexture)
         {
-            for (int column = 0; column < subdividedWallsGrid.GetLength(1); column++)
+            foreach (var tile in entry.Value)
             {
-                Vector2 tilePosition = new(startingPosition.x + tileSize.x * column, startingPosition.y - tileSize.y * row);
-
-                // Draw walls
-                if (subdividedWallsGrid[row, column] == 1)
-                {
-                    var wallTex = wallRuleTile.GetTexture(subdividedWallsGrid, row, column);
-                    CustomRenderer2D.RenderTexture(cubeMesh, cubeMat, wallTex, cubeColor, tilePosition, tileSize);
-                }
+                Vector2 tilePosition = new(startingPosition.x + tileSize.x * tile.y, startingPosition.y - tileSize.y * tile.x);
+                if (!positionsToDraw.ContainsKey(entry.Key)) positionsToDraw.Add(entry.Key, new());
+                positionsToDraw[entry.Key].Add(tilePosition);
             }
         }
+
+        if (customMeshInstancedDrawer != null)
+        {
+            foreach (var positionToDraw in positionsToDraw)
+            {
+                if (positionToDraw.Key == null || positionToDraw.Value == null) continue;
+                customMeshInstancedDrawer.DrawMeshInstanced(cubeMesh,
+                                                            cubeMat,
+                                                            positionToDraw.Key,
+                                                            cubeColor,
+                                                            positionToDraw.Value,
+                                                            tileSize,
+                                                            true);
+            }
+        }
+
+        //for (int row = 0; row < subdividedWallsGrid.GetLength(0); row++)
+        //{
+        //    for (int column = 0; column < subdividedWallsGrid.GetLength(1); column++)
+        //    {
+        //        Vector2 tilePosition = new(startingPosition.x + tileSize.x * column, startingPosition.y - tileSize.y * row);
+
+        //        // Draw walls
+        //        if (subdividedWallsGrid[row, column] == 1)
+        //        {
+        //            var wallTex = wallRuleTile.GetTexture(subdividedWallsGrid, row, column);
+        //            //CustomTextureRenderer2D.RenderTexture(cubeMesh, cubeMat, wallTex, cubeColor, tilePosition, tileSize);
+
+        //            if (!positionsToDraw.ContainsKey(wallTex)) positionsToDraw.Add(wallTex, new());
+        //            positionsToDraw[wallTex].Add(tilePosition);
+        //        }
+        //    }
+        //}
+
+        //if (customMeshInstancedDrawer != null)
+        //{
+        //    foreach (var positionToDraw in positionsToDraw)
+        //    {
+        //        if (positionToDraw.Key == null || positionToDraw.Value == null) continue;
+        //        customMeshInstancedDrawer.DrawMeshInstanced(cubeMesh,
+        //                                                    cubeMat,
+        //                                                    positionToDraw.Key,
+        //                                                    cubeColor,
+        //                                                    positionToDraw.Value,
+        //                                                    tileSize,
+        //                                                    true);
+        //    }
+        //}
+
     }
     private void DrawChildCubes(Rect position)
     {
