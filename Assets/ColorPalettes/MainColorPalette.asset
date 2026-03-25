@@ -15,7 +15,7 @@ MonoBehaviour:
   defaultColor: {r: 1, g: 1, b: 1, a: 1}
   colors:
   - colorEnum: 0
-    color: {r: 1, g: 0.33018857, b: 0.33018857, a: 1}
+    color: {r: 1, g: 0.37145594, b: 0.37145594, a: 1}
   - colorEnum: 1
     color: {r: 0.37416548, g: 1, b: 0.35283017, a: 1}
   - colorEnum: 2
