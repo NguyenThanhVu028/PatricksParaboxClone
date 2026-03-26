@@ -10,7 +10,8 @@ public class EnterableCube : Cube
     [Header("Enterable cube properties")]
     [SerializeField] bool isReversed = false;
     [SerializeField] List<Cube> childCubes = new();
-    [Header("Tiling")]
+    [HideInInspector]
+    [Min(1)]
     [SerializeField] int tiling = 9;
     [Min(1)]
     [SerializeField] int wallSubdivision = 2; // Wall texture might be small than a tile
@@ -23,22 +24,25 @@ public class EnterableCube : Cube
     // This grid contains ID of cubes from the CubesManager
     // Enterable cube uses this grid to initiate its children
     [SerializeField]
-    int[,] cubesIDGrid = new int[,]
-    {
-        { 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-        { 1, 0, 1, 1, 0, 0, 1, 0, 1 },
-        { 1, 2, 0, 0, 0, 0, 0, 0, 1 },
-        { 1, 0, 1, 3, 1, 1, 0, 0, 1 },
-        { 1, 0, 1, 0, 1, 1, 0, 0, 1 },
-        { 1, 4, 1, 5, 0, 1, 0, 0, 1 },
-        { 1, 0, 1, 0, 0, 6, 0, 7, 1 },
-        { 1, 0, 0, 0, 0, 0, 0, 0, 1 },
-        { 1, 1, 1, 1, 1, 1, 1, 1, 1 }
-    };
+    [Min(0)]
+    int[] cubesIDGrid = {0};
 
     private Cube[,] cubesGrid;
 
     public int Tiling { get => tiling; }
+    public int[] CubesIDGrid { get => cubesIDGrid; }
+    public int GetCubeIDInGrid(int row, int col)
+    {
+        int index = row * tiling + col;
+        if (index >= cubesIDGrid.Length) return -1;
+        return cubesIDGrid[index];
+    }
+    public void SetCubeIDInGrid(int row, int col, int value)
+    {
+        int index = row * tiling + col;
+        if (index >= cubesIDGrid.Length) return;
+        cubesIDGrid[index] = value;
+    }
 
     /* This dictionary stores calculated static textures and their positions in grid
      * One texture could be drawn at different positions with different grid sizes.
@@ -66,6 +70,10 @@ public class EnterableCube : Cube
         DrawFloor(position);
         DrawWalls(position);
         DrawChildCubes(position);
+    }
+    public void ReGenerateCubesIDGrid()
+    {
+        cubesIDGrid = new int[tiling * tiling];
     }
     public void CalculateStaticTextures()
     {
@@ -158,16 +166,17 @@ public class EnterableCube : Cube
         if (cubesManager == null ) { Debug.LogWarning("No cubes manager is found in this scene to spawn cubes!"); return; }
 
         // Init cubes
-        cubesGrid = new Cube[cubesIDGrid.GetLength(0), cubesIDGrid.GetLength(1)];
-        for(int row = 0; row < cubesIDGrid.GetLength(0); row++)
+        Debug.Log("Tiling: " + Tiling + " tiling: " + tiling);
+        cubesGrid = new Cube[tiling, tiling];
+        for(int row = 0; row < tiling; row++)
         {
-            for(int column = 0; column < cubesIDGrid.GetLength(1); column++)
+            for(int column = 0; column < tiling; column++)
             {
-                var spawnedCube = cubesManager.GetCube(cubesIDGrid[row, column]);
+                var spawnedCube = cubesManager.GetCube(GetCubeIDInGrid(row, column));
                 if (spawnedCube == null) continue;
 
-                spawnedCube.RelativeScale = new Vector2(1.0f / cubesIDGrid.GetLength(1), 1.0f / cubesIDGrid.GetLength(0));
-                spawnedCube.RelativePosition = Relativity.RPosFromGridTile(cubesIDGrid.GetLength(1), cubesIDGrid.GetLength(0), row, column);
+                spawnedCube.RelativeScale = new Vector2(1.0f / tiling, 1.0f / tiling);
+                spawnedCube.RelativePosition = Relativity.RPosFromGridTile(tiling, tiling, row, column);
 
                 spawnedCube.Parent = this;
                 childCubes.Add(spawnedCube);
