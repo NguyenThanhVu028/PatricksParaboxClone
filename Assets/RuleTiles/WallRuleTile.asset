@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01fcc334bab9bff4eb1e3dbe34ec5682, type: 3}
+  m_Name: WallRuleTile
+  m_EditorClassIdentifier: 
+  defaultTexture: {fileID: 2800000, guid: 1f63a7432f5385743a32b5897830d98d, type: 3}
+  tilingRules:
+  - ruleName: Top Left
+    tileText: {fileID: 2800000, guid: be0e13a49caf41c4dbd81b84ef0fc8d4, type: 3}
+    treatNullValueAs: 2
+  - ruleName: Left
+    tileText: {fileID: 2800000, guid: 51119d65caaeaad45a8332d19e8e7e7f, type: 3}
+    treatNullValueAs: 0
+  - ruleName: Bottom Left
+    tileText: {fileID: 2800000, guid: 9d878d1c7be3f8745a09d766ec415045, type: 3}
+    treatNullValueAs: 2
+  - ruleName: Bottom
+    tileText: {fileID: 2800000, guid: b476020d0a01d2643b51f5a411988fb8, type: 3}
+    treatNullValueAs: 0
+  - ruleName: Bottom Right
+    tileText: {fileID: 2800000, guid: ef117ee93ba0bdd4fbd2a53747283ccd, type: 3}
+    treatNullValueAs: 2
+  - ruleName: Right
+    tileText: {fileID: 2800000, guid: f7d3614dfb0de2140903b3c452cd6c18, type: 3}
+    treatNullValueAs: 0
+  - ruleName: Top Right
+    tileText: {fileID: 2800000, guid: ef3c6ceae910f6249a0082fcba94f4fd, type: 3}
+    treatNullValueAs: 2
+  - ruleName: Top
+    tileText: {fileID: 2800000, guid: dd161a45258c1bb45843151594a920c0, type: 3}
+    treatNullValueAs: 0
+  - ruleName: Inner Top Left
+    tileText: {fileID: 2800000, guid: ba0cf2c1514dff44b83110b13930b9f4, type: 3}
+    treatNullValueAs: 2
+  - ruleName: Inner Bottom Left
+    tileText: {fileID: 2800000, guid: 811882fdb4b612d4dad3d59d1cf57aef, type: 3}
+    treatNullValueAs: 2
+  - ruleName: Inner Bottom Right
+    tileText: {fileID: 2800000, guid: d77db51e3ed681c40bdd614319f6584d, type: 3}
+    treatNullValueAs: 2
+  - ruleName: Inner Top Right
+    tileText: {fileID: 2800000, guid: 8d7f9b84de4bff047aeb1b1b91d9c92c, type: 3}
+    treatNullValueAs: 2
