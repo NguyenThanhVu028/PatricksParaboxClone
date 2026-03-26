@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -44,26 +45,44 @@ public class CustomTextureRenderer2D
         Graphics.RenderMesh(rp, mesh, 0, matrix);
     }
 
-    public static void DrawGridToRenderTexture(ref RenderTexture targetRenderTexture, int gridWidth, int gridHeight, Dictionary<Texture2D, List<Vector2Int>> texturesInGrid, Material material)
+    public static void ClearRenderTexture(RenderTexture renderTexture)
+    {
+        if (renderTexture == null) return;
+
+        RenderTexture.active = renderTexture;
+
+        GL.LoadPixelMatrix(0, renderTexture.width, renderTexture.height, 0);
+        GL.Clear(true, true, Color.clear);
+
+        RenderTexture.active = null;
+    }
+
+    public static void DrawTexturesToRenderTextureGrid(ref RenderTexture targetRenderTexture, Dictionary<Texture2D, List<TexturePositionInGrid>> texturesInGrid, Material material)
     {
         if (targetRenderTexture == null) { Debug.LogWarning("Trying to render into an invalid Render Texture!"); return; }
 
         RenderTexture.active = targetRenderTexture;
 
         GL.LoadPixelMatrix(0, targetRenderTexture.width, targetRenderTexture.height, 0);
-        GL.Clear(true, true, Color.clear);
+        //GL.Clear(true, true, Color.clear);
+
+        Vector2 tileSize = new();
+        Rect rectToDraw = new();
 
         foreach (var entry in texturesInGrid)
         {
-            if (entry.Key == null) continue;
-            if (entry.Value == null) continue;
+            if (entry.Key == null) continue; //  No texture
+            if (entry.Value == null) continue; //  No positions in grid
 
-            Vector2 tileSize = new((float)targetRenderTexture.width / gridWidth, (float)targetRenderTexture.height / gridHeight);
-            Rect rectToDraw = new(0, 0, tileSize.x, tileSize.y);
-            foreach (var position in entry.Value)
+            foreach(var positionInGrid in entry.Value)
             {
-                rectToDraw.x = position.y * tileSize.x;
-                rectToDraw.y = position.x * tileSize.y;
+                tileSize.x = (float)targetRenderTexture.width / positionInGrid.GridWidth;
+                tileSize.y = (float)targetRenderTexture.height / positionInGrid.GridHeight;
+                
+                rectToDraw.x = positionInGrid.PositionInGrid.y * tileSize.x;
+                rectToDraw.y = positionInGrid.PositionInGrid.x * tileSize.y;
+                rectToDraw.size = tileSize;
+
                 Graphics.DrawTexture(rectToDraw, entry.Key, material);
             }
         }
@@ -71,8 +90,6 @@ public class CustomTextureRenderer2D
         RenderTexture.active = null;
 
     }
-
-    //public static void DrawTextureToRenderTexture(ref RenderTexture )
 
     // Use this function to check if the specified position and size is visible on camera
     public static bool CheckVisibility(Vector2 position, Vector2 size)
@@ -96,74 +113,23 @@ public class CustomTextureRenderer2D
         int pixelPerUnit = Mathf.RoundToInt((float)Camera.main.pixelHeight / (Camera.main.orthographicSize * 2.0f));
         return new Vector2(scale.x * pixelPerUnit, scale.y * pixelPerUnit);
     }
+
+    [Serializable]
+    public class TexturePositionInGrid
+    {
+        [SerializeField] int gridWidth = 1;
+        [SerializeField] int gridHeight = 1;
+        [SerializeField] Vector2Int positionInGrid = new();
+
+        public TexturePositionInGrid(int gridWidth, int gridHeight, Vector2Int positionInGrid)
+        {
+            this.gridWidth = gridWidth;
+            this.gridHeight = gridHeight;
+            this.positionInGrid = positionInGrid;
+        }
+
+        public int GridWidth { get => gridWidth; }
+        public int GridHeight { get => gridHeight; }
+        public Vector2Int PositionInGrid { get => positionInGrid; }
+    }
 }
-
-//public class CustomMeshInstancedDrawer
-//{
-//    public static readonly int maxDrawMeshInstanceCount = 1023;
-
-//    private List<Matrix4x4> matrices; // Reuse Matrix4x4 array to prevent garbage, improve performance
-//    private MaterialPropertyBlock matProps;
-
-//    public CustomMeshInstancedDrawer()
-//    {
-//        matrices = new();
-//        matProps = new();
-//    }
-
-//    public void DrawMeshInstanced(Mesh mesh,
-//                                    Material material,
-//                                    Texture2D texture,
-//                                    Color color,
-//                                    List<Vector2> positions,
-//                                    Vector2 size,
-//                                    bool occlusionCulling = true)
-//    {
-//        int positionsListOffset = 0;
-//        while (positionsListOffset < positions.Count)
-//        {
-//            int positionsCount = Mathf.Min(maxDrawMeshInstanceCount, positions.Count - positionsListOffset);
-//            DrawMeshInstanceWithOffset(mesh,
-//                                        material,
-//                                        texture,
-//                                        color,
-//                                        positions,
-//                                        positionsCount,
-//                                        positionsListOffset,
-//                                        size,
-//                                        occlusionCulling);
-//            positionsListOffset += positionsCount;
-//        }
-//    }
-
-//    public void DrawMeshInstanceWithOffset(Mesh mesh,
-//                                            Material material,
-//                                            Texture2D texture,
-//                                            Color color,
-//                                            List<Vector2> positions,
-//                                            int positionsCount,
-//                                            int positionsListOffset,
-//                                            Vector2 size,
-//                                            bool occlusionCulling = true)
-//    {
-//        int totalDrawCount = 0;
-//        matrices.Clear();
-//        for (int i = positionsListOffset; i < positionsListOffset + positionsCount; i++)
-//        {
-//            if (i >= positions.Count) break;
-//            if (totalDrawCount >= maxDrawMeshInstanceCount) break;
-//            // If occulusionCulling is on, then the texture won't be rendered outside of camera's view
-//            if (occlusionCulling && !CustomTextureRenderer2D.CheckVisibility(positions[i], size)) continue;
-
-//            // Convert positions into the Matrix4x4 array
-//            matrices.Add(Matrix4x4.TRS(positions[i], Quaternion.identity, size));
-//            totalDrawCount++;
-//        }
-
-//        matProps.Clear();
-//        matProps.SetTexture(CustomTextureRenderer2D.mainTexID, texture);
-//        //matProps.SetColor(CustomTextureRenderer2D.colorID, color);
-
-//        Graphics.DrawMeshInstanced(mesh, 0, material, matrices, matProps);
-//    }
-//}

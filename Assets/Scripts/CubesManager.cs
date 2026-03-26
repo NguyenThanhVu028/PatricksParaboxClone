@@ -28,23 +28,13 @@ public class CubesManager : MonoBehaviour
             if (cube.ID == id)
             {
                 if (cube.Cube == null) return null;
-                if (cube.Cube.Instatiable)
+                if (cube.Cube.NeedInstantiating)
                     return Instantiate(cube.Cube);
                 else return cube.Cube;
             }
         }
         return null;
     }
-
-    //public Cube GetCubeInScene(int id)
-    //{
-    //    foreach(var cube in cubesInScene)
-    //    {
-    //        if (cube == null) continue;
-    //        if (cube.ID == id) return cube.Cube;
-    //    }
-    //    return null;
-    //}
 }
 
 [Serializable]

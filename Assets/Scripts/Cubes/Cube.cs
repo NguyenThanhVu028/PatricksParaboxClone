@@ -13,7 +13,7 @@ public class Cube : MonoBehaviour
     [SerializeField] protected CubeTypes cubeType;
     [SerializeField] protected ColorPalette colorPalette;
     [SerializeField] protected ColorPalette.ColorEnum cubeColor;
-    [SerializeField] protected bool instantiable = true;
+    [SerializeField] protected bool needInstantiating = true;
     [Header("Rendering")]
     [SerializeField] protected int minPixelToRender = 2; // Don't render if the render rectangle size in pixel is smaller than this value
     [SerializeField] protected Material cubeMat;
@@ -27,7 +27,7 @@ public class Cube : MonoBehaviour
     public bool CanBePlayer { get => canBePlayer; }
     public CubeTypes CubeType { get => cubeType; }
     public ColorPalette.ColorEnum CubeColor { get => cubeColor; set => cubeColor = value; }
-    public bool Instatiable { get => instantiable; }
+    public bool NeedInstantiating { get => needInstantiating; }
     public EnterableCube Parent { get => parent; set => parent = value; }
     public Vector2 RelativeSize { get => relativeSize; set => relativeSize = value; }
     public Vector2 RelativePosition { get => relativePosition; set => relativePosition = value; }
