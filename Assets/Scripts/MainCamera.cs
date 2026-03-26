@@ -10,7 +10,7 @@ public class MainCamera : MonoBehaviour
     [SerializeField] MainCameraRenderMode renderMode = MainCameraRenderMode.SingleCube;
 
     [Header("Single Cube mode")]
-    [SerializeField] Cube targetCube;
+    [SerializeField] EnterableCube targetCube;
     [SerializeField] Rect renderPosition;
     [SerializeField] bool renderParents = true; // Used for SingleCube mode
     [SerializeField] int numberOfParentsToTraverse = 3;
@@ -48,7 +48,23 @@ public class MainCamera : MonoBehaviour
     private void RenderSingleCube()
     {
         if (targetCube == null) return;
-        targetCube.Draw(renderPosition);
+        if (renderParents)
+        {
+            // Traverse through the target cube's parents
+            EnterableCube newTargetCube = targetCube;
+            Rect newRenderPosition = renderPosition;
+            int parentCount = 0;
+            while(parentCount < numberOfParentsToTraverse)
+            {
+                if (newTargetCube.Parent == null) break;
+                newRenderPosition = Relativity.PRectFromCRect(newRenderPosition, newTargetCube.RelativeScale, newTargetCube.RelativePosition);
+                newTargetCube = newTargetCube.Parent;
+                parentCount++;
+            }
+
+            if (newTargetCube != null) newTargetCube.Draw(newRenderPosition);
+        }
+        else targetCube.Draw(renderPosition);
     }
 
     // This function can only be used in SingleCube mode
@@ -75,7 +91,20 @@ public class MainCamera : MonoBehaviour
     {
         if (!useGizmos) return;
         Gizmos.color = cubeRenderPositionColor;
-        Gizmos.DrawWireCube(renderPosition.position, renderPosition.size);
+        switch (renderMode)
+        {
+            case MainCameraRenderMode.SingleCube:
+                Gizmos.DrawWireCube(renderPosition.position, renderPosition.size);
+                break;
+            case MainCameraRenderMode.MultipleCubes:
+                foreach(var cube in cubesToRender)
+                {
+                    if (cube == null) continue;
+                    Gizmos.DrawWireCube(cube.RenderPosition.position, cube.RenderPosition.size);
+                }
+                break;
+        }
+        
     }
 
     [Serializable]

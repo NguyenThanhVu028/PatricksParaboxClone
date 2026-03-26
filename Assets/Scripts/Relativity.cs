@@ -39,4 +39,13 @@ public static class Relativity
         cRect.y = pRect.y + pRect.height * 0.5f * rPos.y;
         return cRect;
     }
+
+    public static Rect PRectFromCRect(Rect cRect, Vector2 rScl, Vector2 rPos)
+    {
+        Rect pRect = new Rect();
+        pRect.width = cRect.width / rScl.x; pRect.height = cRect.height / rScl.y;
+        pRect.x = cRect.x - pRect.width * 0.5f * rPos.x;
+        pRect.y = cRect.y - pRect.height * 0.5f * rPos.y;
+        return pRect;
+    }
 }
