@@ -180,9 +180,12 @@ public class CustomRuleTile : ScriptableObject
     [Serializable]
     public class TilingRule
     {
+        public enum TreatNullValue { Same, Different, Invalid, Ignore}
+
         [SerializeField] string ruleName;
         [SerializeField] Texture2D tileText;
-        [SerializeField] bool acceptNullValue = false; // If true, treat null value as -1
+        //[SerializeField] bool acceptNullValue = false; // If true, treat null value as -1
+        [SerializeField] TreatNullValue treatNullValueAs = TreatNullValue.Invalid;
         [SerializeField] int[,] rule = new int[3, 3];
         public Texture2D Texture { get => tileText; }
 
@@ -200,7 +203,7 @@ public class CustomRuleTile : ScriptableObject
              * dirGridRow, dirGridCol: Index of a 3x3 grid, representing the direction of the target neighbor
              * 
              * Check suitable logic:
-             * - If the target neighbor is out of bounds, then the rule value should neither be 1 nor -1
+             * - If the target neighbor is out of bounds, then check what the rule treats null value as (same, different, invalid or ignore)
              * - If the rule value in the given direction is equal to 1, then the target value and the target neighbor value should be the same.
              * - If the rule value in the given direction is equal to -1, then the target value and the target neighbor value should be different.
              * - If the rule value in the given direction is equal to 0, then the target neighbor is always suitable no mattter its value.
@@ -211,12 +214,24 @@ public class CustomRuleTile : ScriptableObject
 
             int topLeftColumn = column - 1, topLeftRow = row - 1; // In the 3x3 grid
 
-            // If the checking direction if out of bounds
+            // If the checking direction if out of bounds -> null value
             if (topLeftColumn + dirGridCol < 0 || topLeftColumn + dirGridCol >= grid.GetLength(1) ||
                 topLeftRow + dirGridRow < 0 || topLeftRow + dirGridRow >= grid.GetLength(0))
             {
-                if (rule[dirGridRow, dirGridCol] == 1) return false;
-                if (rule[dirGridRow, dirGridCol] == -1 && !acceptNullValue) return false;
+                switch (treatNullValueAs)
+                {
+                    case TreatNullValue.Ignore:
+                        return true;
+                    case TreatNullValue.Invalid:
+                        if (rule[dirGridRow, dirGridCol] == 1 || rule[dirGridRow, dirGridCol] == -1) return false;
+                        return true;
+                    case TreatNullValue.Same:
+                        if (rule[dirGridRow, dirGridCol] != -1) return true;
+                        return false;
+                    case TreatNullValue.Different:
+                        if (rule[dirGridRow, dirGridCol] != 1) return true;
+                        return false;
+                }
                 return true;
             }
 
