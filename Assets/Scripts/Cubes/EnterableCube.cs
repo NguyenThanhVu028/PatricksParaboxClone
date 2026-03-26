@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,65 +20,86 @@ public class EnterableCube : Cube
     [SerializeField] int tileTextureSize = 16;
     [SerializeField] int staticTilesRTDepth = 16;
 
-
-    // This grid is used to mark position of the walls
-    //[SerializeField]
-    int[,] rawWallsGrid = new int[,]
+    // This grid contains ID of cubes from the CubesManager
+    // Enterable cube uses this grid to initiate its children
+    [SerializeField]
+    int[,] cubesIDGrid = new int[,]
     {
         { 1, 1, 1, 1, 1, 1, 1, 1, 1 },
         { 1, 0, 1, 1, 0, 0, 1, 0, 1 },
-        { 1, 0, 0, 0, 0, 0, 0, 0, 1 },
+        { 1, 2, 0, 0, 0, 0, 0, 0, 1 },
+        { 1, 0, 1, 3, 1, 1, 0, 0, 1 },
         { 1, 0, 1, 0, 1, 1, 0, 0, 1 },
-        { 1, 0, 1, 0, 1, 1, 0, 0, 1 },
-        { 1, 0, 1, 0, 0, 1, 0, 0, 1 },
+        { 1, 4, 1, 0, 0, 1, 0, 0, 1 },
         { 1, 0, 1, 0, 0, 0, 0, 0, 1 },
         { 1, 0, 0, 0, 0, 0, 0, 0, 1 },
         { 1, 1, 1, 1, 1, 1, 1, 1, 1 }
     };
 
+    private Cube[,] cubesGrid;
+
+    // This grid is used to mark position of the walls
+    //[SerializeField]
+    //int[,] rawWallsGrid = new int[,]
+    //{
+    //    { 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+    //    { 1, 0, 1, 1, 0, 0, 1, 0, 1 },
+    //    { 1, 0, 0, 0, 0, 0, 0, 0, 1 },
+    //    { 1, 0, 1, 0, 1, 1, 0, 0, 1 },
+    //    { 1, 0, 1, 0, 1, 1, 0, 0, 1 },
+    //    { 1, 0, 1, 0, 0, 1, 0, 0, 1 },
+    //    { 1, 0, 1, 0, 0, 0, 0, 0, 1 },
+    //    { 1, 0, 0, 0, 0, 0, 0, 0, 1 },
+    //    { 1, 1, 1, 1, 1, 1, 1, 1, 1 }
+    //};
+
     // This grid contains id of cubes that can be instantiated by cube manager (normal cube, ...)
-    [SerializeField]
-    int[,] supportCubesGrid = new int[,]
-    {
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 2, 5, 6, 0, 0, 0, 0, 0 },
-        { 0, 3, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 4, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0 }
-    };
+    //[SerializeField]
+    //int[,] supportCubesGrid = new int[,]
+    //{
+    //    { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    //    { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    //    { 0, 1, 0, 0, 0, 0, 0, 0, 0 },
+    //    { 0, 2, 5, 6, 0, 0, 0, 0, 0 },
+    //    { 0, 3, 0, 0, 0, 0, 0, 0, 0 },
+    //    { 0, 4, 0, 0, 0, 0, 0, 0, 0 },
+    //    { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    //    { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    //    { 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+    //};
 
     // This grid contains id of cubes that cannot be instantiated (enterable cubes, ...)
-    [SerializeField]
-    int[,] cubesGrid = new int[,]
-    {
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 1, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0 }
-    };
-
-    // This is the actual walls and floors grid that will be drawn on screen
-    protected int[,] subdividedWallsGrid;
-
-    /* This dictionary stores precalculated texture and grid positions for each static tile
-     * Group static tiles that share the same texture
-     */
-    Dictionary<Texture2D, List<Vector2Int>> staticTiles = new();
-
-    // This Render Texture is used to draw static tiles
-    [SerializeField] RenderTexture staticTilesRT;
+    //[SerializeField]
+    //int[,] cubesGrid = new int[,]
+    //{
+    //    { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    //    { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    //    { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    //    { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    //    { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    //    { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    //    { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    //    { 0, 0, 0, 0, 0, 1, 0, 0, 0 },
+    //    { 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+    //};
 
     public int Tiling { get => tiling; }
 
+    // This is the actual walls and floors grid that will be drawn on screen
+    //protected int[,] wallsGrid;
+
+    /* This dictionary stores calculated texture and grid positions for each static tile
+     * Group static tiles that share the same texture together. */
+    Dictionary<Texture2D, List<Vector2Int>> staticTiles = new();
+
+    // All static tiles will be drawn onto this Render Texture which will later be drawn in Update
+    // Use RenderTexture to reduce calculation on static tiles
+    [SerializeField] RenderTexture staticTilesRT;
+
+    private void Reset()
+    {
+        instantiable = false;
+    }
     private void Start()
     {
         InitChildCubes();
@@ -90,29 +112,9 @@ public class EnterableCube : Cube
         DrawWalls(position);
         DrawChildCubes(position);
     }
-
-    // Need to subdivide the grid if wall textures are smaller than a tile
-    private void SubdivideWallsGrid()
-    {
-        subdividedWallsGrid = new int[tiling * wallSubdivision, tiling * wallSubdivision];
-
-        for(int rawGridRow = 0; rawGridRow < rawWallsGrid.GetLength(0); rawGridRow++)
-        {
-            for(int rawGridColumn = 0; rawGridColumn < rawWallsGrid.GetLength(1); rawGridColumn++)
-            {
-                for(int subdivisionRow = 0; subdivisionRow < wallSubdivision; subdivisionRow++)
-                {
-                    for (int subDivisionColumn = 0; subDivisionColumn < wallSubdivision; subDivisionColumn++)
-                    {
-                        subdividedWallsGrid[rawGridRow * wallSubdivision + subdivisionRow, rawGridColumn * wallSubdivision + subDivisionColumn] = rawWallsGrid[rawGridRow, rawGridColumn];
-                    }
-                }
-            }
-        }
-    }
     public void CalculateStaticTiles()
     {
-        SubdivideWallsGrid();
+        var wallsGrid = CalculateWallsGrid();
 
         if (staticTilesRT == null)
         {
@@ -124,22 +126,65 @@ public class EnterableCube : Cube
 
         staticTiles.Clear();
 
-        for (int row = 0; row < subdividedWallsGrid.GetLength(0); row++)
+        /* Calculate wall tiles logic:
+         * - Loop through cubes grid to find wall cubes, ignore those that are or can be player
+         * - Having the position in the cubes grid -> Find suitable Texture for each tile at the coresponding positions in walls grid 
+         * - Store textures with their positions data
+         * */
+        
+        for (int cubesGridRow = 0; cubesGridRow < cubesGrid.GetLength(0); cubesGridRow++)
         {
-            for (int column = 0; column < subdividedWallsGrid.GetLength(1); column++)
+            for (int cubesGridColumn = 0; cubesGridColumn < cubesGrid.GetLength(1); cubesGridColumn++)
             {
-                // Calculate texture positions for every wall tiles
-                if (subdividedWallsGrid[row, column] == 1)
-                {
-                    var wallTex = wallRuleTile.GetTexture(subdividedWallsGrid, row, column);
+                if (cubesGrid[cubesGridRow, cubesGridColumn] == null) continue;
+                if (!(cubesGrid[cubesGridRow, cubesGridColumn] is WallCube)) continue;
+                if (cubesGrid[cubesGridRow, cubesGridColumn].CanBePlayer || cubesGrid[cubesGridRow, cubesGridColumn].IsPlayer) continue;
 
-                    if (!staticTiles.ContainsKey(wallTex)) staticTiles.Add(wallTex, new());
-                    staticTiles[wallTex].Add(new Vector2Int(row, column));
+                (cubesGrid[cubesGridRow, cubesGridColumn] as WallCube).SetSubdivision(wallSubdivision);
+
+                for (int subdivisionRow = 0; subdivisionRow < wallSubdivision; subdivisionRow++)
+                {
+                    for (int subDivisionColumn = 0; subDivisionColumn < wallSubdivision; subDivisionColumn++)
+                    {
+                        int wallsGridRow = cubesGridRow * wallSubdivision + subdivisionRow;
+                        int wallsGridColumn = cubesGridColumn * wallSubdivision + subDivisionColumn;
+                        var wallTex = wallRuleTile.GetTexture(wallsGrid, wallsGridRow, wallsGridColumn);
+
+                        if (!staticTiles.ContainsKey(wallTex)) staticTiles.Add(wallTex, new());
+                        staticTiles[wallTex].Add(new Vector2Int(wallsGridRow, wallsGridColumn));
+
+                        (cubesGrid[cubesGridRow, cubesGridColumn] as WallCube).SetTexture(wallTex, subdivisionRow, subDivisionColumn);
+                    }
                 }
             }
         }
 
-        CustomTextureRenderer2D.DrawGridToRenderTexture(ref staticTilesRT, subdividedWallsGrid.GetLength(0), subdividedWallsGrid.GetLength(1), staticTiles, cubeMat);
+        CustomTextureRenderer2D.DrawGridToRenderTexture(ref staticTilesRT, wallsGrid.GetLength(0), wallsGrid.GetLength(1), staticTiles, cubeMat);
+    }
+
+    private int[,] CalculateWallsGrid()
+    {
+        if (cubesGrid == null) return null;
+
+        int[,] wallsGrid = new int[tiling * wallSubdivision, tiling * wallSubdivision];
+
+        for (int cubesGridRow = 0; cubesGridRow < cubesGrid.GetLength(0); cubesGridRow++)
+        {
+            for (int cubesGridColumn = 0; cubesGridColumn < cubesGrid.GetLength(1); cubesGridColumn++)
+            {
+                if (!(cubesGrid[cubesGridRow, cubesGridColumn] is WallCube)) continue;
+
+                for (int subdivisionRow = 0; subdivisionRow < wallSubdivision; subdivisionRow++)
+                {
+                    for (int subDivisionColumn = 0; subDivisionColumn < wallSubdivision; subDivisionColumn++)
+                    {
+                        wallsGrid[cubesGridRow * wallSubdivision + subdivisionRow, cubesGridColumn * wallSubdivision + subDivisionColumn] = 1;
+                    }
+                }
+            }
+        }
+
+        return wallsGrid;
     }
 
     private void InitChildCubes()
@@ -147,19 +192,26 @@ public class EnterableCube : Cube
         CubesManager cubesManager = CubesManager.Instance;
         if (cubesManager == null ) { Debug.LogWarning("No cubes manager is found in this scene to spawn cubes!"); return; }
 
-        // Init support cubes
-        for(int row = 0; row < supportCubesGrid.GetLength(0); row++)
+        // Init cubes
+        cubesGrid = new Cube[cubesIDGrid.GetLength(0), cubesIDGrid.GetLength(1)];
+        for(int row = 0; row < cubesIDGrid.GetLength(0); row++)
         {
-            for(int column = 0; column < supportCubesGrid.GetLength(1); column++)
+            for(int column = 0; column < cubesIDGrid.GetLength(1); column++)
             {
-                var supportCube = cubesManager.GetCubeInScene(supportCubesGrid[row, column]);
-                if (supportCube == null) continue;
+                var spawnedCube = cubesManager.GetCube(cubesIDGrid[row, column]);
+                if (spawnedCube == null) continue;
 
-                supportCube.RelativeSize = new Vector2(1.0f / supportCubesGrid.GetLength(1), 1.0f / supportCubesGrid.GetLength(0));
-                supportCube.RelativePosition = Relativity.RPosFromGridTile(supportCubesGrid.GetLength(1), supportCubesGrid.GetLength(0), row, column);
+                spawnedCube.RelativeSize = new Vector2(1.0f / cubesIDGrid.GetLength(1), 1.0f / cubesIDGrid.GetLength(0));
+                spawnedCube.RelativePosition = Relativity.RPosFromGridTile(cubesIDGrid.GetLength(1), cubesIDGrid.GetLength(0), row, column);
 
-                supportCube.Parent = this;
-                childCubes.Add(supportCube);
+                spawnedCube.Parent = this;
+                childCubes.Add(spawnedCube);
+                cubesGrid[row, column] = spawnedCube;
+
+                if (spawnedCube is WallCube)
+                {
+                    spawnedCube.CubeColor = cubeColor;
+                }
             }
         }
     }
@@ -167,13 +219,13 @@ public class EnterableCube : Cube
     private void DrawFloor(Rect position)
     {
         Color cubeColor = Color.white;
-        if (colorPalette != null) cubeColor = colorPalette.GetColor(color);
+        if (colorPalette != null) cubeColor = colorPalette.GetColor(base.cubeColor);
         CustomTextureRenderer2D.RenderMesh(cubeMesh, cubeMat, floorTexture, cubeColor, position.position, position.size);
     }
 
     public void DrawWalls(Rect position)
     {
-        if (subdividedWallsGrid == null) return;
+        //if (wallsGrid == null) return;
         if (wallRuleTile == null || floorTexture == null)
         {
             Debug.LogWarning($"Enterable cube: {name} is missing wall or floor tile reference.");
@@ -181,7 +233,7 @@ public class EnterableCube : Cube
         }
 
         Color cubeColor = Color.white;
-        if (colorPalette != null) cubeColor = colorPalette.GetColor(color);
+        if (colorPalette != null) cubeColor = colorPalette.GetColor(base.cubeColor);
         if (staticTilesRT != null) CustomTextureRenderer2D.RenderMesh(cubeMesh, cubeMat, staticTilesRT, cubeColor, position.position, position.size);
 
         //Color cubeColor = Color.white;
@@ -236,7 +288,21 @@ public class EnterableCube : Cube
         foreach(var childCube in childCubes)
         {
             if (childCube == null) continue;
+            if (childCube is WallCube) // Ignore walls that aren't or can't potentially be a player
+            {
+                if (!(childCube.CanBePlayer || childCube.IsPlayer)) continue;
+            }
             childCube.Draw(Relativity.CRectFromPRect(position, childCube.RelativeSize, childCube.RelativePosition));
         }
     }
+
+    [Serializable]
+    public class StaticTileDetails
+    {
+        [SerializeField] List<Vector2Int> positions = new();
+        [SerializeField] Vector2 size;
+
+        public List<Vector2Int> Positions { get => positions; }
+        public Vector2 Size { get => size; }
+    } 
 }

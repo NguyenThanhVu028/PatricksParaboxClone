@@ -72,6 +72,8 @@ public class CustomTextureRenderer2D
 
     }
 
+    //public static void DrawTextureToRenderTexture(ref RenderTexture )
+
     // Use this function to check if the specified position and size is visible on camera
     public static bool CheckVisibility(Vector2 position, Vector2 size)
     {

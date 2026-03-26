@@ -6,8 +6,8 @@ public class CubesManager : MonoBehaviour
 {
     private static CubesManager instance = null;
 
-    [SerializeField] List<CubeDetails> cubePrefabs = new();
-    [SerializeField] List<CubeDetails> cubesInScene = new();
+    [SerializeField] List<CubeDetails> allCubes = new();
+    //[SerializeField] List<CubeDetails> cubesInScene = new();
 
     public static CubesManager Instance { get => instance; }
 
@@ -20,29 +20,31 @@ public class CubesManager : MonoBehaviour
         instance = this;
     }
 
-    public Cube GetCubePrefab(int id)
+    public Cube GetCube(int id)
     {
-        foreach(var cube in cubePrefabs)
+        foreach(var cube in allCubes)
         {
             if (cube == null) continue;
             if (cube.ID == id)
             {
                 if (cube.Cube == null) return null;
-                return Instantiate(cube.Cube);
+                if (cube.Cube.Instatiable)
+                    return Instantiate(cube.Cube);
+                else return cube.Cube;
             }
         }
         return null;
     }
 
-    public Cube GetCubeInScene(int id)
-    {
-        foreach(var cube in cubesInScene)
-        {
-            if (cube == null) continue;
-            if (cube.ID == id) return cube.Cube;
-        }
-        return null;
-    }
+    //public Cube GetCubeInScene(int id)
+    //{
+    //    foreach(var cube in cubesInScene)
+    //    {
+    //        if (cube == null) continue;
+    //        if (cube.ID == id) return cube.Cube;
+    //    }
+    //    return null;
+    //}
 }
 
 [Serializable]

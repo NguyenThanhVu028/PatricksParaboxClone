@@ -2,26 +2,35 @@ using UnityEngine;
 
 public class Cube : MonoBehaviour
 {
+    // Normal: cube that can be pushed -> Try both pushing, entering and possessing
+    // Static: cube that can't be pushed -> Try entering and possessing
+    // Empty: cube that other cubes can go through -> Ignore
+    public enum CubeTypes { Normal, Static, Empty} 
+
     [Header("General Info")]
     [SerializeField] protected bool isPlayer = false;
     [SerializeField] protected bool canBePlayer = false;
-    [SerializeField] protected bool isBlockage = true; // If false, a cube can move into it right away without trying to push or enter it
+    [SerializeField] protected CubeTypes cubeType;
     [SerializeField] protected ColorPalette colorPalette;
-    [SerializeField] protected ColorPalette.ColorEnum color;
+    [SerializeField] protected ColorPalette.ColorEnum cubeColor;
+    [SerializeField] protected bool instantiable = true;
     [Header("Rendering")]
-    [SerializeField] protected int minPixelToRender = 2; // Don't render if the rectangle size is smaller than this value
+    [SerializeField] protected int minPixelToRender = 2; // Don't render if the render rectangle size in pixel is smaller than this value
     [SerializeField] protected Material cubeMat;
     [SerializeField] protected Mesh cubeMesh;
     [Header("Cube stats")]
-    [SerializeField] protected Cube parent;
+    [SerializeField] protected EnterableCube parent;
     [SerializeField] protected Vector2 relativeSize = new(1, 1);
     [SerializeField] protected Vector2 relativePosition = new(0, 0);
 
+    public bool IsPlayer { get => isPlayer; set => isPlayer = value; }
+    public bool CanBePlayer { get => canBePlayer; }
+    public CubeTypes CubeType { get => cubeType; }
+    public ColorPalette.ColorEnum CubeColor { get => cubeColor; set => cubeColor = value; }
+    public bool Instatiable { get => instantiable; }
+    public EnterableCube Parent { get => parent; set => parent = value; }
     public Vector2 RelativeSize { get => relativeSize; set => relativeSize = value; }
     public Vector2 RelativePosition { get => relativePosition; set => relativePosition = value; }
-    public bool IsBlockage { get => isBlockage; }
-    public bool IsPlayer { get => isPlayer; }
-    public Cube Parent { get => parent; set => parent = value; }
 
     public virtual void Draw(Rect position)
     {

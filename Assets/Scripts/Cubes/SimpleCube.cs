@@ -6,7 +6,7 @@ public class SimpleCube : Cube
     protected override void DrawCube(Rect position)
     {
         Color cubeColor = Color.white;
-        if (colorPalette != null) cubeColor = colorPalette.GetColor(color);
+        if (colorPalette != null) cubeColor = colorPalette.GetColor(base.cubeColor);
         CustomTextureRenderer2D.RenderMesh(cubeMesh, cubeMat, cubeText, cubeColor, position.position, position.size);
     }
 }
