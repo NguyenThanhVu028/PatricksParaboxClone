@@ -12,19 +12,19 @@ public class CustomTextureRenderer2D
                                     Material material,
                                     Texture texture,
                                     Color color,
-                                    Vector2 relativePosition,
-                                    Vector2 relativeSize,
+                                    Vector2 position,
+                                    Vector2 size,
                                     //Rect? parentRect = null,
                                     bool occlusionCulling = true)
     {
         // If occulusionCulling is on, then the texture won't be rendered outside of camera's view
-        if (occlusionCulling && !CheckVisibility(relativePosition, relativeSize)) return;
+        if (occlusionCulling && !CheckVisibility(position, size)) return;
 
         MaterialPropertyBlock matProps = new();
         matProps.SetTexture(mainTexID, texture);
         matProps.SetColor(colorID, color);
 
-        RenderMesh(mesh, material, matProps, relativePosition, relativeSize, occlusionCulling);
+        RenderMesh(mesh, material, matProps, position, size, occlusionCulling);
     }
 
     public static void RenderMesh(Mesh mesh,

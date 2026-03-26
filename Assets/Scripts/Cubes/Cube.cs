@@ -20,7 +20,7 @@ public class Cube : MonoBehaviour
     [SerializeField] protected Mesh cubeMesh;
     [Header("Cube stats")]
     [SerializeField] protected EnterableCube parent;
-    [SerializeField] protected Vector2 relativeSize = new(1, 1);
+    [SerializeField] protected Vector2 relativeScale = new(1, 1);
     [SerializeField] protected Vector2 relativePosition = new(0, 0);
 
     public bool IsPlayer { get => isPlayer; set => isPlayer = value; }
@@ -29,7 +29,7 @@ public class Cube : MonoBehaviour
     public ColorPalette.ColorEnum CubeColor { get => cubeColor; set => cubeColor = value; }
     public bool NeedInstantiating { get => needInstantiating; }
     public EnterableCube Parent { get => parent; set => parent = value; }
-    public Vector2 RelativeSize { get => relativeSize; set => relativeSize = value; }
+    public Vector2 RelativeScale { get => relativeScale; set => relativeScale = value; }
     public Vector2 RelativePosition { get => relativePosition; set => relativePosition = value; }
 
     public virtual void Draw(Rect position)

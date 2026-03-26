@@ -157,6 +157,12 @@ MonoBehaviour:
     cube: {fileID: 614129077}
   - id: 4
     cube: {fileID: 966354154}
+  - id: 5
+    cube: {fileID: 1383476915}
+  - id: 6
+    cube: {fileID: 1392399402}
+  - id: 7
+    cube: {fileID: 840669334}
 --- !u!4 &59677699
 Transform:
   m_ObjectHideFlags: 0
@@ -298,7 +304,7 @@ MonoBehaviour:
   cubeMat: {fileID: 2100000, guid: 78b9e2b83bf5d0643b88372fc8f8b336, type: 2}
   cubeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   parent: {fileID: 0}
-  relativeSize: {x: 1, y: 1}
+  relativeScale: {x: 1, y: 1}
   relativePosition: {x: 0, y: 0}
   isReversed: 0
   childCubes: []
@@ -524,13 +530,13 @@ MonoBehaviour:
   canBePlayer: 0
   cubeType: 0
   colorPalette: {fileID: 11400000, guid: 37ff109e4e0da694b8a3a4b1caa63d91, type: 2}
-  cubeColor: 0
+  cubeColor: 5
   needInstantiating: 0
   minPixelToRender: 2
   cubeMat: {fileID: 2100000, guid: 78b9e2b83bf5d0643b88372fc8f8b336, type: 2}
   cubeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   parent: {fileID: 0}
-  relativeSize: {x: 1, y: 1}
+  relativeScale: {x: 1, y: 1}
   relativePosition: {x: 0, y: 0}
   isReversed: 0
   childCubes: []
@@ -683,7 +689,7 @@ MonoBehaviour:
   cubeMat: {fileID: 2100000, guid: 78b9e2b83bf5d0643b88372fc8f8b336, type: 2}
   cubeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   parent: {fileID: 0}
-  relativeSize: {x: 1, y: 1}
+  relativeScale: {x: 1, y: 1}
   relativePosition: {x: 0, y: 0}
   isReversed: 0
   childCubes: []
@@ -749,7 +755,7 @@ MonoBehaviour:
   cubeMat: {fileID: 2100000, guid: 78b9e2b83bf5d0643b88372fc8f8b336, type: 2}
   cubeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   parent: {fileID: 0}
-  relativeSize: {x: 1, y: 1}
+  relativeScale: {x: 1, y: 1}
   relativePosition: {x: 0, y: 0}
   isReversed: 0
   childCubes: []
@@ -902,7 +908,7 @@ MonoBehaviour:
   cubeMat: {fileID: 2100000, guid: 78b9e2b83bf5d0643b88372fc8f8b336, type: 2}
   cubeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   parent: {fileID: 0}
-  relativeSize: {x: 1, y: 1}
+  relativeScale: {x: 1, y: 1}
   relativePosition: {x: 0, y: 0}
   isReversed: 0
   childCubes: []
@@ -1100,7 +1106,7 @@ MonoBehaviour:
   cubeMat: {fileID: 2100000, guid: 78b9e2b83bf5d0643b88372fc8f8b336, type: 2}
   cubeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   parent: {fileID: 0}
-  relativeSize: {x: 1, y: 1}
+  relativeScale: {x: 1, y: 1}
   relativePosition: {x: 0, y: 0}
   isReversed: 0
   childCubes: []
@@ -1160,13 +1166,13 @@ MonoBehaviour:
   canBePlayer: 0
   cubeType: 0
   colorPalette: {fileID: 11400000, guid: 37ff109e4e0da694b8a3a4b1caa63d91, type: 2}
-  cubeColor: 0
+  cubeColor: 2
   needInstantiating: 0
   minPixelToRender: 2
   cubeMat: {fileID: 2100000, guid: 78b9e2b83bf5d0643b88372fc8f8b336, type: 2}
   cubeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   parent: {fileID: 0}
-  relativeSize: {x: 1, y: 1}
+  relativeScale: {x: 1, y: 1}
   relativePosition: {x: 0, y: 0}
   isReversed: 0
   childCubes: []
@@ -1539,7 +1545,7 @@ MonoBehaviour:
   cubeMat: {fileID: 0}
   cubeMesh: {fileID: 0}
   parent: {fileID: 0}
-  relativeSize: {x: 1, y: 1}
+  relativeScale: {x: 1, y: 1}
   relativePosition: {x: 0, y: 0}
   wallSubdivision: 2
 --- !u!4 &1993895921

@@ -30,8 +30,8 @@ public class EnterableCube : Cube
         { 1, 2, 0, 0, 0, 0, 0, 0, 1 },
         { 1, 0, 1, 3, 1, 1, 0, 0, 1 },
         { 1, 0, 1, 0, 1, 1, 0, 0, 1 },
-        { 1, 4, 1, 0, 0, 1, 0, 0, 1 },
-        { 1, 0, 1, 0, 0, 0, 0, 0, 1 },
+        { 1, 4, 1, 5, 0, 1, 0, 0, 1 },
+        { 1, 0, 1, 0, 0, 6, 0, 7, 1 },
         { 1, 0, 0, 0, 0, 0, 0, 0, 1 },
         { 1, 1, 1, 1, 1, 1, 1, 1, 1 }
     };
@@ -166,7 +166,7 @@ public class EnterableCube : Cube
                 var spawnedCube = cubesManager.GetCube(cubesIDGrid[row, column]);
                 if (spawnedCube == null) continue;
 
-                spawnedCube.RelativeSize = new Vector2(1.0f / cubesIDGrid.GetLength(1), 1.0f / cubesIDGrid.GetLength(0));
+                spawnedCube.RelativeScale = new Vector2(1.0f / cubesIDGrid.GetLength(1), 1.0f / cubesIDGrid.GetLength(0));
                 spawnedCube.RelativePosition = Relativity.RPosFromGridTile(cubesIDGrid.GetLength(1), cubesIDGrid.GetLength(0), row, column);
 
                 spawnedCube.Parent = this;
@@ -203,7 +203,7 @@ public class EnterableCube : Cube
             {
                 if (!(childCube.CanBePlayer || childCube.IsPlayer)) continue;
             }
-            childCube.Draw(Relativity.CRectFromPRect(position, childCube.RelativeSize, childCube.RelativePosition));
+            childCube.Draw(Relativity.CRectFromPRect(position, childCube.RelativeScale, childCube.RelativePosition));
         }
     }
 }
