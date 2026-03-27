@@ -23,25 +23,26 @@ public class EnterableCube : Cube
 
     // This grid contains ID of cubes from the CubesManager
     // Enterable cube uses this grid to initiate its children
+    [HideInInspector]
     [SerializeField]
     [Min(0)]
-    int[] cubesIDGrid = {0};
+    ChildCubeInitDetail[] childCubesInitDetails = {new()};
 
     private Cube[,] cubesGrid;
 
     public int Tiling { get => tiling; }
-    public int[] CubesIDGrid { get => cubesIDGrid; }
-    public int GetCubeIDInGrid(int row, int col)
+    public ChildCubeInitDetail[] ChildCubesInitDetails { get => childCubesInitDetails; }
+    public ChildCubeInitDetail GetChildCubeInitDetails(int row, int col)
     {
         int index = row * tiling + col;
-        if (index >= cubesIDGrid.Length) return -1;
-        return cubesIDGrid[index];
+        if (index >= childCubesInitDetails.Length) return null;
+        return childCubesInitDetails[index];
     }
-    public void SetCubeIDInGrid(int row, int col, int value)
+    public void SetChildCubeInitDetails(int row, int col, ChildCubeInitDetail details)
     {
         int index = row * tiling + col;
-        if (index >= cubesIDGrid.Length) return;
-        cubesIDGrid[index] = value;
+        if (index >= childCubesInitDetails.Length) return;
+        childCubesInitDetails[index] = details;
     }
 
     /* This dictionary stores calculated static textures and their positions in grid
@@ -65,15 +66,10 @@ public class EnterableCube : Cube
         CalculateStaticTextures();
     }
 
-    protected override void DrawCube(Rect position)
-    {
-        DrawFloor(position);
-        DrawWalls(position);
-        DrawChildCubes(position);
-    }
+    // Init functions
     public void ReGenerateCubesIDGrid()
     {
-        cubesIDGrid = new int[tiling * tiling];
+        childCubesInitDetails = new ChildCubeInitDetail[tiling * tiling];
     }
     public void CalculateStaticTextures()
     {
@@ -134,7 +130,6 @@ public class EnterableCube : Cube
          * -> Repeat the process for the remaining layers
          * */
     }
-
     private int[,] CalculateWallsGrid()
     {
         if (cubesGrid == null) return null;
@@ -159,26 +154,29 @@ public class EnterableCube : Cube
 
         return wallsGrid;
     }
-
     private void InitChildCubes()
     {
         CubesManager cubesManager = CubesManager.Instance;
         if (cubesManager == null ) { Debug.LogWarning("No cubes manager is found in this scene to spawn cubes!"); return; }
 
         // Init cubes
-        Debug.Log("Tiling: " + Tiling + " tiling: " + tiling);
         cubesGrid = new Cube[tiling, tiling];
         for(int row = 0; row < tiling; row++)
         {
             for(int column = 0; column < tiling; column++)
             {
-                var spawnedCube = cubesManager.GetCube(GetCubeIDInGrid(row, column));
+                var cubeToSpawnDetails = GetChildCubeInitDetails(row, column);
+                if (cubeToSpawnDetails == null) continue;
+
+                var spawnedCube = cubesManager.GetCube(cubeToSpawnDetails.CubeID);
                 if (spawnedCube == null) continue;
 
                 spawnedCube.RelativeScale = new Vector2(1.0f / tiling, 1.0f / tiling);
                 spawnedCube.RelativePosition = Relativity.RPosFromGridTile(tiling, tiling, row, column);
-
                 spawnedCube.Parent = this;
+                spawnedCube.IsPlayer = cubeToSpawnDetails.IsPlayer;
+                spawnedCube.CanBePlayer = cubeToSpawnDetails.CanBePlayer;
+
                 childCubes.Add(spawnedCube);
                 cubesGrid[row, column] = spawnedCube;
 
@@ -189,14 +187,20 @@ public class EnterableCube : Cube
             }
         }
     }
-
+    
+    // Draw functions
+    protected override void DrawCube(Rect position)
+    {
+        DrawFloor(position);
+        DrawWalls(position);
+        DrawChildCubes(position);
+    }   
     private void DrawFloor(Rect position)
     {
         Color cubeColor = Color.white;
         if (colorPalette != null) cubeColor = colorPalette.GetColor(base.cubeColor);
         CustomTextureRenderer2D.RenderMesh(cubeMesh, cubeMat, floorTexture, cubeColor, position.position, position.size);
     }
-
     public void DrawWalls(Rect position)
     {
         Color cubeColor = Color.white;
@@ -213,6 +217,45 @@ public class EnterableCube : Cube
                 if (!(childCube.CanBePlayer || childCube.IsPlayer)) continue;
             }
             childCube.Draw(Relativity.CRectFromPRect(position, childCube.RelativeScale, childCube.RelativePosition));
+        }
+    }
+
+    // Child cube actions
+    public float RequestToMove(CubeMovement childCubeMovement, Vector2 direction)
+    {
+        if (childCubeMovement.TargetCube.Parent != this) return 0;
+        Vector2Int childCubePosInGrid = Relativity.GridPosFromRPos(tiling, tiling, childCubeMovement.TargetCube.RelativePosition);
+        Vector2Int targetPos = childCubePosInGrid + Vector2Int.RoundToInt(direction.normalized);
+        if (targetPos.x < 0 || targetPos.x >= tiling || targetPos.y < 0 || targetPos.y >= tiling)
+        {
+            // Moving out logic
+            return 0; // Testing purpose
+        }
+
+        //// Moving internally
+        //Rect targetRect = Relativity.CRectFromGridTile(tiling, tiling, targetPos.x, targetPos.y);
+
+        return 0;
+    }
+
+    [Serializable]
+    public class ChildCubeInitDetail
+    {
+        [SerializeField] int cubeID = 0;
+        [SerializeField] bool isPlayer = false;
+        [SerializeField] bool canBePlayer = false;
+        [SerializeField] bool isReversed = false;
+
+        public int CubeID { get => cubeID; set => cubeID = value; }
+        public bool IsPlayer { get => isPlayer; set => isPlayer = value; }
+        public bool CanBePlayer { get => canBePlayer; set => canBePlayer = value; }
+
+        public ChildCubeInitDetail()
+        {
+            cubeID = 0;
+            isPlayer = false;
+            canBePlayer = false;
+            isReversed = false;
         }
     }
 }

@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using static EnterableCube;
 
 [CustomEditor(typeof(EnterableCube))]
 public class EnterableCubeEditor : Editor
@@ -7,6 +8,8 @@ public class EnterableCubeEditor : Editor
     #region SerializedProperties
     SerializedProperty tiling;
     #endregion
+
+    Vector2Int cubeToShowDetail = new Vector2Int(0, 0);
 
     EnterableCube targetEnterableCube;
     private void OnEnable()
@@ -19,21 +22,32 @@ public class EnterableCubeEditor : Editor
         base.OnInspectorGUI();
         EditorGUILayout.LabelField("Cubes Grid", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(tiling);
-        if (GUILayout.Button("Reset Cubes ID Grid"))
+        if (GUILayout.Button("Reset Cubes Init Details Grid"))
         {
             targetEnterableCube.ReGenerateCubesIDGrid();
             EditorUtility.SetDirty(targetEnterableCube);
         }
         EditorGUI.BeginChangeCheck();
-        EditorGUILayout.LabelField("Cubes ID Grid");
+        EditorGUILayout.LabelField("Cubes Init Details Grid: ");
         for(int row = 0; row < targetEnterableCube.Tiling; row++)
         {
             EditorGUILayout.BeginHorizontal();
-            for(int column = 0; column < targetEnterableCube.Tiling; column++)
+            // Row headers
+            EditorGUILayout.BeginVertical();
+            EditorGUILayout.LabelField("ID", GUILayout.Width(80));
+            EditorGUILayout.LabelField("Is Player", GUILayout.Width(80));
+            EditorGUILayout.LabelField("Can Be Player", GUILayout.Width(80));
+            EditorGUILayout.LabelField("Edit details: ", GUILayout.Width(80));
+            EditorGUILayout.EndVertical();
+            for (int column = 0; column < targetEnterableCube.Tiling; column++)
             {
-                //targetEnterableCube.CubesIDGrid[row, column] = EditorGUILayout.IntField(targetEnterableCube.CubesIDGrid[row, column], GUILayout.MaxWidth(30));
-                targetEnterableCube.SetCubeIDInGrid(row, column, EditorGUILayout.IntField(targetEnterableCube.GetCubeIDInGrid(row, column), GUILayout.MaxWidth(30)));
-                //EditorUtility.SetDirty(targetEnterableCube);
+                var childCubeInitDetail = targetEnterableCube.GetChildCubeInitDetails(row, column);
+                if (childCubeInitDetail == null) continue;
+                EditorGUILayout.BeginVertical();
+                childCubeInitDetail.CubeID = EditorGUILayout.IntField(childCubeInitDetail.CubeID, GUILayout.Width(30));
+                childCubeInitDetail.IsPlayer= EditorGUILayout.Toggle(childCubeInitDetail.IsPlayer, GUILayout.Width(30));
+                childCubeInitDetail.CanBePlayer = EditorGUILayout.Toggle(childCubeInitDetail.CanBePlayer, GUILayout.Width(30));
+                EditorGUILayout.EndVertical();
             }
             EditorGUILayout.EndHorizontal();
         }

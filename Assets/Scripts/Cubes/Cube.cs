@@ -8,8 +8,11 @@ public class Cube : MonoBehaviour
     public enum CubeTypes { Normal, Static, Empty} 
 
     [Header("General Info")]
+    [HideInInspector]
     [SerializeField] protected bool isPlayer = false;
+    [HideInInspector]
     [SerializeField] protected bool canBePlayer = false;
+
     [SerializeField] protected CubeTypes cubeType;
     [SerializeField] protected ColorPalette colorPalette;
     [SerializeField] protected ColorPalette.ColorEnum cubeColor;
@@ -24,7 +27,7 @@ public class Cube : MonoBehaviour
     [SerializeField] protected Vector2 relativePosition = new(0, 0);
 
     public bool IsPlayer { get => isPlayer; set => isPlayer = value; }
-    public bool CanBePlayer { get => canBePlayer; }
+    public bool CanBePlayer { get => canBePlayer; set => canBePlayer = value; }
     public CubeTypes CubeType { get => cubeType; }
     public ColorPalette.ColorEnum CubeColor { get => cubeColor; set => cubeColor = value; }
     public bool NeedInstantiating { get => needInstantiating; }

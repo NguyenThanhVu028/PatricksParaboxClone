@@ -31,6 +31,23 @@ public static class Relativity
         return new Vector2(topLeftRelativePos.x + col * tileSize.x, topLeftRelativePos.y - row * tileSize.y);
     }
 
+    public static Rect CRectFromGridTile(int gridWidth, int gridHeight, int row, int col)
+    {
+        Rect resRect = new();
+        resRect.position = RPosFromGridTile(gridWidth, gridHeight, row, col);
+        resRect.size = new Vector2(1.0f / gridWidth, 1.0f / gridHeight);
+        return resRect;
+    }
+
+    public static Vector2Int GridPosFromRPos(int gridWidth, int gridHeight, Vector2 rPos)
+    {
+        Vector2 center = new Vector2((float)gridWidth * 0.5f, (float)gridHeight * 0.5f);
+        Vector2Int resPos = new();
+        resPos.x = Mathf.RoundToInt(center.x + rPos.x * gridWidth * 0.5f);
+        resPos.y = Mathf.RoundToInt(center.y + rPos.y * gridHeight * 0.5f);
+        return resPos;
+    }
+
     public static Rect CRectFromPRect(Rect pRect, Vector2 rScl, Vector2 rPos)
     {
         Rect cRect = new Rect();
