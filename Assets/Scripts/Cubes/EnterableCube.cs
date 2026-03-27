@@ -38,6 +38,7 @@ public class EnterableCube : Cube
         if (index >= childCubesInitDetails.Length) return null;
         return childCubesInitDetails[index];
     }
+    public Cube[,] CubesGrid { get => cubesGrid; }
     public void SetChildCubeInitDetails(int row, int col, ChildCubeInitDetail details)
     {
         int index = row * tiling + col;
@@ -187,7 +188,22 @@ public class EnterableCube : Cube
             }
         }
     }
-    
+    private void ModifyChildCube(Cube childCube)
+    {
+        if (childCube == null) return;
+        if (childCube is EnterableCube enterableCube)
+        {
+            enterableCube.isReversed = (isReversed ? !enterableCube.isReversed : enterableCube.isReversed);
+        }
+    }
+    private void UnModifyChildCube(Cube childCube)
+    {
+        if (childCube == null) return;
+        if (childCube is EnterableCube enterableCube)
+        {
+            enterableCube.isReversed = (isReversed ? !enterableCube.isReversed : enterableCube.isReversed);
+        }
+    }
     // Draw functions
     protected override void DrawCube(Rect position)
     {
@@ -220,21 +236,42 @@ public class EnterableCube : Cube
         }
     }
 
-    // Child cube actions
-    public float RequestToMove(CubeMovement childCubeMovement, int row, int column)
+    public float RequestToMove(Vector2 cRPos, Vector2 cRScl, Cube childCube, int row, int column, bool external = false)
     {
-        //if (childCubeMovement.TargetCube.Parent != this) return 0;
-        //Vector2Int childCubePosInGrid = Relativity.GridPosFromRPos(tiling, tiling, childCubeMovement.TargetCube.RelativePosition);
-        //Vector2Int targetPos = childCubePosInGrid + Vector2Int.RoundToInt(direction.normalized);
-        //if (targetPos.x < 0 || targetPos.x >= tiling || targetPos.y < 0 || targetPos.y >= tiling)
-        //{
-        //    // Moving out logic
-        //    return 0; // Testing purpose
-        //}
+        var childCubeMovement = childCube.GetComponent<CubeMovement>();
+        if (childCubeMovement == null) return 0;
 
-        //// Moving internally
-        //Rect targetRect = Relativity.CRectFromGridTile(tiling, tiling, targetPos.x, targetPos.y);
+        // if target position is out of range -> try to move child cube outside
+        if (row < 0 || column < 0 || row >= tiling || column >= tiling)
+        {
+            
+            return 0;
+        }
 
+        // If target position is empty -> move right in -> return target time
+        if (cubesGrid[row, column] == null)
+        {
+            float targetTime = (external) ? childCubeMovement.SpecialMoveTime : childCubeMovement.NormalMoveTime;
+            Vector2 childCubeTargetRPos = Relativity.RPosFromGridTile(tiling, tiling, row, column);
+            Vector2 childCubeTargetRScl = new Vector2(1.0f / tiling, 1.0f / tiling);
+            cubesGrid[row, column] = childCube;
+            return childCubeMovement.StartMoving(cRPos, cRScl, childCubeTargetRPos, childCubeTargetRScl, targetTime);
+        }
+
+        // If there is a movable cube -> Try to move that cube away
+        var blockageCubeMovement = cubesGrid[row, column].GetComponent<CubeMovement>();
+        if (blockageCubeMovement != null)
+        {
+            if (cubesGrid[row, column].GetComponent<CubeMovement>().IsMoving){
+            }
+            //var targetTime = RequestToMove(cubesGrid[row, column].RelativePosition, cubesGrid[row, column].RelativeScale, cubesGrid[row, column], )
+        }
+
+        // If that cube is blocked or not movable -> Try to enter
+
+        // If all above fail, try to possess the cube
+
+        // Fail to move
         return 0;
     }
 

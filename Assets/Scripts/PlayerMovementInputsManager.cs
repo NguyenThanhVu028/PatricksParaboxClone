@@ -53,28 +53,24 @@ public class PlayerMovementInputsManager : MonoBehaviour
 
     public void OnMoveUp(bool isActive)
     {
-        Debug.Log("Move up: " + isActive);
         if (!allowMovementInput) return;
         if (isActive) AddToInputList(Vector2.up);
         else RemoveFromInputList(Vector2.up);
     }
     public void OnMoveDown(bool isActive)
     {
-        Debug.Log("Move down: " + isActive);
         if (!allowMovementInput) return;
         if (isActive) AddToInputList(Vector2.down);
         else RemoveFromInputList(Vector2.down);
     }
     public void OnMoveLeft(bool isActive)
     {
-        Debug.Log("Move left: " + isActive);
         if (!allowMovementInput) return;
         if (isActive) AddToInputList(Vector2.left);
         else RemoveFromInputList(Vector2.left);
     }
     public void OnMoveRight(bool isActive)
     {
-        Debug.Log("Move right: " + isActive);
         if (!allowMovementInput) return;
         if (isActive) AddToInputList(Vector2.right);
         else RemoveFromInputList(Vector2.right);

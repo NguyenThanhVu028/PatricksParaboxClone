@@ -41,10 +41,10 @@ public static class Relativity
 
     public static Vector2Int GridPosFromRPos(int gridWidth, int gridHeight, Vector2 rPos)
     {
-        Vector2 center = new Vector2((float)gridWidth * 0.5f, (float)gridHeight * 0.5f);
+        Vector2 center = new Vector2(gridHeight * 0.5f - 0.5f, gridWidth * 0.5f - 0.5f);
         Vector2Int resPos = new();
-        resPos.x = Mathf.RoundToInt(center.x + rPos.x * gridWidth * 0.5f);
-        resPos.y = Mathf.RoundToInt(center.y + rPos.y * gridHeight * 0.5f);
+        resPos.x = Mathf.RoundToInt(center.x - rPos.y * gridHeight * 0.5f);
+        resPos.y = Mathf.RoundToInt(center.y + rPos.x * gridWidth * 0.5f);
         return resPos;
     }
 

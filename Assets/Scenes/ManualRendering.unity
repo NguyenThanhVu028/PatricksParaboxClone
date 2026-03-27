@@ -119,6 +119,38 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &10023963 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2601011977459787844, guid: a9d5fe7847b3a894fa714f95f94030dc, type: 3}
+  m_PrefabInstance: {fileID: 1438813731}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &10023964 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3330600575587197656, guid: a9d5fe7847b3a894fa714f95f94030dc, type: 3}
+  m_PrefabInstance: {fileID: 1438813731}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 10023963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a79d719644dad549ac1ae04a95e3ce0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &10023966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 10023963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c40dd76a8993a234ea82ff15f914c21e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movable: 1
+  normalMoveTime: 0.1
+  specialMoveTime: 0.5
+  coolDownTime: 0.075
 --- !u!1 &59677697
 GameObject:
   m_ObjectHideFlags: 0
@@ -155,6 +187,8 @@ MonoBehaviour:
     cube: {fileID: 1013356207}
   - id: 3
     cube: {fileID: 1143282404}
+  - id: 4
+    cube: {fileID: 10023964}
 --- !u!4 &59677699
 Transform:
   m_ObjectHideFlags: 0
@@ -480,6 +514,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1013356208}
   - component: {fileID: 1013356207}
+  - component: {fileID: 1013356209}
   m_Layer: 0
   m_Name: EnterableCube
   m_TagString: Untagged
@@ -536,8 +571,8 @@ MonoBehaviour:
     isPlayer: 0
     canBePlayer: 0
     isReversed: 0
-  - cubeID: 1
-    isPlayer: 0
+  - cubeID: 0
+    isPlayer: 1
     canBePlayer: 0
     isReversed: 0
   - cubeID: 1
@@ -681,6 +716,22 @@ Transform:
   - {fileID: 1875552833}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1013356209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1013356206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c40dd76a8993a234ea82ff15f914c21e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movable: 1
+  normalMoveTime: 0.1
+  specialMoveTime: 0.5
+  coolDownTime: 0.075
 --- !u!1 &1038702593
 GameObject:
   m_ObjectHideFlags: 0
@@ -942,6 +993,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1143282405}
   - component: {fileID: 1143282404}
+  - component: {fileID: 1143282406}
   m_Layer: 0
   m_Name: EnterableCube2
   m_TagString: Untagged
@@ -1002,15 +1054,15 @@ MonoBehaviour:
     isPlayer: 0
     canBePlayer: 0
     isReversed: 0
-  - cubeID: 1
-    isPlayer: 0
+  - cubeID: 4
+    isPlayer: 1
+    canBePlayer: 0
+    isReversed: 0
+  - cubeID: 4
+    isPlayer: 1
     canBePlayer: 0
     isReversed: 0
   - cubeID: 2
-    isPlayer: 0
-    canBePlayer: 0
-    isReversed: 0
-  - cubeID: 0
     isPlayer: 0
     canBePlayer: 0
     isReversed: 0
@@ -1063,6 +1115,22 @@ Transform:
   - {fileID: 735741218}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1143282406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1143282403}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c40dd76a8993a234ea82ff15f914c21e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movable: 1
+  normalMoveTime: 0.1
+  specialMoveTime: 0.5
+  coolDownTime: 0.075
 --- !u!1 &1285392986
 GameObject:
   m_ObjectHideFlags: 0
@@ -1120,6 +1188,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SimpleCube
       objectReference: {fileID: 0}
+    - target: {fileID: 3330600575587197656, guid: a9d5fe7847b3a894fa714f95f94030dc, type: 3}
+      propertyPath: cubeColor
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 4745218084157380791, guid: a9d5fe7847b3a894fa714f95f94030dc, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.51
@@ -1163,7 +1235,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2601011977459787844, guid: a9d5fe7847b3a894fa714f95f94030dc, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 10023966}
   m_SourcePrefab: {fileID: 100100000, guid: a9d5fe7847b3a894fa714f95f94030dc, type: 3}
 --- !u!1 &1573972303
 GameObject:
@@ -1747,6 +1822,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1993895921}
   - component: {fileID: 1993895920}
+  - component: {fileID: 1993895922}
   m_Layer: 0
   m_Name: WallCube
   m_TagString: Untagged
@@ -1795,6 +1871,22 @@ Transform:
   - {fileID: 1042486434}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1993895922
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993895919}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c40dd76a8993a234ea82ff15f914c21e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movable: 1
+  normalMoveTime: 0.5
+  specialMoveTime: 1
+  coolDownTime: 0.075
 --- !u!1 &2004965300
 GameObject:
   m_ObjectHideFlags: 0

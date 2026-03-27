@@ -21,7 +21,7 @@ MonoBehaviour:
   - colorEnum: 2
     color: {r: 0.18679237, g: 0.3445789, b: 1, a: 1}
   - colorEnum: 3
-    color: {r: 1, g: 0.8258476, b: 0, a: 1}
+    color: {r: 1, g: 1, b: 0, a: 1}
   - colorEnum: 4
     color: {r: 0, g: 0.9245283, b: 0.9245283, a: 1}
   - colorEnum: 5
