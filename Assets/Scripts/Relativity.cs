@@ -65,4 +65,33 @@ public static class Relativity
         pRect.y = cRect.y - pRect.height * 0.5f * rPos.y;
         return pRect;
     }
+
+    public static Vector2 CRPosFromCRealPos(Rect pRect, Vector2 cRealPos)
+    {
+        Vector2 cRPos = new();
+        cRPos.x = (cRealPos.x - pRect.x) / ((float)pRect.width * 0.5f);
+        cRPos.y = (cRealPos.y - pRect.y) / ((float)pRect.height * 0.5f);
+        return cRPos;
+    }
+    public static Vector2 CRealPosFromCRPos(Rect pRect, Vector2 cRPos)
+    {
+        Vector2 cRealPos = new();
+        cRealPos.x = pRect.x + cRPos.x * pRect.width;
+        cRealPos.y = pRect.y + cRPos.y * pRect.height;
+        return cRealPos;
+    }
+    public static Vector2 PRPosFromCRPosAndCRScl(Vector2 cRPos, Vector2 cRScl)
+    {
+        Vector2 pRPos = new();
+        pRPos.x = -cRPos.x / cRScl.x;
+        pRPos.y = -cRPos.y / cRScl.y;
+        return pRPos;
+    }
+    //public static Vector2 CRPosFromPRPosAndPRScl(Vector2 pRPos, Vector2 pRScl)
+    //{
+    //    Vector2 cRPos = new();
+    //    cRPos.x = -pRPos.x / pRScl.x;
+    //    cRPos.y = -pRPos.y / pRScl.y;
+    //    return cRPos;
+    //}
 }

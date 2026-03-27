@@ -31,16 +31,10 @@ public class CubeMovement : MonoBehaviour
         if (targetCube != null && targetCube.IsPlayer && playerMovementInputsManager != null)
         {
             Vector2 movementInput = playerMovementInputsManager.GetLatestMovementInput();
-            Push(movementInput); // Push itself
+
         }
     }
 
-    // Called by other cubes or itself, it will return moving time of this object
-    public float Push(Vector2 direction)
-    {
-        if (targetCube == null || targetCube.Parent == null) return 0;
-        return targetCube.Parent.RequestToMove(this, direction);
-    }
 
     // Called by parent cube
     public void StartMoving(Rect targetPosition, bool normalMove)

@@ -221,16 +221,16 @@ public class EnterableCube : Cube
     }
 
     // Child cube actions
-    public float RequestToMove(CubeMovement childCubeMovement, Vector2 direction)
+    public float RequestToMove(CubeMovement childCubeMovement, int row, int column)
     {
-        if (childCubeMovement.TargetCube.Parent != this) return 0;
-        Vector2Int childCubePosInGrid = Relativity.GridPosFromRPos(tiling, tiling, childCubeMovement.TargetCube.RelativePosition);
-        Vector2Int targetPos = childCubePosInGrid + Vector2Int.RoundToInt(direction.normalized);
-        if (targetPos.x < 0 || targetPos.x >= tiling || targetPos.y < 0 || targetPos.y >= tiling)
-        {
-            // Moving out logic
-            return 0; // Testing purpose
-        }
+        //if (childCubeMovement.TargetCube.Parent != this) return 0;
+        //Vector2Int childCubePosInGrid = Relativity.GridPosFromRPos(tiling, tiling, childCubeMovement.TargetCube.RelativePosition);
+        //Vector2Int targetPos = childCubePosInGrid + Vector2Int.RoundToInt(direction.normalized);
+        //if (targetPos.x < 0 || targetPos.x >= tiling || targetPos.y < 0 || targetPos.y >= tiling)
+        //{
+        //    // Moving out logic
+        //    return 0; // Testing purpose
+        //}
 
         //// Moving internally
         //Rect targetRect = Relativity.CRectFromGridTile(tiling, tiling, targetPos.x, targetPos.y);
