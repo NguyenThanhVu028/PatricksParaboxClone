@@ -125,7 +125,7 @@ public class MainCamera : MonoBehaviour
     {
         if (demoZoomInCube == null) return;
         Vector2 rScl = new(); rScl.x = 1.0f / demoZoomInCube.RelativeScale.x; rScl.y = 1.0f / demoZoomInCube.RelativeScale.y;
-        Vector2 rPos = Relativity.PRPosFromCRPosAndCRScl(demoZoomInCube.RelativePosition, demoZoomInCube.RelativeScale);
+        Vector2 rPos = Relativity.PRPosToAChild(demoZoomInCube.RelativePosition, demoZoomInCube.RelativeScale);
 
         Debug.Log($"Demo cube: {demoZoomInCube.name}, childRPos: {demoZoomInCube.RelativePosition}, childRScl: {demoZoomInCube.RelativeScale}, parentRPos: {rPos}, parentRScl {rScl}");
         ChangeTarget(rPos, rScl, demoZoomInCube);
@@ -160,7 +160,7 @@ public class MainCamera : MonoBehaviour
          * - Set new target and focus on new target
          */
         Vector2 newTargetRScl = new Vector2(1.0f / rScl.x, 1.0f / rScl.y);
-        Vector2 newTargetRPos = Relativity.PRPosFromCRPosAndCRScl(rPos, rScl);
+        Vector2 newTargetRPos = Relativity.PRPosToAChild(rPos, rScl);
         Rect newTargetRect = Relativity.CRectFromPRect(renderPosition, newTargetRScl, newTargetRPos);
 
         float elapsedTime = -1;

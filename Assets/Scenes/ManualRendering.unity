@@ -1054,12 +1054,12 @@ MonoBehaviour:
     isPlayer: 0
     canBePlayer: 0
     isReversed: 0
-  - cubeID: 4
-    isPlayer: 1
+  - cubeID: 0
+    isPlayer: 0
     canBePlayer: 0
     isReversed: 0
-  - cubeID: 4
-    isPlayer: 1
+  - cubeID: 0
+    isPlayer: 0
     canBePlayer: 0
     isReversed: 0
   - cubeID: 2
@@ -1070,16 +1070,16 @@ MonoBehaviour:
     isPlayer: 0
     canBePlayer: 0
     isReversed: 0
-  - cubeID: 1
+  - cubeID: 4
     isPlayer: 0
     canBePlayer: 0
     isReversed: 0
-  - cubeID: 0
+  - cubeID: 4
     isPlayer: 0
     canBePlayer: 0
     isReversed: 0
-  - cubeID: 1
-    isPlayer: 0
+  - cubeID: 4
+    isPlayer: 1
     canBePlayer: 0
     isReversed: 0
   - cubeID: 0
@@ -1142,7 +1142,7 @@ GameObject:
   - component: {fileID: 1285392988}
   - component: {fileID: 1285392987}
   m_Layer: 0
-  m_Name: PlayerMovementInputsManager
+  m_Name: PlayerInputsManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

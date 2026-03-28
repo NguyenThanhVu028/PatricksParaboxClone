@@ -10,7 +10,7 @@ public class CubeMovement : MonoBehaviour
     [SerializeField] float coolDownTime = 0.075f;
 
     protected Cube selfCube;
-    protected PlayerMovementInputsManager playerMovementInputsManager;
+    protected PlayerInputsManager playerMovementInputsManager;
     protected Coroutine movingCoroutine = null;
     protected Vector2 targetRPos = Vector2.zero;
     protected Vector2 previousRPos = Vector2.zero;
@@ -28,7 +28,7 @@ public class CubeMovement : MonoBehaviour
     private void Start()
     {
         selfCube = GetComponent<Cube>();
-        playerMovementInputsManager = PlayerMovementInputsManager.Instance;
+        playerMovementInputsManager = PlayerInputsManager.Instance;
     }
     private void Update()
     {
@@ -37,15 +37,15 @@ public class CubeMovement : MonoBehaviour
             playerMovementInputsManager != null &&
             !IsMoving && !IsCoolingDown)
         {
-            Vector2 movementInput = playerMovementInputsManager.GetLatestMovementInput();
-            if (movementInput != Vector2.zero)
+            PlayerInputsManager.MovementInputs movementInput = playerMovementInputsManager.GetLatestMovementInput();
+            if (movementInput != PlayerInputsManager.MovementInputs.None)
             {
                 Vector2Int currentPosInGrid = Relativity.GridPosFromRPos(selfCube.Parent.Tiling, selfCube.Parent.Tiling, selfCube.RelativePosition);
                 Debug.Log("Current pos in grid: " + currentPosInGrid);
-                Vector2Int targetPosInGrid = new Vector2Int(currentPosInGrid.x - Mathf.RoundToInt(movementInput.normalized.y), currentPosInGrid.y + Mathf.RoundToInt(movementInput.normalized.x));
+                Vector2Int targetPosInGrid = currentPosInGrid + PlayerInputsManager.ConvertMovementInputToGridDirection(movementInput);
                 Debug.Log("Target pos in grid: " + targetPosInGrid);
-                selfCube.Parent.CubesGrid[currentPosInGrid.x, currentPosInGrid.y] = null;
-                if (selfCube.Parent.RequestToMove(selfCube.RelativePosition, selfCube.RelativeScale, selfCube, targetPosInGrid.x, targetPosInGrid.y) == 0)
+                //selfCube.Parent.CubesGrid[currentPosInGrid.x, currentPosInGrid.y] = null;
+                if (selfCube.Parent.RequestToMove(selfCube.RelativePosition, selfCube.RelativeScale, selfCube, movementInput, targetPosInGrid.x, targetPosInGrid.y) == 0)
                 {
                     // If fail to move
                     selfCube.Parent.CubesGrid[currentPosInGrid.x, currentPosInGrid.y] = selfCube;
