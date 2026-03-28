@@ -17,6 +17,7 @@ public class CubeMovement : MonoBehaviour
     protected Vector2 targetRScl = Vector2.zero;
     protected Vector2 previousRScl = Vector2.zero;
     protected float coolDownTimer = 0f;
+    public bool Movable { get => movable; }
     //protected bool isTryingToMove = false;
 
     public bool IsMoving { get => (movingCoroutine != null); }
@@ -59,6 +60,22 @@ public class CubeMovement : MonoBehaviour
     public float StartMoving(Vector2 startRPos, Vector2 startRScl, Vector2 endRPos, Vector2 endRScl, float targetTime)
     {
         if (IsMoving || IsCoolingDown) return 0;
+
+        // If this cube is a player -> update camera
+        if (selfCube.IsPlayer && MainCamera.Instance != null)
+        {
+            Vector2 oldParentRPos = Relativity.PRPosToAChild(selfCube.RelativePosition, selfCube.RelativeScale);
+            Vector2 oldParentRScl = Relativity.PRSclToAChild(selfCube.RelativeScale);
+
+            Vector2 newParentRPos = Relativity.PRPosToAChild(startRPos, startRScl);
+            Vector2 newParentRScl = Relativity.PRSclToAChild(startRScl);
+
+            Vector2 oldParentRPosToNewParent = Relativity.SRPosFromSameParent(newParentRPos, newParentRScl, oldParentRPos);
+            Vector2 oldParentRSclToNewParent = Relativity.SRSclFromSameParent(newParentRScl, oldParentRScl);
+
+            MainCamera.Instance.ChangeTarget(oldParentRPosToNewParent, oldParentRSclToNewParent, selfCube.Parent, targetTime);
+        }
+
         movingCoroutine = StartCoroutine(MovingCoroutine(startRPos, startRScl, endRPos, endRScl, targetTime));
         return targetTime;
     }

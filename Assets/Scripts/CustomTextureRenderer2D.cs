@@ -18,7 +18,7 @@ public class CustomTextureRenderer2D
                                     bool occlusionCulling = true)
     {
         // If occulusionCulling is on, then the texture won't be rendered outside of camera's view
-        if (occlusionCulling && !CheckVisibility(position, size)) return;
+        //if (occlusionCulling && !CheckVisibility(position, size)) return;
 
         MaterialPropertyBlock matProps = new();
         matProps.SetTexture(mainTexID, texture);
@@ -35,7 +35,7 @@ public class CustomTextureRenderer2D
                                     bool occlusionCulling = true)
     {
         // If occulusionCulling is on, then the texture won't be rendered outside of camera's view
-        if (occlusionCulling && !CheckVisibility(position, size)) return;
+        //if (occlusionCulling && !CheckVisibility(position, size)) return;
 
         Matrix4x4 matrix = Matrix4x4.TRS(position, Quaternion.identity, size); //  Calculate position
 
@@ -111,7 +111,7 @@ public class CustomTextureRenderer2D
     public static Vector2 ConvertScaleToPixel(Vector2 scale)
     {
         int pixelPerUnit = Mathf.RoundToInt((float)Camera.main.pixelHeight / (Camera.main.orthographicSize * 2.0f));
-        return new Vector2(scale.x * pixelPerUnit, scale.y * pixelPerUnit);
+        return new Vector2(Mathf.Abs(scale.x) * pixelPerUnit, Mathf.Abs(scale.y) * pixelPerUnit);
     }
 
     [Serializable]

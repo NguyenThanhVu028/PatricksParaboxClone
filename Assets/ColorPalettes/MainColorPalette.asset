@@ -17,14 +17,14 @@ MonoBehaviour:
   - colorEnum: 0
     color: {r: 1, g: 0.37145594, b: 0.37145594, a: 1}
   - colorEnum: 1
-    color: {r: 0.37416548, g: 1, b: 0.35283017, a: 1}
+    color: {r: 0.48485067, g: 1, b: 0.3830188, a: 1}
   - colorEnum: 2
-    color: {r: 0.18679237, g: 0.3445789, b: 1, a: 1}
+    color: {r: 0.5113207, g: 0.6057515, b: 1, a: 1}
   - colorEnum: 3
-    color: {r: 1, g: 1, b: 0, a: 1}
+    color: {r: 1, g: 0.897074, b: 0, a: 1}
   - colorEnum: 4
     color: {r: 0, g: 0.9245283, b: 0.9245283, a: 1}
   - colorEnum: 5
-    color: {r: 0.5906003, g: 0.13396227, b: 1, a: 1}
+    color: {r: 0.72361225, g: 0.41320753, b: 1, a: 1}
   - colorEnum: 6
     color: {r: 1, g: 0.26226407, b: 0.95764184, a: 1}

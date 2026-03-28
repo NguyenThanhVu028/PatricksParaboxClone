@@ -38,9 +38,17 @@ public class Cube : MonoBehaviour
     public Vector2 RelativeScale { get => relativeScale; set => relativeScale = value; }
     public Vector2 RelativePosition { get => relativePosition; set => relativePosition = value; }
 
+    private void Start()
+    {
+        if (isPlayer && MainCamera.Instance != null)
+        {
+            MainCamera.Instance.SetNewTargetCube(parent);
+        }
+    }
+
     public virtual void Draw(Rect position)
     {
-        if (!CustomTextureRenderer2D.CheckVisibility(position.position, position.size)) return;
+        //if (!CustomTextureRenderer2D.CheckVisibility(position.position, position.size)) return;
 
         Vector2 rectSizeInPixel = CustomTextureRenderer2D.ConvertScaleToPixel(position.size);
         if (rectSizeInPixel.x < minPixelToRender || rectSizeInPixel.y < minPixelToRender) return; // Don't draw if the requested rectangle is too small (To avoid infinite rendering)

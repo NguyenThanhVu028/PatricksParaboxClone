@@ -8,7 +8,11 @@ public class MainCamera : MonoBehaviour
 {
     public enum MainCameraRenderMode { SingleCube, MultipleCubes };
 
+    private static MainCamera instance;
+
+    [Header("Render settings")]
     [SerializeField] MainCameraRenderMode renderMode = MainCameraRenderMode.SingleCube;
+    [SerializeField] bool flipHorizontally = false;
 
     [Header("Single Cube mode")]
     [SerializeField] EnterableCube targetCube;
@@ -25,13 +29,13 @@ public class MainCamera : MonoBehaviour
 
     private Camera mainCamera;
     private Coroutine zoomCoroutine = null;
+
+    public static MainCamera Instance { get => instance; }
     private void Awake()
     {
         mainCamera = GetComponent<Camera>();
-    }
-    private void Start()
-    {
-        FocusOnTargetCube();
+        if (instance != null && instance != this) Destroy(instance);
+        instance = this;
     }
     private void Update()
     {
@@ -85,8 +89,14 @@ public class MainCamera : MonoBehaviour
         else targetCube.Draw(renderPosition);
     }
 
-    // This function can only be used in SingleCube mode
-    [ContextMenu("Focus On Target Cube")]
+    public void SetNewTargetCube(EnterableCube newTarget)
+    {
+        if (newTarget == null || newTarget == this) return;
+        targetCube = newTarget;
+        FocusOnTargetCube();
+    }
+
+    [ContextMenu("Focus")]
     public void FocusOnTargetCube()
     {
         if (renderMode != MainCameraRenderMode.SingleCube) return;
@@ -94,10 +104,12 @@ public class MainCamera : MonoBehaviour
 
         transform.position = new Vector3 (renderPosition.position.x, renderPosition.position.y, transform.position.z);
         mainCamera.orthographicSize = GetIdealOrthographicSize(renderPosition, targetCube);
+
+        Debug.Log("Ideal ortho size: " + GetIdealOrthographicSize(renderPosition, targetCube));
     }
 
     public enum CameraMovements { ZoomIn, ZoomOut }
-    public void ChangeTarget(Vector2 rPos, Vector2 rScl, EnterableCube newTarget)
+    public void ChangeTarget(Vector2 prevRPosToNew, Vector2 prevRSclToNew, EnterableCube newTarget, float time = 0.5f)
     {
         // rPos and rScl are relative values of the old target to the new target
 
@@ -110,9 +122,9 @@ public class MainCamera : MonoBehaviour
             return;
         }
         // Zooming out
-        if (rScl.x < 1 || rScl.y < 1) zoomCoroutine = StartCoroutine(ZoomOutCoroutine(rPos, rScl, newTarget));
+        if (prevRSclToNew.x < 1 || prevRSclToNew.y < 1) zoomCoroutine = StartCoroutine(ZoomOutCoroutine(prevRPosToNew, prevRSclToNew, newTarget, time));
         // Zooming in
-        else zoomCoroutine = StartCoroutine(ZoomInCoroutine(rPos, rScl, newTarget));
+        else zoomCoroutine = StartCoroutine(ZoomInCoroutine(prevRPosToNew, prevRSclToNew, newTarget, time));
     }
     [ContextMenu("Demo zoom out")]
     public void DemoZoomOut()
@@ -149,18 +161,18 @@ public class MainCamera : MonoBehaviour
         }
     }
 
-    private IEnumerator ZoomInCoroutine(Vector2 rPos, Vector2 rScl, EnterableCube newTarget, float time = 0.5f)
+    private IEnumerator ZoomInCoroutine(Vector2 prevRPosToNew, Vector2 prevRSclToNew, EnterableCube newTarget, float time)
     {
         /* Zoom in logic:
-         * - Target cube is still the old target as first
+         * - Target cube is still the old target at first
          * - Keep old ortho and transform
          * - Calculate new target Rect based on old target Rect
          * - Calculate new ortho and new position based on new target Rect
          * - Start lerping toward new ortho and new position in "time"
          * - Set new target and focus on new target
          */
-        Vector2 newTargetRScl = new Vector2(1.0f / rScl.x, 1.0f / rScl.y);
-        Vector2 newTargetRPos = Relativity.PRPosToAChild(rPos, rScl);
+        Vector2 newTargetRScl = new Vector2(1.0f / prevRSclToNew.x, 1.0f / prevRSclToNew.y);
+        Vector2 newTargetRPos = Relativity.PRPosToAChild(prevRPosToNew, prevRSclToNew);
         Rect newTargetRect = Relativity.CRectFromPRect(renderPosition, newTargetRScl, newTargetRPos);
 
         float elapsedTime = -1;
@@ -168,8 +180,17 @@ public class MainCamera : MonoBehaviour
         float targetOrthoSize = GetIdealOrthographicSize(newTargetRect, newTarget);
         Vector3 oldPos = transform.position;
         Vector3 targetPos = new Vector3(newTargetRect.x, newTargetRect.y, -10);
+        bool skippedFirstFrame = false;
         while (elapsedTime < time)
         {
+            if (!skippedFirstFrame)
+            {
+                // Skip the first frame to make sure the zooming in process starts at elapsed time = 0, not deltaTime
+                skippedFirstFrame = true;
+                yield return null;
+                continue;
+            }
+
             if (elapsedTime < 0) elapsedTime = 0; // Make sure the zooming in process starts at elapsed time = 0, not deltaTime
             else elapsedTime += Time.deltaTime;
 
@@ -189,7 +210,7 @@ public class MainCamera : MonoBehaviour
         FocusOnTargetCube();
         zoomCoroutine = null;
     }
-    private IEnumerator ZoomOutCoroutine(Vector2 rPos, Vector2 rScl, EnterableCube newTarget, float time = 0.5f)
+    private IEnumerator ZoomOutCoroutine(Vector2 prevRPosToNew, Vector2 prevRSclToNew, EnterableCube newTarget, float time)
     {
         /* Zoom out logic:
          * - Target cube is set to the new target
@@ -202,19 +223,28 @@ public class MainCamera : MonoBehaviour
 
         targetCube = newTarget;
         // Calculate old target new Rect
-        Rect oldTargetNewRect = Relativity.CRectFromPRect(renderPosition, rScl, rPos);
+        Rect oldTargetNewRect = Relativity.CRectFromPRect(renderPosition, prevRSclToNew, prevRPosToNew);
         // Calculate camera relative values from the old target
         float cameraRelativeOrthoSize = mainCamera.orthographicSize / renderPosition.height;
-        Vector2 cameraRPosFromOldTarget = Relativity.CRPosFromCRealPos(renderPosition, transform.position);
+        Vector2 cameraRPosToOldTarget = Relativity.CRPosFromCRealPos(renderPosition, transform.position);
 
         float elapsedTime = -1;
         var oldOrthoSize = cameraRelativeOrthoSize * oldTargetNewRect.height;
         var targetOrthoSize = GetIdealOrthographicSize(renderPosition, targetCube);
-        Vector3 oldPos = Relativity.CRealPosFromCRPos(oldTargetNewRect, cameraRPosFromOldTarget); ; oldPos.z = -10;
+        Vector3 oldPos = Relativity.CRealPosFromCRPos(oldTargetNewRect, cameraRPosToOldTarget); ; oldPos.z = -10;
         Vector3 targetPos = renderPosition.position; targetPos.z = -10;
+        bool skippedFirstFrame = false;
 
         while (elapsedTime < time)
         {
+            if (!skippedFirstFrame)
+            {
+                // Skip the first frame to make sure the zooming in process starts at elapsed time = 0, not deltaTime
+                skippedFirstFrame = true;
+                yield return null;
+                continue;
+            }
+
             if (elapsedTime < 0) elapsedTime = 0;
             else elapsedTime += Time.deltaTime;
 

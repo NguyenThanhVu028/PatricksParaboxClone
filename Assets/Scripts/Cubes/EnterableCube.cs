@@ -2,14 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 using static UnityEngine.Rendering.DebugUI.Table;
 
 public class EnterableCube : Cube
 {
     [Header("Enterable cube properties")]
-    [SerializeField] bool isReversed = false;
-    [SerializeField] List<Cube> childCubes = new();
+    //[SerializeField] bool isReversed = false;
+    //[SerializeField] List<Cube> childCubes = new();
     [HideInInspector]
     [Min(1)]
     [SerializeField] int tiling = 9;
@@ -178,7 +179,7 @@ public class EnterableCube : Cube
                 spawnedCube.IsPlayer = cubeToSpawnDetails.IsPlayer;
                 spawnedCube.CanBePlayer = cubeToSpawnDetails.CanBePlayer;
 
-                childCubes.Add(spawnedCube);
+                //childCubes.Add(spawnedCube);
                 cubesGrid[row, column] = spawnedCube;
 
                 if (spawnedCube is WallCube)
@@ -191,19 +192,20 @@ public class EnterableCube : Cube
     private void ModifyChildCube(Cube childCube)
     {
         if (childCube == null) return;
-        if (childCube is EnterableCube enterableCube)
-        {
-            enterableCube.isReversed = (isReversed ? !enterableCube.isReversed : enterableCube.isReversed);
-        }
+        //if (childCube is EnterableCube enterableCube)
+        //{
+        //    enterableCube.isReversed = (isReversed ? !enterableCube.isReversed : enterableCube.isReversed);
+        //}
     }
     private void UnModifyChildCube(Cube childCube)
     {
         if (childCube == null) return;
-        if (childCube is EnterableCube enterableCube)
-        {
-            enterableCube.isReversed = (isReversed ? !enterableCube.isReversed : enterableCube.isReversed);
-        }
+        //if (childCube is EnterableCube enterableCube)
+        //{
+        //    enterableCube.isReversed = (isReversed ? !enterableCube.isReversed : enterableCube.isReversed);
+        //}
     }
+    
     // Draw functions
     protected override void DrawCube(Rect position)
     {
@@ -225,74 +227,165 @@ public class EnterableCube : Cube
     }
     private void DrawChildCubes(Rect position)
     {
-        foreach(var childCube in childCubes)
+        List<Cube> movingCubes = new();
+        foreach(var childCube in cubesGrid)
         {
             if (childCube == null) continue;
             if (childCube is WallCube) // Ignore walls that aren't or can't potentially be a player
             {
                 if (!(childCube.CanBePlayer || childCube.IsPlayer)) continue;
             }
+            if (childCube.GetComponent<CubeMovement>() != null && childCube.GetComponent<CubeMovement>().IsMoving)
+            {
+                movingCubes.Add(childCube);
+                continue;
+            }
             childCube.Draw(Relativity.CRectFromPRect(position, childCube.RelativeScale, childCube.RelativePosition));
+        }
+        // Drawing moving cubes on top of other cubes to avoid being covered by other cubes when moving
+        foreach (var movingCube in movingCubes)
+        {
+            movingCube.Draw(Relativity.CRectFromPRect(position, movingCube.RelativeScale, movingCube.RelativePosition));
         }
     }
 
-    public float RequestToMove(Vector2 cRPos, Vector2 cRScl, Cube childCube, PlayerInputsManager.MovementInputs direction, int targetRow, int targetColumn, bool external = false)
+    // Child cubes actions
+    public float RequestToMove(Vector2 cRPos, Vector2 cRScl, Cube requestedCube, PlayerInputsManager.MovementInputs direction, int requestedRow, int requestedColumn, bool external = false, bool specialMove = false)
     {
-        var childCubeMovement = childCube.GetComponent<CubeMovement>();
-        if (childCubeMovement == null) return 0;
+        var requestedCubeMovement = requestedCube.GetComponent<CubeMovement>();
+        if (requestedCubeMovement == null) return 0;
 
-        Vector2Int childCubePosition = Relativity.GridPosFromRPos(tiling, tiling, childCube.RelativePosition);
-        if (CheckValidGridPosition(childCubePosition.x, childCubePosition.y)) CubesGrid[childCubePosition.x, childCubePosition.y] = null;
-
-        // if target position is out of range -> try to move child cube outside
-        if (!CheckValidGridPosition(targetRow, targetColumn))
+        Vector2Int requestedCubePosition = Relativity.GridPosFromRPos(tiling, tiling, requestedCube.RelativePosition);
+        
+        // If the requested cube is a child of this cube -> Pick it up from its position
+        if (!external && CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) CubesGrid[requestedCubePosition.x, requestedCubePosition.y] = null;
+        // If the requested cube is not a child of this cube -> Modify it
+        if (external)
         {
-            // Caculate target position in the outter cube
-            // Calculate outer cube relative values based on this current parent cube
-            // Calculate child cube relative values to the outter cube
-            // Let the outter cube handle the movement request with the calculated values
-            // Let the outter cube modify the child cube, if fail -> unmodify
-            if (CheckValidGridPosition(childCubePosition.x, childCubePosition.y)) CubesGrid[childCubePosition.x, childCubePosition.y] = childCube;
+            ModifyChildCube(requestedCube);
+            requestedCube.Parent = this;
+        }
+
+        float targetTime = (specialMove) ? requestedCubeMovement.SpecialMoveTime : requestedCubeMovement.NormalMoveTime;
+
+        // if the requested position is out of range -> try to move the requested cube outside
+        if (!CheckValidGridPosition(requestedRow, requestedColumn))
+        {
+            if (Parent == null)
+            {
+                if (!external && CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) CubesGrid[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
+                return 0;
+            }
+            if (external && Parent == this)
+            {
+                // Inifite loop -> teleport to the void instead
+                // This is just a placeholder code for testing
+                if (!external && CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) CubesGrid[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
+                return 0;
+            }
+
+            /* Moving out logic:
+             * - Caculate target position in the outter cube
+             * - Calculate outter cube relative values to this cube
+             * - Calculate child cube relative values to the outter cube
+             * - Let the outter cube modify the child cube (reverse, ...), if fail -> unmodify
+             * - Let the outter cube handle the movement of the requested cube
+             */
+
+            Vector2Int enterableCubePos = Relativity.GridPosFromRPos(Parent.Tiling, Parent.tiling, RelativePosition);
+            //PlayerInputsManager.MovementInputs pushDirection = (isReversed)? PlayerInputsManager.FilpMovementInput(direction, true) : direction;
+            Vector2Int targetPositionToPushTo = enterableCubePos + PlayerInputsManager.ConvertMovementInputToGridDirection(direction);
+            
+            Vector2 outterCubeRPos = Relativity.PRPosToAChild(relativePosition, relativeScale);
+            Vector2 outterCubeRScl = Relativity.PRSclToAChild(relativeScale);
+
+            Vector2 childCubeRPosToOutterCube = Relativity.SRPosFromSameParent(outterCubeRPos, outterCubeRScl, cRPos);
+            Vector2 childCubeRSclToOutterCube = Relativity.SRSclFromSameParent(outterCubeRScl, cRScl);
+
+            targetTime = parent.RequestToMove(childCubeRPosToOutterCube, childCubeRSclToOutterCube, requestedCube, direction, targetPositionToPushTo.x, targetPositionToPushTo.y, true, true);
+            if (targetTime > 0) return targetTime;
+
+            // Fail to move out -> unmodify, set requested cube's parent back to this cube
+            parent.UnModifyChildCube(requestedCube);
+            requestedCube.Parent = this;
+            // Place the requested cube back to its original position if the requested cube is this cube's child
+            if (!external && CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) CubesGrid[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
             return 0;
         }
-         
-        float targetTime = (external)? childCubeMovement.SpecialMoveTime : childCubeMovement.NormalMoveTime;
 
         // If there is a movable cube -> Try to move that cube away first
-        if (cubesGrid[targetRow, targetColumn] != null)
+        if (cubesGrid[requestedRow, requestedColumn] != null)
         {
-            var blockageCubeMovement = cubesGrid[targetRow, targetColumn].GetComponent<CubeMovement>();
-            if (blockageCubeMovement != null)
+            var blockageCubeMovement = cubesGrid[requestedRow, requestedColumn].GetComponent<CubeMovement>();
+            if (blockageCubeMovement != null && blockageCubeMovement.Movable)
             {
-                if (cubesGrid[targetRow, targetColumn].GetComponent<CubeMovement>().IsMoving) return 0;
-                Vector2Int targetPositionToPushTo = new Vector2Int(targetRow, targetColumn) + PlayerInputsManager.ConvertMovementInputToGridDirection(direction);
-                targetTime = RequestToMove(cubesGrid[targetRow, targetColumn].RelativePosition, cubesGrid[targetRow, targetColumn].RelativeScale, cubesGrid[targetRow, targetColumn], direction, targetPositionToPushTo.x, targetPositionToPushTo.y, external);
+                if (blockageCubeMovement.IsMoving)
+                {
+                    if (!external && CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) CubesGrid[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
+                    return 0;
+                }
+                if (cubesGrid[requestedRow, requestedColumn].GetComponent<CubeMovement>().IsMoving) return 0;
+                Vector2Int targetPositionToPushTo = new Vector2Int(requestedRow, requestedColumn) + PlayerInputsManager.ConvertMovementInputToGridDirection(direction);
+                targetTime = RequestToMove(cubesGrid[requestedRow, requestedColumn].RelativePosition, cubesGrid[requestedRow, requestedColumn].RelativeScale, cubesGrid[requestedRow, requestedColumn], direction, targetPositionToPushTo.x, targetPositionToPushTo.y, false, specialMove);
                 // If move successful, the position at [row, column] should be empty, update target time based on how long it takes for the blockage cube to move
             }
         }
 
         // If target position is empty (either originally or after moving the blockage cube) -> Move to that position
-        if (cubesGrid[targetRow, targetColumn] == null)
+        if (cubesGrid[requestedRow, requestedColumn] == null)
         {
-            Vector2 childCubeTargetRPos = Relativity.RPosFromGridTile(tiling, tiling, targetRow, targetColumn);
+            Vector2 childCubeTargetRPos = Relativity.RPosFromGridTile(tiling, tiling, requestedRow, requestedColumn);
             Vector2 childCubeTargetRScl = new Vector2(1.0f / tiling, 1.0f / tiling);
-            cubesGrid[targetRow, targetColumn] = childCube;
-            return childCubeMovement.StartMoving(cRPos, cRScl, childCubeTargetRPos, childCubeTargetRScl, targetTime);
+            cubesGrid[requestedRow, requestedColumn] = requestedCube;
+            return requestedCubeMovement.StartMoving(cRPos, cRScl, childCubeTargetRPos, childCubeTargetRScl, targetTime);
         }
 
         // If that cube is blocked or not movable -> Try to enter
+        if (cubesGrid[requestedRow, requestedColumn] is EnterableCube enterableCube)
+        {
+            Vector2 childCubeRPosToBlockageCube = Relativity.SRPosFromSameParent(enterableCube.RelativePosition, enterableCube.RelativeScale, cRPos);
+            Vector2 childCubeRSclToBlockageCube = Relativity.SRSclFromSameParent(enterableCube.RelativeScale, cRScl);
+
+            Vector2Int targetPositionToPushTo = enterableCube.GetEnterPosition(direction, childCubeRPosToBlockageCube);
+
+            targetTime = enterableCube.RequestToMove(childCubeRPosToBlockageCube, childCubeRSclToBlockageCube, requestedCube, direction, targetPositionToPushTo.x, targetPositionToPushTo.y, true, true);
+            if (targetTime > 0) return targetTime;
+
+            // Fail to move out -> unmodify, set requested cube's parent back to this cube
+            enterableCube.UnModifyChildCube(requestedCube);
+            requestedCube.Parent = this;
+            // Place the requested cube back to its original position if the requested cube is this cube's child
+            if (!external && CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) CubesGrid[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
+            return 0;
+        }
 
         // If all above fail, try to possess the cube
-        if (childCube.StartPossessing(cubesGrid[targetRow, targetColumn]))
+        if (requestedCube.StartPossessing(cubesGrid[requestedRow, requestedColumn]))
         {
             // If possess successfully -> return child cube to its original position in the cubes grid
-            if (CheckValidGridPosition(childCubePosition.x, childCubePosition.y)) CubesGrid[childCubePosition.x, childCubePosition.y] = childCube;
+            if (!external && CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) CubesGrid[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
             return 0;
         }
 
         // Fail to move -> return child cube to its original position in the cubes grid
-        if (CheckValidGridPosition(childCubePosition.x, childCubePosition.y)) CubesGrid[childCubePosition.x, childCubePosition.y] = childCube;
+        if (!external && CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) CubesGrid[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
         return 0;
+    }
+
+    private Vector2Int GetEnterPosition(PlayerInputsManager.MovementInputs direction, Vector2 rPos)
+    {
+        switch (direction)
+        {
+            case PlayerInputsManager.MovementInputs.Up:
+                return new Vector2Int(tiling - 1, Mathf.RoundToInt((tiling - 1) * (rPos.x + 1) * 0.5f));
+            case PlayerInputsManager.MovementInputs.Down:
+                return new Vector2Int(0, Mathf.RoundToInt((tiling - 1) * (rPos.x + 1) * 0.5f));
+            case PlayerInputsManager.MovementInputs.Right:
+                return new Vector2Int(Mathf.RoundToInt((tiling - 1) * (1 - rPos.y) * 0.5f), 0);
+            case PlayerInputsManager.MovementInputs.Left:
+                return new Vector2Int(Mathf.RoundToInt((tiling - 1) * (1 - rPos.y) * 0.5f), tiling - 1);
+        }
+        return Vector2Int.zero;
     }
 
     protected bool CheckValidGridPosition(int row, int column)
@@ -307,7 +400,6 @@ public class EnterableCube : Cube
         [SerializeField] int cubeID = 0;
         [SerializeField] bool isPlayer = false;
         [SerializeField] bool canBePlayer = false;
-        [SerializeField] bool isReversed = false;
 
         public int CubeID { get => cubeID; set => cubeID = value; }
         public bool IsPlayer { get => isPlayer; set => isPlayer = value; }
@@ -318,7 +410,6 @@ public class EnterableCube : Cube
             cubeID = 0;
             isPlayer = false;
             canBePlayer = false;
-            isReversed = false;
         }
     }
 }

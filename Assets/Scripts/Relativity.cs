@@ -92,10 +92,17 @@ public static class Relativity
         return pRPos;
     }
     // Get relative position of sub child to main child based on their relative positions to the same parent
+    public static Vector2 PRSclToAChild(Vector2 cRScl)
+    {
+        Vector2 pRScl = new();
+        pRScl.x = 1.0f / cRScl.x;
+        pRScl.y = 1.0f / cRScl.y;
+        return pRScl;
+    }
     public static Vector2 SRPosFromSameParent(Vector2 mainCRPos, Vector2 mainRScl, Vector2 subRPos)
     {
         Vector2 sRPos = subRPos - mainCRPos;
-        sRPos.x /= mainCRPos.x; sRPos.y /= mainCRPos.y;
+        sRPos.x /= mainRScl.x; sRPos.y /= mainRScl.y;
         return sRPos;
     }
     // Get relative scale of sub child to main child based on their relative scales to the same parent
