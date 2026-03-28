@@ -7,7 +7,8 @@ public class PlayerInputsManager : MonoBehaviour
 
     private static PlayerInputsManager instance;
 
-    [SerializeField] bool allowMovementInput = true;
+    [SerializeField] bool allowTakingMovementInput = true;
+    [SerializeField] bool allowUsingMovementInput = true;
     private List<MovementInputs> movementInputsList = new(); // Store all the receivec inputs
 
     private MainInputSystem mainInputSystem;
@@ -43,37 +44,45 @@ public class PlayerInputsManager : MonoBehaviour
 
 
    // Movement inputs
+    public void StopUsingMovementInputs()
+    {
+        allowUsingMovementInput = false;
+    }
     public void StopTakingMovementInputs()
     {
-        allowMovementInput = false;
+        allowTakingMovementInput = false;
         movementInputsList.Clear();
     }
     public void ContinueTakingMovementInputs()
     {
-        allowMovementInput = true;
+        allowTakingMovementInput = true;
+    }
+    public void ContinueUsingMovementInputs()
+    {
+        allowUsingMovementInput = true;
     }
 
     public void OnMoveUp(bool isActive)
     {
-        if (!allowMovementInput) return;
+        if (!allowTakingMovementInput) return;
         if (isActive) AddToInputList(MovementInputs.Up);
         else RemoveFromInputList(MovementInputs.Up);
     }
     public void OnMoveDown(bool isActive)
     {
-        if (!allowMovementInput) return;
+        if (!allowTakingMovementInput) return;
         if (isActive) AddToInputList(MovementInputs.Down);
         else RemoveFromInputList(MovementInputs.Down);
     }
     public void OnMoveLeft(bool isActive)
     {
-        if (!allowMovementInput) return;
+        if (!allowTakingMovementInput) return;
         if (isActive) AddToInputList(MovementInputs.Left);
         else RemoveFromInputList(MovementInputs.Left);
     }
     public void OnMoveRight(bool isActive)
     {
-        if (!allowMovementInput) return;
+        if (!allowTakingMovementInput) return;
         if (isActive) AddToInputList(MovementInputs.Right);
         else RemoveFromInputList(MovementInputs.Right);
     }
@@ -94,7 +103,7 @@ public class PlayerInputsManager : MonoBehaviour
 
     public MovementInputs GetLatestMovementInput()
     {
-        if (movementInputsList == null || movementInputsList.Count == 0) return MovementInputs.None;
+        if (movementInputsList == null || movementInputsList.Count == 0 || !allowUsingMovementInput) return MovementInputs.None;
         return movementInputsList[movementInputsList.Count - 1];
     }
     

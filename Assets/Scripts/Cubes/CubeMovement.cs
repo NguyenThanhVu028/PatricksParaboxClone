@@ -41,14 +41,10 @@ public class CubeMovement : MonoBehaviour
             if (movementInput != PlayerInputsManager.MovementInputs.None)
             {
                 Vector2Int currentPosInGrid = Relativity.GridPosFromRPos(selfCube.Parent.Tiling, selfCube.Parent.Tiling, selfCube.RelativePosition);
-                Debug.Log("Current pos in grid: " + currentPosInGrid);
                 Vector2Int targetPosInGrid = currentPosInGrid + PlayerInputsManager.ConvertMovementInputToGridDirection(movementInput);
-                Debug.Log("Target pos in grid: " + targetPosInGrid);
-                //selfCube.Parent.CubesGrid[currentPosInGrid.x, currentPosInGrid.y] = null;
                 if (selfCube.Parent.RequestToMove(selfCube.RelativePosition, selfCube.RelativeScale, selfCube, movementInput, targetPosInGrid.x, targetPosInGrid.y) == 0)
                 {
                     // If fail to move
-                    selfCube.Parent.CubesGrid[currentPosInGrid.x, currentPosInGrid.y] = selfCube;
                     coolDownTimer = coolDownTime;
                 }
             }

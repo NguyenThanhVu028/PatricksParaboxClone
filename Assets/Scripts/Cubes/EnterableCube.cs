@@ -248,9 +248,10 @@ public class EnterableCube : Cube
         if (!CheckValidGridPosition(targetRow, targetColumn))
         {
             // Caculate target position in the outter cube
-            // Calculate ouuter cube relative values based on this current parent cube
+            // Calculate outer cube relative values based on this current parent cube
             // Calculate child cube relative values to the outter cube
             // Let the outter cube handle the movement request with the calculated values
+            // Let the outter cube modify the child cube, if fail -> unmodify
             if (CheckValidGridPosition(childCubePosition.x, childCubePosition.y)) CubesGrid[childCubePosition.x, childCubePosition.y] = childCube;
             return 0;
         }
@@ -282,6 +283,12 @@ public class EnterableCube : Cube
         // If that cube is blocked or not movable -> Try to enter
 
         // If all above fail, try to possess the cube
+        if (childCube.StartPossessing(cubesGrid[targetRow, targetColumn]))
+        {
+            // If possess successfully -> return child cube to its original position in the cubes grid
+            if (CheckValidGridPosition(childCubePosition.x, childCubePosition.y)) CubesGrid[childCubePosition.x, childCubePosition.y] = childCube;
+            return 0;
+        }
 
         // Fail to move -> return child cube to its original position in the cubes grid
         if (CheckValidGridPosition(childCubePosition.x, childCubePosition.y)) CubesGrid[childCubePosition.x, childCubePosition.y] = childCube;

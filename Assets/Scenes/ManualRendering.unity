@@ -546,6 +546,7 @@ MonoBehaviour:
   parent: {fileID: 0}
   relativeScale: {x: 1, y: 1}
   relativePosition: {x: 0, y: 0}
+  possessingTime: 1
   isReversed: 0
   childCubes: []
   tiling: 3
@@ -1025,6 +1026,7 @@ MonoBehaviour:
   parent: {fileID: 0}
   relativeScale: {x: 1, y: 1}
   relativePosition: {x: 0, y: 0}
+  possessingTime: 1
   isReversed: 0
   childCubes: []
   tiling: 4
@@ -1064,23 +1066,23 @@ MonoBehaviour:
     isReversed: 0
   - cubeID: 2
     isPlayer: 0
-    canBePlayer: 0
+    canBePlayer: 1
     isReversed: 0
   - cubeID: 0
     isPlayer: 0
     canBePlayer: 0
     isReversed: 0
   - cubeID: 4
-    isPlayer: 0
-    canBePlayer: 0
+    isPlayer: 1
+    canBePlayer: 1
     isReversed: 0
   - cubeID: 4
     isPlayer: 0
-    canBePlayer: 0
+    canBePlayer: 1
     isReversed: 0
   - cubeID: 4
     isPlayer: 1
-    canBePlayer: 0
+    canBePlayer: 1
     isReversed: 0
   - cubeID: 0
     isPlayer: 0
@@ -1160,7 +1162,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d62f33cd924f00409ca39f3d681398f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allowMovementInput: 1
+  allowTakingMovementInput: 1
+  allowUsingMovementInput: 1
 --- !u!4 &1285392988
 Transform:
   m_ObjectHideFlags: 0
@@ -1854,6 +1857,7 @@ MonoBehaviour:
   parent: {fileID: 0}
   relativeScale: {x: 1, y: 1}
   relativePosition: {x: 0, y: 0}
+  possessingTime: 1
   wallSubdivision: 2
 --- !u!4 &1993895921
 Transform:
