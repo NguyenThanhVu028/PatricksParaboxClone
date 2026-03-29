@@ -9,27 +9,24 @@ using static UnityEngine.Rendering.DebugUI.Table;
 public class EnterableCube : Cube
 {
     [Header("Enterable cube properties")]
-    //[SerializeField] bool isReversed = false;
-    //[SerializeField] List<Cube> childCubes = new();
     [HideInInspector]
     [Min(1)]
     [SerializeField] int tiling = 9;
     [Min(1)]
-    [SerializeField] int wallSubdivision = 2; // Wall texture might be small than a tile
+    [SerializeField] int wallSubdivision = 2; // Wall texture might be smaller than a tile
     [SerializeField] CustomRuleTile wallRuleTile;
     [SerializeField] Texture2D floorTexture;
     [Header("Enterable cube rendering")]
     [SerializeField] int tileTextureSize = 16;
     [SerializeField] int staticTilesRTDepth = 16;
 
-    // This grid contains ID of cubes from the CubesManager
-    // Enterable cube uses this grid to initiate its children
     [HideInInspector]
     [SerializeField]
     [Min(0)]
     ChildCubeInitDetail[] childCubesInitDetails = {new()};
 
-    private Cube[,] cubesGrid;
+    private List<Cube> emptyCubes = new(); // Seperate empty cubes from other cubes, empty cubes are only be rendered but ignore checking for interactions by other cubes
+    private Cube[,] childCubes;
 
     public int Tiling { get => tiling; }
     public ChildCubeInitDetail[] ChildCubesInitDetails { get => childCubesInitDetails; }
@@ -39,7 +36,9 @@ public class EnterableCube : Cube
         if (index >= childCubesInitDetails.Length) return null;
         return childCubesInitDetails[index];
     }
-    public Cube[,] CubesGrid { get => cubesGrid; }
+    public Cube[,] CubesGrid { get => childCubes; }
+
+    // Used by the Editor
     public void SetChildCubeInitDetails(int row, int col, ChildCubeInitDetail details)
     {
         int index = row * tiling + col;
@@ -47,11 +46,7 @@ public class EnterableCube : Cube
         childCubesInitDetails[index] = details;
     }
 
-    /* This dictionary stores calculated static textures and their positions in grid
-     * One texture could be drawn at different positions with different grid sizes.
-     * Currently, only walls are considered as static tiles.
-     * Clear this list and add new textures to draw on different layers.
-     */
+    // This dictionary stores calculated static textures and their positions in grid
     protected Dictionary<Texture2D, List<CustomTextureRenderer2D.TexturePositionInGrid>> staticTextures = new();
 
     // All static textures are drawn onto this Render Texture which will later be drawn in Update.
@@ -87,23 +82,20 @@ public class EnterableCube : Cube
         staticTextures.Clear();
 
         /* Calculate walls logic:
-         * - Loop through cubes grid to find wall cubes, ignore those that are or can be player.
+         * - Loop through cubes grid to find wall cubes
          * - Having the position of a wall cube in the cubes grid -> Find suitable texture for each tile at the coresponding positions in walls grid of it
-         * - Store that texture with its position in grid data.
+         * - If this wall cube is not or can't be player -> Store that texture with its position in grid to the static textures list.
          * */
 
         var wallsGrid = CalculateWallsGrid();
 
-        for (int cubesGridRow = 0; cubesGridRow < cubesGrid.GetLength(0); cubesGridRow++)
+        for (int cubesGridRow = 0; cubesGridRow < childCubes.GetLength(0); cubesGridRow++)
         {
-            for (int cubesGridColumn = 0; cubesGridColumn < cubesGrid.GetLength(1); cubesGridColumn++)
+            for (int cubesGridColumn = 0; cubesGridColumn < childCubes.GetLength(1); cubesGridColumn++)
             {
-                if (cubesGrid[cubesGridRow, cubesGridColumn] == null) continue;
-                if (!(cubesGrid[cubesGridRow, cubesGridColumn] is WallCube)) continue;
-                if (cubesGrid[cubesGridRow, cubesGridColumn].CanBePlayer || cubesGrid[cubesGridRow, cubesGridColumn].IsPlayer) continue;
-
-                (cubesGrid[cubesGridRow, cubesGridColumn] as WallCube).SetSubdivision(wallSubdivision);
-
+                if (childCubes[cubesGridRow, cubesGridColumn] == null) continue;
+                if (!(childCubes[cubesGridRow, cubesGridColumn] is WallCube)) continue;
+                (childCubes[cubesGridRow, cubesGridColumn] as WallCube).SetSubdivision(wallSubdivision);
                 for (int subdivisionRow = 0; subdivisionRow < wallSubdivision; subdivisionRow++)
                 {
                     for (int subDivisionColumn = 0; subDivisionColumn < wallSubdivision; subDivisionColumn++)
@@ -112,11 +104,16 @@ public class EnterableCube : Cube
                         int wallsGridColumn = cubesGridColumn * wallSubdivision + subDivisionColumn;
                         var wallTex = wallRuleTile.GetTexture(wallsGrid, wallsGridRow, wallsGridColumn);
 
+                        // If this wall cube is or can be a player -> only calculate texture without drawing on RT
+                        if (childCubes[cubesGridRow, cubesGridColumn].CanBePlayer || childCubes[cubesGridRow, cubesGridColumn].IsPlayer)
+                        {
+                            (childCubes[cubesGridRow, cubesGridColumn] as WallCube).SetTexture(wallTex, subdivisionRow, subDivisionColumn);
+                            continue;
+                        }
+
                         // Tell the staticTextures dictionary that this wall texture will be drawn in wallsGrid at (wallsGridRow, wallsGridColumn) 
                         if (!staticTextures.ContainsKey(wallTex)) staticTextures.Add(wallTex, new());
                         staticTextures[wallTex].Add(new(wallsGrid.GetLength(0), wallsGrid.GetLength(1), new Vector2Int(wallsGridRow, wallsGridColumn)));
-
-                        (cubesGrid[cubesGridRow, cubesGridColumn] as WallCube).SetTexture(wallTex, subdivisionRow, subDivisionColumn);
                     }
                 }
             }
@@ -134,15 +131,15 @@ public class EnterableCube : Cube
     }
     private int[,] CalculateWallsGrid()
     {
-        if (cubesGrid == null) return null;
+        if (childCubes == null) return null;
 
         int[,] wallsGrid = new int[tiling * wallSubdivision, tiling * wallSubdivision];
 
-        for (int cubesGridRow = 0; cubesGridRow < cubesGrid.GetLength(0); cubesGridRow++)
+        for (int cubesGridRow = 0; cubesGridRow < childCubes.GetLength(0); cubesGridRow++)
         {
-            for (int cubesGridColumn = 0; cubesGridColumn < cubesGrid.GetLength(1); cubesGridColumn++)
+            for (int cubesGridColumn = 0; cubesGridColumn < childCubes.GetLength(1); cubesGridColumn++)
             {
-                if (!(cubesGrid[cubesGridRow, cubesGridColumn] is WallCube)) continue;
+                if (!(childCubes[cubesGridRow, cubesGridColumn] is WallCube)) continue;
 
                 for (int subdivisionRow = 0; subdivisionRow < wallSubdivision; subdivisionRow++)
                 {
@@ -162,7 +159,7 @@ public class EnterableCube : Cube
         if (cubesManager == null ) { Debug.LogWarning("No cubes manager is found in this scene to spawn cubes!"); return; }
 
         // Init cubes
-        cubesGrid = new Cube[tiling, tiling];
+        childCubes = new Cube[tiling, tiling];
         for(int row = 0; row < tiling; row++)
         {
             for(int column = 0; column < tiling; column++)
@@ -178,32 +175,20 @@ public class EnterableCube : Cube
                 spawnedCube.Parent = this;
                 spawnedCube.IsPlayer = cubeToSpawnDetails.IsPlayer;
                 spawnedCube.CanBePlayer = cubeToSpawnDetails.CanBePlayer;
-
-                //childCubes.Add(spawnedCube);
-                cubesGrid[row, column] = spawnedCube;
-
-                if (spawnedCube is WallCube)
-                {
-                    spawnedCube.CubeColor = cubeColor;
-                }
+                if (spawnedCube.CubeType == CubeTypes.Empty) emptyCubes.Add(spawnedCube);
+                else childCubes[row, column] = spawnedCube;
+                ModifyChildCube(spawnedCube);
+                spawnedCube.Init();
             }
         }
     }
     private void ModifyChildCube(Cube childCube)
     {
         if (childCube == null) return;
-        //if (childCube is EnterableCube enterableCube)
-        //{
-        //    enterableCube.isReversed = (isReversed ? !enterableCube.isReversed : enterableCube.isReversed);
-        //}
     }
     private void UnModifyChildCube(Cube childCube)
     {
         if (childCube == null) return;
-        //if (childCube is EnterableCube enterableCube)
-        //{
-        //    enterableCube.isReversed = (isReversed ? !enterableCube.isReversed : enterableCube.isReversed);
-        //}
     }
     
     // Draw functions
@@ -227,8 +212,15 @@ public class EnterableCube : Cube
     }
     private void DrawChildCubes(Rect position, float depth)
     {
+        // Draw empty cubes first
+        foreach (var emptyCube in emptyCubes)
+        {
+            emptyCube.Draw(Relativity.CRectFromPRect(position, emptyCube.RelativeScale, emptyCube.RelativePosition), depth);
+        }
+
         List<Cube> movingCubes = new();
-        foreach(var childCube in cubesGrid)
+        // Draw static cubes
+        foreach (var childCube in childCubes)
         {
             if (childCube == null) continue;
             if (childCube is WallCube) // Ignore walls that aren't or can't potentially be a player
@@ -242,7 +234,8 @@ public class EnterableCube : Cube
             }
             childCube.Draw(Relativity.CRectFromPRect(position, childCube.RelativeScale, childCube.RelativePosition), depth);
         }
-        // Drawing moving cubes on top of other cubes to avoid being covered by other cubes when moving
+
+        // Drawing moving cubes on top of other cubes to avoid being covered
         foreach (var movingCube in movingCubes)
         {
             movingCube.Draw(Relativity.CRectFromPRect(position, movingCube.RelativeScale, movingCube.RelativePosition), depth - 0.1f);
@@ -321,10 +314,10 @@ public class EnterableCube : Cube
         }
 
         // If there is a movable cube -> Try to move that cube away first
-        if (cubesGrid[requestedRow, requestedColumn] != null)
+        if (childCubes[requestedRow, requestedColumn] != null)
         {
-            Debug.Log($"{requestedCube.name} try to push {cubesGrid[requestedRow, requestedColumn].name}");
-            var blockageCubeMovement = cubesGrid[requestedRow, requestedColumn].GetComponent<CubeMovement>();
+            Debug.Log($"{requestedCube.name} try to push {childCubes[requestedRow, requestedColumn].name}");
+            var blockageCubeMovement = childCubes[requestedRow, requestedColumn].GetComponent<CubeMovement>();
             if (blockageCubeMovement != null && blockageCubeMovement.Movable)
             {
                 if (blockageCubeMovement.IsMoving)
@@ -333,24 +326,24 @@ public class EnterableCube : Cube
                     if (!external && CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) CubesGrid[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
                     return 0;
                 }
-                if (cubesGrid[requestedRow, requestedColumn].GetComponent<CubeMovement>().IsMoving) return 0;
+                if (childCubes[requestedRow, requestedColumn].GetComponent<CubeMovement>().IsMoving) return 0;
                 Vector2Int targetPositionToPushTo = new Vector2Int(requestedRow, requestedColumn) + PlayerInputsManager.ConvertMovementInputToGridDirection(direction);
-                targetTime = RequestToMove(cubesGrid[requestedRow, requestedColumn].RelativePosition, cubesGrid[requestedRow, requestedColumn].RelativeScale, cubesGrid[requestedRow, requestedColumn], direction, targetPositionToPushTo.x, targetPositionToPushTo.y, false, specialMove);
+                targetTime = RequestToMove(childCubes[requestedRow, requestedColumn].RelativePosition, childCubes[requestedRow, requestedColumn].RelativeScale, childCubes[requestedRow, requestedColumn], direction, targetPositionToPushTo.x, targetPositionToPushTo.y, false, specialMove);
                 // If move successful, the position at [row, column] should be empty, update target time based on how long it takes for the blockage cube to move
             }
         }
 
         // If target position is empty (either originally or after moving the blockage cube) -> Move to that position
-        if (cubesGrid[requestedRow, requestedColumn] == null)
+        if (childCubes[requestedRow, requestedColumn] == null)
         {
             Debug.Log($"{requestedCube.name} successfully move to an empty position {requestedRow}, {requestedColumn} of {gameObject.name}!");
             Vector2 childCubeTargetRPos = Relativity.RPosFromGridTile(tiling, tiling, requestedRow, requestedColumn);
             Vector2 childCubeTargetRScl = new Vector2(1.0f / tiling, 1.0f / tiling);
-            cubesGrid[requestedRow, requestedColumn] = requestedCube;
+            childCubes[requestedRow, requestedColumn] = requestedCube;
             return requestedCubeMovement.StartMoving(cRPos, cRScl, childCubeTargetRPos, childCubeTargetRScl, targetTime);
         }
         // If there is another cube that is trying to move into this position
-        else if (cubesGrid[requestedRow, requestedColumn].GetComponent<CubeMovement>().IsMoving)
+        else if (childCubes[requestedRow, requestedColumn].GetComponent<CubeMovement>().IsMoving)
         {
             Debug.Log($"{requestedCube.name} fail to move because another cube is entering {requestedRow}, {requestedColumn} of {gameObject.name}!");
             if (!external && CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) CubesGrid[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
@@ -358,7 +351,7 @@ public class EnterableCube : Cube
         }
 
         // If that cube is blocked or not movable -> Try to enter
-        if (cubesGrid[requestedRow, requestedColumn] is EnterableCube enterableCube)
+        if (childCubes[requestedRow, requestedColumn] is EnterableCube enterableCube)
         {
             Vector2 childCubeRPosToBlockageCube = Relativity.SRPosFromSameParent(enterableCube.RelativePosition, enterableCube.RelativeScale, cRPos);
             Vector2 childCubeRSclToBlockageCube = Relativity.SRSclFromSameParent(enterableCube.RelativeScale, cRScl);
@@ -371,14 +364,14 @@ public class EnterableCube : Cube
             // Fail to move out -> unmodify, set requested cube's parent back to this cube
             enterableCube.UnModifyChildCube(requestedCube);
             requestedCube.Parent = this;
-            Debug.Log($"{requestedCube.name} fail to enter {cubesGrid[requestedRow, requestedColumn].gameObject.name}!");
+            Debug.Log($"{requestedCube.name} fail to enter {childCubes[requestedRow, requestedColumn].gameObject.name}!");
             // Place the requested cube back to its original position if the requested cube is this cube's child
             if (!external && CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) CubesGrid[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
             return 0;
         }
 
         // If all above fail, try to possess the cube
-        if (requestedCube.StartPossessing(cubesGrid[requestedRow, requestedColumn]))
+        if (requestedCube.StartPossessing(childCubes[requestedRow, requestedColumn]))
         {
             // If possess successfully -> return child cube to its original position in the cubes grid
             if (!external && CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) CubesGrid[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;

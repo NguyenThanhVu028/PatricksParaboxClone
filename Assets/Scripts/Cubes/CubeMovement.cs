@@ -1,15 +1,16 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(Cube))]
 public class CubeMovement : MonoBehaviour
 {
-    [SerializeField] bool movable = true;
+    //[SerializeField] bool movable = true;
     [SerializeField] float normalMoveTime = 0.1f; // Used when player simply moving form one point to another
     [SerializeField] float specialMoveTime = 0.5f; // Used when player enters a cube, transforms, . . .
     [SerializeField] float coolDownTime = 0.075f;
 
-    protected Cube selfCube;
+    [SerializeField] protected Cube selfCube;
     protected PlayerInputsManager playerMovementInputsManager;
     protected Coroutine movingCoroutine = null;
     protected Vector2 targetRPos = Vector2.zero;
@@ -17,14 +18,18 @@ public class CubeMovement : MonoBehaviour
     protected Vector2 targetRScl = Vector2.zero;
     protected Vector2 previousRScl = Vector2.zero;
     protected float coolDownTimer = 0f;
-    public bool Movable { get => movable; }
-    //protected bool isTryingToMove = false;
+    protected UnityEvent onMoveStart = new();
+    protected UnityEvent onMoveEnd = new();
 
+    public bool Movable { get { return selfCube != null && selfCube.CubeType != Cube.CubeTypes.Static; } }
     public bool IsMoving { get => movingCoroutine != null; }
     public bool IsCoolingDown { get => (coolDownTimer > 0); }
     public float NormalMoveTime { get => normalMoveTime; }
     public float SpecialMoveTime { get => specialMoveTime; }
     public Cube SelfCube { get => selfCube; }
+    public UnityEvent OnMoveStart { get => onMoveStart; }
+    public UnityEvent OnMoveEnd { get => onMoveEnd; }
+
     private void Start()
     {
         selfCube = GetComponent<Cube>();
@@ -78,13 +83,13 @@ public class CubeMovement : MonoBehaviour
         movingCoroutine = StartCoroutine(MovingCoroutine(startRPos, startRScl, endRPos, endRScl, targetTime));
         return targetTime;
     }
-
     protected IEnumerator MovingCoroutine(Vector2 startRPos, Vector2 startRScl, Vector2 endRPos, Vector2 endRScl, float time)
     {
         float elapsedTime = -1;
         selfCube.RelativePosition = startRPos;
         selfCube.RelativeScale = startRScl;
         if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.StopUsingMovementInputs();
+        onMoveStart.Invoke();
         while (elapsedTime < time)
         {
             if (elapsedTime < 0) elapsedTime = 0;
@@ -98,5 +103,6 @@ public class CubeMovement : MonoBehaviour
         movingCoroutine = null;
         coolDownTimer = coolDownTime;
         if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.ContinueUsingMovementInputs();
+        onMoveEnd.Invoke();
     }
 }

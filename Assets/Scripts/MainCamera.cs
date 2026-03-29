@@ -122,25 +122,9 @@ public class MainCamera : MonoBehaviour
             return;
         }
         // Zooming out
-        if (prevRSclToNew.x < 1 || prevRSclToNew.y < 1) zoomCoroutine = StartCoroutine(ZoomOutCoroutine(prevRPosToNew, prevRSclToNew, newTarget, time));
+        if (prevRSclToNew.x <= 1 || prevRSclToNew.y <= 1) zoomCoroutine = StartCoroutine(ZoomOutCoroutine(prevRPosToNew, prevRSclToNew, newTarget, time));
         // Zooming in
         else zoomCoroutine = StartCoroutine(ZoomInCoroutine(prevRPosToNew, prevRSclToNew, newTarget, time));
-    }
-    [ContextMenu("Demo zoom out")]
-    public void DemoZoomOut()
-    {
-        ChangeTarget(targetCube.RelativePosition, targetCube.RelativeScale, targetCube.Parent);
-    }
-    [SerializeField] EnterableCube demoZoomInCube;
-    [ContextMenu("Demo zoom in")]
-    public void DemoZoomIn()
-    {
-        if (demoZoomInCube == null) return;
-        Vector2 rScl = new(); rScl.x = 1.0f / demoZoomInCube.RelativeScale.x; rScl.y = 1.0f / demoZoomInCube.RelativeScale.y;
-        Vector2 rPos = Relativity.PRPosToAChild(demoZoomInCube.RelativePosition, demoZoomInCube.RelativeScale);
-
-        Debug.Log($"Demo cube: {demoZoomInCube.name}, childRPos: {demoZoomInCube.RelativePosition}, childRScl: {demoZoomInCube.RelativeScale}, parentRPos: {rPos}, parentRScl {rScl}");
-        ChangeTarget(rPos, rScl, demoZoomInCube);
     }
 
     public float GetIdealOrthographicSize(Rect renderPosition, EnterableCube target)

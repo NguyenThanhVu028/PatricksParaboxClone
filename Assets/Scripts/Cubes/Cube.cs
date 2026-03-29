@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Cube : MonoBehaviour
 {
@@ -9,9 +10,9 @@ public class Cube : MonoBehaviour
     public enum CubeTypes { Normal, Static, Empty }
 
     [Header("General Info")]
-    [HideInInspector]
+    //[HideInInspector]
     [SerializeField] protected bool isPlayer = false;
-    [HideInInspector]
+    //[HideInInspector]
     [SerializeField] protected bool canBePlayer = false;
 
     [SerializeField] protected CubeTypes cubeType;
@@ -29,16 +30,18 @@ public class Cube : MonoBehaviour
     [Header("Other cube settings")]
     [SerializeField] protected float possessingTime = 1.0f;
 
+    protected UnityEvent onParentChanged = new();
+
     public bool IsPlayer { get => isPlayer; set => isPlayer = value; }
     public bool CanBePlayer { get => canBePlayer; set => canBePlayer = value; }
     public CubeTypes CubeType { get => cubeType; }
     public ColorPalette.ColorEnum CubeColor { get => cubeColor; set => cubeColor = value; }
     public bool NeedInstantiating { get => needInstantiating; }
-    public EnterableCube Parent { get => parent; set => parent = value; }
+    public EnterableCube Parent { get => parent; set { parent = value; onParentChanged.Invoke(); } }
     public Vector2 RelativeScale { get => relativeScale; set => relativeScale = value; }
     public Vector2 RelativePosition { get => relativePosition; set => relativePosition = value; }
 
-    private void Start()
+    public virtual void Init()
     {
         if (isPlayer && MainCamera.Instance != null)
         {

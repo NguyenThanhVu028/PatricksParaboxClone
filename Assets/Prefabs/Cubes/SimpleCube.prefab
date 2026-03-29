@@ -97,6 +97,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4745218084157380791}
   - component: {fileID: 3330600575587197656}
+  - component: {fileID: 7585408643129711027}
   m_Layer: 0
   m_Name: SimpleCube
   m_TagString: Untagged
@@ -134,13 +135,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isPlayer: 0
   canBePlayer: 0
-  isBlockage: 1
+  cubeType: 0
   colorPalette: {fileID: 11400000, guid: 37ff109e4e0da694b8a3a4b1caa63d91, type: 2}
-  color: 3
+  cubeColor: 0
+  needInstantiating: 1
   minPixelToRender: 2
   cubeMat: {fileID: 2100000, guid: 78b9e2b83bf5d0643b88372fc8f8b336, type: 2}
   cubeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   parent: {fileID: 0}
-  relativeSize: {x: 1, y: 1}
+  relativeScale: {x: 1, y: 1}
   relativePosition: {x: 0, y: 0}
+  possessingTime: 1
   cubeText: {fileID: 2800000, guid: 753d0c0b2358102429171bdb7fca0273, type: 3}
+--- !u!114 &7585408643129711027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2601011977459787844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c40dd76a8993a234ea82ff15f914c21e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  normalMoveTime: 0.1
+  specialMoveTime: 0.5
+  coolDownTime: 0.075

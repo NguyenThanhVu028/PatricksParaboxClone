@@ -4,6 +4,39 @@ public class WallCube : Cube
 {
     [SerializeField] int wallSubdivision = 2;
     [SerializeField] Texture2D[,] cubeTex;
+
+    private void OnEnable()
+    {
+        if (GetComponent<CubeMovement>() != null)
+        {
+            GetComponent<CubeMovement>().OnMoveStart.AddListener(OnMoveStart);
+        }
+
+        onParentChanged.AddListener(OnParentChanged);
+    }
+    private void OnDisable()
+    {
+        if (GetComponent<CubeMovement>() != null)
+        {
+            GetComponent<CubeMovement>().OnMoveStart.RemoveListener(OnMoveStart);
+        }
+
+        onParentChanged.RemoveListener(OnParentChanged);
+    }
+
+    protected void OnMoveStart()
+    {
+        if (parent != null)
+        {
+            parent.CalculateStaticTextures();
+        }
+    }
+
+    protected void OnParentChanged()
+    {
+        cubeColor = parent.CubeColor;
+    }
+
     protected override void DrawCube(Rect position, float depth = 0)
     {
         Color cubeColor = Color.white;
@@ -15,7 +48,7 @@ public class WallCube : Cube
         {
             for (int col = 0; col < wallSubdivision; col++)
             {
-                Vector2 texPos = new Vector2(startingPos.x + col * texSize.x, startingPos.y + row * texSize.y);
+                Vector2 texPos = new Vector2(startingPos.x + col * texSize.x, startingPos.y - row * texSize.y);
                 CustomTextureRenderer2D.RenderMesh(cubeMesh, cubeMat, cubeTex[row, col], cubeColor, texPos, texSize, depth);
             }
         }
