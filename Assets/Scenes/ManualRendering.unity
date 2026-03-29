@@ -161,17 +161,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &338549155 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3279298194327505553, guid: 8cd60fb214fed354989e3e3e443dd8d2, type: 3}
-  m_PrefabInstance: {fileID: 375554311}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f8507e1a9a038f4e802fa571697aaff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &375554311
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1259,11 +1248,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[57].canBePlayer
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[59].canBePlayer
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1545740933770737201, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1454,7 +1443,7 @@ PrefabInstance:
     - target: {fileID: 7117093254760942138, guid: c062dde4c2d8e1944a3be5e947f50cee, type: 3}
       propertyPath: allCubes.Array.data[4].cube
       value: 
-      objectReference: {fileID: 338549155}
+      objectReference: {fileID: 10023964}
     - target: {fileID: 8992902580454676446, guid: c062dde4c2d8e1944a3be5e947f50cee, type: 3}
       propertyPath: m_Name
       value: CubesManager
