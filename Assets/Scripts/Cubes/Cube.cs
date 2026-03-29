@@ -23,12 +23,15 @@ public class Cube : MonoBehaviour
     [SerializeField] protected int minPixelToRender = 2; // Don't render if the render rectangle size in pixel is smaller than this value
     [SerializeField] protected Material cubeMat;
     [SerializeField] protected Mesh cubeMesh;
+    // Protorype
+    [SerializeField] protected Texture playerFaceTexture;
+    [SerializeField] protected Texture possessableFaceTexture;
     [Header("Cube stats")]
     [SerializeField] protected EnterableCube parent;
     [SerializeField] protected Vector2 relativeScale = new(1, 1);
     [SerializeField] protected Vector2 relativePosition = new(0, 0);
     [Header("Other cube settings")]
-    [SerializeField] protected float possessingTime = 1.0f;
+    [SerializeField] protected float possessingTime = 0.5f;
 
     protected UnityEvent onParentChanged = new();
 
@@ -67,7 +70,16 @@ public class Cube : MonoBehaviour
     protected virtual void DrawPlayerFace(Rect position, float depth)
     {
         // Get player face texture
-
+        var cubeColor = Color.white;
+        if (colorPalette != null) cubeColor = colorPalette.GetColor(this.cubeColor);
+        if (IsPlayer && playerFaceTexture != null)
+        {
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, cubeMat, playerFaceTexture, cubeColor, position.position, position.size, depth - 0.2f);
+        }
+        else if (!IsPlayer && canBePlayer && possessableFaceTexture != null)
+        {
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, cubeMat, possessableFaceTexture, cubeColor, position.position, position.size, depth - 0.2f);
+        }
     }
     protected virtual void DrawSurfaceEffects(Rect position, float depth)
     {

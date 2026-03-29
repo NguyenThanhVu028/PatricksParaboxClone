@@ -1,13 +1,10 @@
 fileFormatVersion: 2
-guid: 5ec214a5235786740b324bded289b90a
+guid: 175e12687aa54ee438e47c5b6034dc6e
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6430300233344513193
-    second: DefaultFace_0
-  - first:
-      213: 4156118482973427486
-    second: DefaultFace_1
+      213: -765760915438012738
+    second: NormalButton_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -116,45 +113,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: DefaultFace_0
+      name: NormalButton_0
       rect:
         serializedVersion: 2
-        x: 4
-        y: 8
-        width: 19
-        height: 15
+        x: 0
+        y: 0
+        width: 32
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 75b8368c10cf2c6a0800000000000000
-      internalID: -6430300233344513193
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: DefaultFace_1
-      rect:
-        serializedVersion: 2
-        x: 21
-        y: 16
-        width: 7
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e17011e7dbf7da930800000000000000
-      internalID: 4156118482973427486
+      spriteID: eb6707c21887f55f0800000000000000
+      internalID: -765760915438012738
       vertices: []
       indices: 
       edges: []
@@ -163,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 73bdccf61e58c7b4fbff330b3a96a59a
     internalID: 0
     vertices: []
     indices: 
@@ -173,8 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      DefaultFace_0: -6430300233344513193
-      DefaultFace_1: 4156118482973427486
+      NormalButton_0: -765760915438012738
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

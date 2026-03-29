@@ -343,7 +343,7 @@ public class EnterableCube : Cube
             return requestedCubeMovement.StartMoving(cRPos, cRScl, childCubeTargetRPos, childCubeTargetRScl, targetTime);
         }
         // If there is another cube that is trying to move into this position
-        else if (childCubes[requestedRow, requestedColumn].GetComponent<CubeMovement>().IsMoving)
+        else if (childCubes[requestedRow, requestedColumn].GetComponent<CubeMovement>() != null && childCubes[requestedRow, requestedColumn].GetComponent<CubeMovement>().IsMoving)
         {
             //Debug.Log($"{requestedCube.name} fail to move because another cube is entering {requestedRow}, {requestedColumn} of {gameObject.name}!");
             if (!external && CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) CubesGrid[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
@@ -399,7 +399,7 @@ public class EnterableCube : Cube
         return Vector2Int.zero;
     }
 
-    protected bool CheckValidGridPosition(int row, int column)
+    public bool CheckValidGridPosition(int row, int column)
     {
         if (row < 0 || column < 0 || row >= tiling || column >= tiling) return false;
         return true;

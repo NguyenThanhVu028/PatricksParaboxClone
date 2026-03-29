@@ -142,10 +142,12 @@ MonoBehaviour:
   minPixelToRender: 2
   cubeMat: {fileID: 2100000, guid: 78b9e2b83bf5d0643b88372fc8f8b336, type: 2}
   cubeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+  playerFaceTexture: {fileID: 2800000, guid: 5ec214a5235786740b324bded289b90a, type: 3}
+  possessableFaceTexture: {fileID: 2800000, guid: 5d9d0117f7fa8704595bb3bdef390e93, type: 3}
   parent: {fileID: 0}
   relativeScale: {x: 1, y: 1}
   relativePosition: {x: 0, y: 0}
-  possessingTime: 1
+  possessingTime: 0.5
   tiling: 5
   wallSubdivision: 2
   wallRuleTile: {fileID: 11400000, guid: 2d82bc5300df33a458823857725fba15, type: 2}
@@ -241,7 +243,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c40dd76a8993a234ea82ff15f914c21e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movable: 1
   normalMoveTime: 0.1
   specialMoveTime: 0.5
   coolDownTime: 0.075
+  selfCube: {fileID: 0}
