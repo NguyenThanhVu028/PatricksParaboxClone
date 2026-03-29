@@ -207,25 +207,25 @@ public class EnterableCube : Cube
     }
     
     // Draw functions
-    protected override void DrawCube(Rect position)
+    protected override void DrawCube(Rect position, float depth = 0)
     {
-        DrawFloor(position);
-        DrawWalls(position);
-        DrawChildCubes(position);
+        DrawFloor(position, depth);
+        DrawWalls(position, depth);
+        DrawChildCubes(position, depth);
     }   
-    private void DrawFloor(Rect position)
+    private void DrawFloor(Rect position, float depth)
     {
         Color cubeColor = Color.white;
         if (colorPalette != null) cubeColor = colorPalette.GetColor(base.cubeColor);
-        CustomTextureRenderer2D.RenderMesh(cubeMesh, cubeMat, floorTexture, cubeColor, position.position, position.size);
+        CustomTextureRenderer2D.RenderMesh(cubeMesh, cubeMat, floorTexture, cubeColor, position.position, position.size, depth);
     }
-    public void DrawWalls(Rect position)
+    public void DrawWalls(Rect position, float depth)
     {
         Color cubeColor = Color.white;
         if (colorPalette != null) cubeColor = colorPalette.GetColor(base.cubeColor);
-        if (staticTexturesRT != null) CustomTextureRenderer2D.RenderMesh(cubeMesh, cubeMat, staticTexturesRT, cubeColor, position.position, position.size);
+        if (staticTexturesRT != null) CustomTextureRenderer2D.RenderMesh(cubeMesh, cubeMat, staticTexturesRT, cubeColor, position.position, position.size, depth);
     }
-    private void DrawChildCubes(Rect position)
+    private void DrawChildCubes(Rect position, float depth)
     {
         List<Cube> movingCubes = new();
         foreach(var childCube in cubesGrid)
@@ -240,12 +240,12 @@ public class EnterableCube : Cube
                 movingCubes.Add(childCube);
                 continue;
             }
-            childCube.Draw(Relativity.CRectFromPRect(position, childCube.RelativeScale, childCube.RelativePosition));
+            childCube.Draw(Relativity.CRectFromPRect(position, childCube.RelativeScale, childCube.RelativePosition), depth);
         }
         // Drawing moving cubes on top of other cubes to avoid being covered by other cubes when moving
         foreach (var movingCube in movingCubes)
         {
-            movingCube.Draw(Relativity.CRectFromPRect(position, movingCube.RelativeScale, movingCube.RelativePosition));
+            movingCube.Draw(Relativity.CRectFromPRect(position, movingCube.RelativeScale, movingCube.RelativePosition), depth - 0.1f);
         }
     }
 
@@ -266,13 +266,18 @@ public class EnterableCube : Cube
             requestedCube.Parent = this;
         }
 
+        if (external) Debug.Log($"{requestedCube.name} requests to enter {gameObject.name}");
+        else Debug.Log($"{requestedCube.name} requests to move within {gameObject.name}");
+
         float targetTime = (specialMove) ? requestedCubeMovement.SpecialMoveTime : requestedCubeMovement.NormalMoveTime;
 
         // if the requested position is out of range -> try to move the requested cube outside
         if (!CheckValidGridPosition(requestedRow, requestedColumn))
         {
+            Debug.Log($"{requestedCube.name} try to move out of {gameObject.name}");
             if (Parent == null)
             {
+                Debug.Log($"{requestedCube.name} cant move out of {gameObject.name} because there is no parent cube!");
                 if (!external && CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) CubesGrid[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
                 return 0;
             }
@@ -280,6 +285,7 @@ public class EnterableCube : Cube
             {
                 // Inifite loop -> teleport to the void instead
                 // This is just a placeholder code for testing
+                Debug.Log($"{requestedCube.name} cant move out of {gameObject.name} because of infinite loop!");
                 if (!external && CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) CubesGrid[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
                 return 0;
             }
@@ -309,6 +315,7 @@ public class EnterableCube : Cube
             parent.UnModifyChildCube(requestedCube);
             requestedCube.Parent = this;
             // Place the requested cube back to its original position if the requested cube is this cube's child
+            Debug.Log($"{requestedCube.name} cant move out of {gameObject.name} because its parent rejected!");
             if (!external && CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) CubesGrid[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
             return 0;
         }
@@ -316,11 +323,13 @@ public class EnterableCube : Cube
         // If there is a movable cube -> Try to move that cube away first
         if (cubesGrid[requestedRow, requestedColumn] != null)
         {
+            Debug.Log($"{requestedCube.name} try to push {cubesGrid[requestedRow, requestedColumn].name}");
             var blockageCubeMovement = cubesGrid[requestedRow, requestedColumn].GetComponent<CubeMovement>();
             if (blockageCubeMovement != null && blockageCubeMovement.Movable)
             {
                 if (blockageCubeMovement.IsMoving)
                 {
+                    Debug.Log($"{requestedCube.name} try to push {blockageCubeMovement.gameObject.name} but it's moving!");
                     if (!external && CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) CubesGrid[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
                     return 0;
                 }
@@ -334,10 +343,18 @@ public class EnterableCube : Cube
         // If target position is empty (either originally or after moving the blockage cube) -> Move to that position
         if (cubesGrid[requestedRow, requestedColumn] == null)
         {
+            Debug.Log($"{requestedCube.name} successfully move to an empty position {requestedRow}, {requestedColumn} of {gameObject.name}!");
             Vector2 childCubeTargetRPos = Relativity.RPosFromGridTile(tiling, tiling, requestedRow, requestedColumn);
             Vector2 childCubeTargetRScl = new Vector2(1.0f / tiling, 1.0f / tiling);
             cubesGrid[requestedRow, requestedColumn] = requestedCube;
             return requestedCubeMovement.StartMoving(cRPos, cRScl, childCubeTargetRPos, childCubeTargetRScl, targetTime);
+        }
+        // If there is another cube that is trying to move into this position
+        else if (cubesGrid[requestedRow, requestedColumn].GetComponent<CubeMovement>().IsMoving)
+        {
+            Debug.Log($"{requestedCube.name} fail to move because another cube is entering {requestedRow}, {requestedColumn} of {gameObject.name}!");
+            if (!external && CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) CubesGrid[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
+            return 0;
         }
 
         // If that cube is blocked or not movable -> Try to enter
@@ -354,6 +371,7 @@ public class EnterableCube : Cube
             // Fail to move out -> unmodify, set requested cube's parent back to this cube
             enterableCube.UnModifyChildCube(requestedCube);
             requestedCube.Parent = this;
+            Debug.Log($"{requestedCube.name} fail to enter {cubesGrid[requestedRow, requestedColumn].gameObject.name}!");
             // Place the requested cube back to its original position if the requested cube is this cube's child
             if (!external && CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) CubesGrid[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
             return 0;

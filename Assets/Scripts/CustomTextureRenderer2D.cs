@@ -14,7 +14,7 @@ public class CustomTextureRenderer2D
                                     Color color,
                                     Vector2 position,
                                     Vector2 size,
-                                    //Rect? parentRect = null,
+                                    float z = 0,
                                     bool occlusionCulling = true)
     {
         // If occulusionCulling is on, then the texture won't be rendered outside of camera's view
@@ -24,7 +24,7 @@ public class CustomTextureRenderer2D
         matProps.SetTexture(mainTexID, texture);
         matProps.SetColor(colorID, color);
 
-        RenderMesh(mesh, material, matProps, position, size, occlusionCulling);
+        RenderMesh(mesh, material, matProps, position, size, z, occlusionCulling);
     }
 
     public static void RenderMesh(Mesh mesh,
@@ -32,12 +32,14 @@ public class CustomTextureRenderer2D
                                     MaterialPropertyBlock matProps, 
                                     Vector2 position, 
                                     Vector2 size,
+                                    float z = 0,
                                     bool occlusionCulling = true)
     {
         // If occulusionCulling is on, then the texture won't be rendered outside of camera's view
         //if (occlusionCulling && !CheckVisibility(position, size)) return;
 
-        Matrix4x4 matrix = Matrix4x4.TRS(position, Quaternion.identity, size); //  Calculate position
+        Vector3 positionToRender = new(position.x, position.y, z);
+        Matrix4x4 matrix = Matrix4x4.TRS(positionToRender, Quaternion.identity, size); //  Calculate position
 
         RenderParams rp = new RenderParams(material); // Calculate render parameters
         rp.matProps = matProps;

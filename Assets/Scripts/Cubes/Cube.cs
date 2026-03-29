@@ -46,27 +46,27 @@ public class Cube : MonoBehaviour
         }
     }
 
-    public virtual void Draw(Rect position)
+    public virtual void Draw(Rect position, float depth = 0)
     {
         //if (!CustomTextureRenderer2D.CheckVisibility(position.position, position.size)) return;
 
         Vector2 rectSizeInPixel = CustomTextureRenderer2D.ConvertScaleToPixel(position.size);
         if (rectSizeInPixel.x < minPixelToRender || rectSizeInPixel.y < minPixelToRender) return; // Don't draw if the requested rectangle is too small (To avoid infinite rendering)
 
-        DrawCube(position);
-        DrawPlayerFace(position);
-        DrawSurfaceEffects(position);
+        DrawCube(position, depth);
+        DrawPlayerFace(position, depth);
+        DrawSurfaceEffects(position, depth);
     }
-    protected virtual void DrawCube(Rect position)
+    protected virtual void DrawCube(Rect position, float depth)
     {
 
     }
-    protected virtual void DrawPlayerFace(Rect position)
+    protected virtual void DrawPlayerFace(Rect position, float depth)
     {
         // Get player face texture
 
     }
-    protected virtual void DrawSurfaceEffects(Rect position)
+    protected virtual void DrawSurfaceEffects(Rect position, float depth)
     {
 
     }

@@ -4,7 +4,7 @@ public class WallCube : Cube
 {
     [SerializeField] int wallSubdivision = 2;
     [SerializeField] Texture2D[,] cubeTex;
-    protected override void DrawCube(Rect position)
+    protected override void DrawCube(Rect position, float depth = 0)
     {
         Color cubeColor = Color.white;
         if (colorPalette != null) cubeColor = colorPalette.GetColor(base.cubeColor);
@@ -16,7 +16,7 @@ public class WallCube : Cube
             for (int col = 0; col < wallSubdivision; col++)
             {
                 Vector2 texPos = new Vector2(startingPos.x + col * texSize.x, startingPos.y + row * texSize.y);
-                CustomTextureRenderer2D.RenderMesh(cubeMesh, cubeMat, cubeTex[row, col], cubeColor, texPos, texSize);
+                CustomTextureRenderer2D.RenderMesh(cubeMesh, cubeMat, cubeTex[row, col], cubeColor, texPos, texSize, depth);
             }
         }
     }

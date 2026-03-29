@@ -197,8 +197,6 @@ public class MainCamera : MonoBehaviour
             mainCamera.orthographicSize = Mathf.Lerp(oldOrthoSize, targetOrthoSize, elapsedTime / time);
             transform.position = Vector3.Lerp(oldPos, targetPos, elapsedTime / time);
 
-            Debug.Log(mainCamera.orthographicSize + " elapsed time: " + elapsedTime + " delta: " + Time.deltaTime);
-
             if (elapsedTime >= time)
             {
                 // Last frame
@@ -250,7 +248,6 @@ public class MainCamera : MonoBehaviour
 
             mainCamera.orthographicSize = Mathf.Lerp(oldOrthoSize, targetOrthoSize, elapsedTime / time);
             transform.position = Vector3.Lerp(oldPos, targetPos, elapsedTime / time);
-            Debug.Log(mainCamera.orthographicSize + " " + Time.deltaTime);
             yield return null;
         }
         FocusOnTargetCube();

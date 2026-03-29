@@ -20,8 +20,7 @@ public class CubeMovement : MonoBehaviour
     public bool Movable { get => movable; }
     //protected bool isTryingToMove = false;
 
-    public bool IsMoving { get => (movingCoroutine != null); }
-    //public bool IsTryingToMove { get => isTryingToMove; set => isTryingToMove = value; }
+    public bool IsMoving { get => movingCoroutine != null; }
     public bool IsCoolingDown { get => (coolDownTimer > 0); }
     public float NormalMoveTime { get => normalMoveTime; }
     public float SpecialMoveTime { get => specialMoveTime; }
@@ -59,7 +58,7 @@ public class CubeMovement : MonoBehaviour
     // Called by parent cube
     public float StartMoving(Vector2 startRPos, Vector2 startRScl, Vector2 endRPos, Vector2 endRScl, float targetTime)
     {
-        if (IsMoving || IsCoolingDown) return 0;
+        if (IsMoving || (selfCube.IsPlayer && IsCoolingDown)) return 0;
 
         // If this cube is a player -> update camera
         if (selfCube.IsPlayer && MainCamera.Instance != null)
@@ -85,7 +84,8 @@ public class CubeMovement : MonoBehaviour
         float elapsedTime = -1;
         selfCube.RelativePosition = startRPos;
         selfCube.RelativeScale = startRScl;
-        while(elapsedTime < time)
+        if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.StopUsingMovementInputs();
+        while (elapsedTime < time)
         {
             if (elapsedTime < 0) elapsedTime = 0;
             else elapsedTime += Time.deltaTime;
@@ -97,5 +97,6 @@ public class CubeMovement : MonoBehaviour
         }
         movingCoroutine = null;
         coolDownTimer = coolDownTime;
+        if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.ContinueUsingMovementInputs();
     }
 }
