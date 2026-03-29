@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerInputsManager : MonoBehaviour
 {
@@ -31,6 +32,7 @@ public class PlayerInputsManager : MonoBehaviour
         mainInputSystem.Normal.MoveLeft.canceled += onMoveLeftCanceled => { OnMoveLeft(false); };
         mainInputSystem.Normal.MoveRight.started += onMoveRightStarted => { OnMoveRight(true); };
         mainInputSystem.Normal.MoveRight.canceled += onMoveRightCanceled => { OnMoveRight(false); };
+        mainInputSystem.Normal.Reset.started += onResetPerformed => { OnReset(); };
     }
 
     private void OnEnable()
@@ -105,6 +107,12 @@ public class PlayerInputsManager : MonoBehaviour
     {
         if (movementInputsList == null || movementInputsList.Count == 0 || !allowUsingMovementInput) return MovementInputs.None;
         return movementInputsList[movementInputsList.Count - 1];
+    }
+
+    // Other inputs
+    public void OnReset()
+    {
+        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
     }
     
     //Helper functions
