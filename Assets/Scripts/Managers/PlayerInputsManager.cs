@@ -148,4 +148,21 @@ public class PlayerInputsManager : MonoBehaviour
                 return MovementInputs.None;
         }
     }
+
+    public static MovementInputs ReverseMovementInput(MovementInputs input)
+    {
+        switch (input)
+        {
+            case MovementInputs.Up:
+                return MovementInputs.Down;
+            case MovementInputs.Down:
+                return MovementInputs.Up;
+            case MovementInputs.Left:
+                return MovementInputs.Right;
+            case MovementInputs.Right:
+                return MovementInputs.Left;
+            default:
+                return MovementInputs.None;
+        }
+    }
 }

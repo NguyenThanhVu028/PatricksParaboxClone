@@ -105,7 +105,7 @@ public class MainCamera : MonoBehaviour
         transform.position = new Vector3 (renderPosition.position.x, renderPosition.position.y, transform.position.z);
         mainCamera.orthographicSize = GetIdealOrthographicSize(renderPosition, targetCube);
 
-        Debug.Log("Ideal ortho size: " + GetIdealOrthographicSize(renderPosition, targetCube));
+        //Debug.Log("Ideal ortho size: " + GetIdealOrthographicSize(renderPosition, targetCube));
     }
 
     public enum CameraMovements { ZoomIn, ZoomOut }
@@ -164,16 +164,16 @@ public class MainCamera : MonoBehaviour
         float targetOrthoSize = GetIdealOrthographicSize(newTargetRect, newTarget);
         Vector3 oldPos = transform.position;
         Vector3 targetPos = new Vector3(newTargetRect.x, newTargetRect.y, -10);
-        bool skippedFirstFrame = false;
+        //bool skippedFirstFrame = false;
         while (elapsedTime < time)
         {
-            if (!skippedFirstFrame)
-            {
-                // Skip the first frame to make sure the zooming in process starts at elapsed time = 0, not deltaTime
-                skippedFirstFrame = true;
-                yield return null;
-                continue;
-            }
+            //if (!skippedFirstFrame)
+            //{
+            //    // Skip the first frame to make sure the zooming in process starts at elapsed time = 0, not deltaTime
+            //    skippedFirstFrame = true;
+            //    yield return null;
+            //    continue;
+            //}
 
             if (elapsedTime < 0) elapsedTime = 0; // Make sure the zooming in process starts at elapsed time = 0, not deltaTime
             else elapsedTime += Time.deltaTime;
@@ -215,17 +215,17 @@ public class MainCamera : MonoBehaviour
         var targetOrthoSize = GetIdealOrthographicSize(renderPosition, targetCube);
         Vector3 oldPos = Relativity.CRealPosFromCRPos(oldTargetNewRect, cameraRPosToOldTarget); ; oldPos.z = -10;
         Vector3 targetPos = renderPosition.position; targetPos.z = -10;
-        bool skippedFirstFrame = false;
+        //bool skippedFirstFrame = false;
 
         while (elapsedTime < time)
         {
-            if (!skippedFirstFrame)
-            {
-                // Skip the first frame to make sure the zooming in process starts at elapsed time = 0, not deltaTime
-                skippedFirstFrame = true;
-                yield return null;
-                continue;
-            }
+            //if (!skippedFirstFrame)
+            //{
+            //    // Skip the first frame to make sure the zooming in process starts at elapsed time = 0, not deltaTime
+            //    skippedFirstFrame = true;
+            //    yield return null;
+            //    continue;
+            //}
 
             if (elapsedTime < 0) elapsedTime = 0;
             else elapsedTime += Time.deltaTime;

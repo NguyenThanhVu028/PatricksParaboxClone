@@ -21,7 +21,7 @@ public class CubeMovement : MonoBehaviour
     protected UnityEvent onMoveStart = new();
     protected UnityEvent onMoveEnd = new();
 
-    public bool Movable { get { return selfCube != null && selfCube.CubeType != Cube.CubeTypes.Static; } }
+    public bool Movable { get { return selfCube != null && selfCube.CubeType != Cube.CubeTypes.Static && selfCube.CubeType != Cube.CubeTypes.Empty; } }
     public bool IsMoving { get => movingCoroutine != null; }
     public bool IsCoolingDown { get => (coolDownTimer > 0); }
     public float NormalMoveTime { get => normalMoveTime; }

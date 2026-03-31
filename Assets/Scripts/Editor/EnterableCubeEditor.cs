@@ -1,6 +1,5 @@
 using UnityEditor;
 using UnityEngine;
-using static EnterableCube;
 
 [CustomEditor(typeof(EnterableCube))]
 public class EnterableCubeEditor : Editor
@@ -9,7 +8,6 @@ public class EnterableCubeEditor : Editor
     SerializedProperty tiling;
     #endregion
 
-    Vector2Int cubeToShowDetail = new Vector2Int(0, 0);
 
     EnterableCube targetEnterableCube;
     private void OnEnable()

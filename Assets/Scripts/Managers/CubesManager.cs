@@ -8,9 +8,10 @@ public class CubesManager : MonoBehaviour
     private static CubesManager instance = null;
 
     [SerializeField] List<CubeDetails> allCubes = new();
-    [SerializeField] float gizmosSpacing = 0.5f;
 
     public static CubesManager Instance { get => instance; }
+
+    public List<CubeDetails> AllCubes { get => allCubes; }
 
     private void OnEnable()
     {
@@ -35,18 +36,6 @@ public class CubesManager : MonoBehaviour
             }
         }
         return null;
-    }
-
-    private void OnDrawGizmos()
-    {
-        Handles.Label(transform.position, "Cubes manager details:");
-        for (int i = 0; i < allCubes.Count; i++)
-        {
-            CubeDetails cubeDetails = allCubes[i];
-            if (cubeDetails == null) continue;
-            Vector3 gizmosPos = transform.position + Vector3.down * (i + 1) * gizmosSpacing;
-            Handles.Label(gizmosPos, $"ID: {cubeDetails.ID} | Cube: {(cubeDetails.Cube != null ? cubeDetails.Cube.name : "null")}");
-        }
     }
 }
 
