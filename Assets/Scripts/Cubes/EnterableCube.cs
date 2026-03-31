@@ -301,7 +301,7 @@ public class EnterableCube : Cube
             Cube blockageCube = childCubes[requestedRow, requestedColumn];
             childCubes[requestedRow, requestedColumn] = null;
 
-            var tempTargetTime = TryLetBlockageCubeEnterRequestedCube(blockageCube, enterable, direction);
+            var tempTargetTime = TryLetBlockageCubeEnterRequestedCube(blockageCube, enterable, cRPos, cRScl, direction);
 
             // Fail to move the blockage cube -> return the blockage cube
             if (tempTargetTime <= 0) childCubes[requestedRow, requestedColumn] = blockageCube;
@@ -420,15 +420,15 @@ public class EnterableCube : Cube
         return 0;
     }
 
-    private float TryLetBlockageCubeEnterRequestedCube(Cube blockageCube, EnterableCube requestedCube, PlayerInputsManager.MovementInputs direction)
+    private float TryLetBlockageCubeEnterRequestedCube(Cube blockageCube, EnterableCube requestedCube, Vector2 requestedCubeRPos, Vector2 requestedCubeRScl, PlayerInputsManager.MovementInputs direction)
     {
         Debug.Log($"Try to let {blockageCube.name} enter {requestedCube.name}");
 
         var blockageCubeMovement = blockageCube.GetComponent<CubeMovement>();
         if (blockageCubeMovement != null && blockageCubeMovement.Movable)
         {
-            Vector2 blockageCubeRPosToRequestedCube = Relativity.SRPosFromSameParent(requestedCube.RelativePosition, requestedCube.RelativeScale, blockageCube.RelativePosition);
-            Vector2 blockageCubeRSclToRequestedCube = Relativity.SRSclFromSameParent(requestedCube.RelativeScale, blockageCube.RelativeScale);
+            Vector2 blockageCubeRPosToRequestedCube = Relativity.SRPosFromSameParent(requestedCubeRPos, requestedCubeRScl, blockageCube.RelativePosition);
+            Vector2 blockageCubeRSclToRequestedCube = Relativity.SRSclFromSameParent(requestedCubeRScl, blockageCube.RelativeScale);
 
             Debug.Log(blockageCubeRPosToRequestedCube + " " + blockageCubeRSclToRequestedCube);
 
