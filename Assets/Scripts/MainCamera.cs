@@ -175,6 +175,9 @@ public class MainCamera : MonoBehaviour
             //    continue;
             //}
 
+            mainCamera.orthographicSize = oldOrthoSize;
+            transform.position = oldPos;
+
             if (elapsedTime < 0) elapsedTime = 0; // Make sure the zooming in process starts at elapsed time = 0, not deltaTime
             else elapsedTime += Time.deltaTime;
 
@@ -215,6 +218,11 @@ public class MainCamera : MonoBehaviour
         var targetOrthoSize = GetIdealOrthographicSize(renderPosition, targetCube);
         Vector3 oldPos = Relativity.CRealPosFromCRPos(oldTargetNewRect, cameraRPosToOldTarget); ; oldPos.z = -10;
         Vector3 targetPos = renderPosition.position; targetPos.z = -10;
+
+        mainCamera.orthographicSize = oldOrthoSize;
+        transform.position = oldPos;
+
+        Render();
         //bool skippedFirstFrame = false;
 
         while (elapsedTime < time)
@@ -226,6 +234,7 @@ public class MainCamera : MonoBehaviour
             //    yield return null;
             //    continue;
             //}
+
 
             if (elapsedTime < 0) elapsedTime = 0;
             else elapsedTime += Time.deltaTime;

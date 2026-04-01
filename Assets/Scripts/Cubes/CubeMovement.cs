@@ -66,23 +66,31 @@ public class CubeMovement : MonoBehaviour
         if (IsMoving || (selfCube.IsPlayer && IsCoolingDown)) return 0;
 
         // If this cube is a player -> update camera
-        if (selfCube.IsPlayer && MainCamera.Instance != null)
-        {
-            Vector2 oldParentRPos = Relativity.PRPosToAChild(selfCube.RelativePosition, selfCube.RelativeScale);
-            Vector2 oldParentRScl = Relativity.PRSclToAChild(selfCube.RelativeScale);
-
-            Vector2 newParentRPos = Relativity.PRPosToAChild(startRPos, startRScl);
-            Vector2 newParentRScl = Relativity.PRSclToAChild(startRScl);
-
-            Vector2 oldParentRPosToNewParent = Relativity.SRPosFromSameParent(newParentRPos, newParentRScl, oldParentRPos);
-            Vector2 oldParentRSclToNewParent = Relativity.SRSclFromSameParent(newParentRScl, oldParentRScl);
-
-            MainCamera.Instance.ChangeTarget(oldParentRPosToNewParent, oldParentRSclToNewParent, selfCube.Parent, targetTime);
-        }
+        UpdateCamera(selfCube, startRPos, startRScl, targetTime);
 
         movingCoroutine = StartCoroutine(MovingCoroutine(startRPos, startRScl, endRPos, endRScl, targetTime));
         return targetTime;
     }
+
+    private void UpdateCamera(Cube player, Vector2 playerStartRPos, Vector2 playerStartRScl, float targetTime)
+    {
+        Debug.Log("Update cam");
+        if (!player.IsPlayer) return;
+        if (MainCamera.Instance != null)
+        {
+            Vector2 oldParentRPos = Relativity.PRPosToAChild(player.RelativePosition, player.RelativeScale);
+            Vector2 oldParentRScl = Relativity.PRSclToAChild(player.RelativeScale);
+
+            Vector2 newParentRPos = Relativity.PRPosToAChild(playerStartRPos, playerStartRScl);
+            Vector2 newParentRScl = Relativity.PRSclToAChild(playerStartRScl);
+
+            Vector2 oldParentRPosToNewParent = Relativity.SRPosFromSameParent(newParentRPos, newParentRScl, oldParentRPos);
+            Vector2 oldParentRSclToNewParent = Relativity.SRSclFromSameParent(newParentRScl, oldParentRScl);
+
+            MainCamera.Instance.ChangeTarget(oldParentRPosToNewParent, oldParentRSclToNewParent, player.Parent, targetTime);
+        }
+    }
+
     protected IEnumerator MovingCoroutine(Vector2 startRPos, Vector2 startRScl, Vector2 endRPos, Vector2 endRScl, float time)
     {
         float elapsedTime = -1;
