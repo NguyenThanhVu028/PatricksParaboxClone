@@ -11,8 +11,6 @@ public class CubeMovement : MonoBehaviour
     [SerializeField] float coolDownTime = 0.075f;
 
     [SerializeField] protected Cube selfCube;
-
-    protected EnterableCube previousParent; // Record self cube's previous parent to record history
     protected PlayerInputsManager playerMovementInputsManager;
     protected Coroutine movingCoroutine = null;
     //protected Vector2 targetRPos = Vector2.zero;
@@ -35,7 +33,7 @@ public class CubeMovement : MonoBehaviour
     private void OnEnable()
     {
         selfCube = GetComponent<Cube>();
-        selfCube.OnInit.AddListener(OnSelfCubeInit);
+        //selfCube.OnInit.AddListener(OnSelfCubeInit);
         playerMovementInputsManager = PlayerInputsManager.Instance;
     }
     private void Update()
@@ -62,30 +60,35 @@ public class CubeMovement : MonoBehaviour
         if (coolDownTimer < 0) coolDownTimer = 0;
     }
 
-    private void OnSelfCubeInit()
-    {
-        previousParent = selfCube.Parent;
-    }
 
     // Called by parent cube
     public float StartMoving(Vector2 startRPos, Vector2 startRScl, Vector2 endRPos, Vector2 endRScl, float targetTime)
     {
         if (IsMoving || (selfCube.IsPlayer && IsCoolingDown)) return 0;
 
-        // If this cube is a player -> update camera
-        UpdateCamera(selfCube, startRPos, startRScl, targetTime);
-
         // Record history event
         Debug.Log($"Cube {selfCube.name} moves");
         if (HistoryManager.Instance != null)
         {
-            HistoryManager.Instance.RecordNewEvent(selfCube, previousParent, selfCube.RelativePosition, selfCube.RelativeScale);
-            previousParent = selfCube.Parent; // Update current parent after recording
+            HistoryManager.Instance.RecordNewEvent(selfCube, selfCube.PreviousParent, selfCube.RelativePosition, selfCube.RelativeScale);
             if (selfCube.IsPlayer) HistoryManager.Instance.ArchiveHistoryRecord(); // Player will archive the record
         }
 
+        // If this cube is a player -> update camera
+        UpdateCamera(selfCube, startRPos, startRScl, targetTime);
+
         movingCoroutine = StartCoroutine(MovingCoroutine(startRPos, startRScl, endRPos, endRScl, targetTime));
+
         return targetTime;
+    }
+
+    public void StopMoving()
+    {
+        if (movingCoroutine != null) StopCoroutine(movingCoroutine);
+        movingCoroutine = null;
+
+        if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.ContinueUsingMovementInputs();
+        onMoveEnd.Invoke();
     }
 
     private void UpdateCamera(Cube player, Vector2 playerStartRPos, Vector2 playerStartRScl, float targetTime)
@@ -102,6 +105,9 @@ public class CubeMovement : MonoBehaviour
 
             Vector2 oldParentRPosToNewParent = Relativity.SRPosFromSameParent(newParentRPos, newParentRScl, oldParentRPos);
             Vector2 oldParentRSclToNewParent = Relativity.SRSclFromSameParent(newParentRScl, oldParentRScl);
+
+            player.RelativePosition = playerStartRPos;
+            player.RelativeScale = playerStartRScl;
 
             MainCamera.Instance.ChangeTarget(oldParentRPosToNewParent, oldParentRSclToNewParent, player.Parent, targetTime);
         }
@@ -126,6 +132,7 @@ public class CubeMovement : MonoBehaviour
         }
         movingCoroutine = null;
         coolDownTimer = coolDownTime;
+        selfCube.PreviousParent = selfCube.Parent; // Update current parent after moving
         if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.ContinueUsingMovementInputs();
         onMoveEnd.Invoke();
     }

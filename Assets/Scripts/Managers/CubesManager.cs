@@ -57,17 +57,15 @@ public class CubesManager : MonoBehaviour
         {
             if (historyEvent == null || historyEvent.TargetCube == null) continue;
 
+            // Stop moving coroutine
+            if (historyEvent.TargetCube.GetComponent<CubeMovement>() != null)
+                historyEvent.TargetCube.GetComponent<CubeMovement>().StopMoving();
+
             // Let target cube leave its current parent
             if (historyEvent.TargetCube.Parent != null)
             {
-                Vector2Int targetCubeCurrentPosInParent = Relativity.GridPosFromRPos(historyEvent.TargetCube.Parent.Tiling, historyEvent.TargetCube.Parent.Tiling, historyEvent.TargetCube.RelativePosition);
-                if (historyEvent.TargetCube.Parent.CheckValidGridPosition(targetCubeCurrentPosInParent.x, targetCubeCurrentPosInParent.y))
-                {
-                    if (historyEvent.TargetCube.Parent.CubesGrid[targetCubeCurrentPosInParent.x, targetCubeCurrentPosInParent.y] == historyEvent.TargetCube)
-                    {
-                        historyEvent.TargetCube.Parent.CubesGrid[targetCubeCurrentPosInParent.x, targetCubeCurrentPosInParent.y] = null;
-                    }
-                }
+                Debug.Log($"{historyEvent.TargetCube.Parent} removes {historyEvent.TargetCube}");
+                historyEvent.TargetCube.Parent.RemoveChild(historyEvent.TargetCube);
             }
 
             // Let target cube return to its previous parent
@@ -76,14 +74,26 @@ public class CubesManager : MonoBehaviour
                 historyEvent.TargetCube.Parent = null;
                 continue;
             }
+
             Vector2Int targetCubePrevPosInParent = Relativity.GridPosFromRPos(historyEvent.PreviousParent.Tiling, historyEvent.PreviousParent.Tiling, historyEvent.PreviousRPos);
             if (!historyEvent.PreviousParent.CheckValidGridPosition(targetCubePrevPosInParent.x, targetCubePrevPosInParent.y)) return;
+            Debug.Log($"Reset {historyEvent.TargetCube} parent to {historyEvent.PreviousParent}");
             historyEvent.PreviousParent.CubesGrid[targetCubePrevPosInParent.x, targetCubePrevPosInParent.y] = historyEvent.TargetCube;
             historyEvent.TargetCube.Parent = historyEvent.PreviousParent;
+            historyEvent.TargetCube.PreviousParent = historyEvent.PreviousParent;
             historyEvent.TargetCube.RelativePosition = historyEvent.PreviousRPos;
             historyEvent.TargetCube.RelativeScale = historyEvent.PreviousRScl;
+            ResetCamera(historyEvent.TargetCube);
 
         }
+    }
+
+    private void ResetCamera(Cube targetCube)
+    {
+        if (!targetCube.IsPlayer || MainCamera.Instance == null) return;
+        MainCamera.Instance.StopZooming();
+        MainCamera.Instance.SetNewTargetCube(targetCube.Parent);
+        MainCamera.Instance.FocusOnTargetCube();
     }
 }
 

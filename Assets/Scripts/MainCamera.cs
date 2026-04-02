@@ -247,6 +247,12 @@ public class MainCamera : MonoBehaviour
         zoomCoroutine= null;
     }
 
+    public void StopZooming()
+    {
+        if (zoomCoroutine != null) StopCoroutine(zoomCoroutine);
+        zoomCoroutine = null;
+    }
+
     private void OnDrawGizmos()
     {
         if (!useGizmos) return;

@@ -239,6 +239,33 @@ public class EnterableCube : Cube
         }
     }
 
+    // Children functions
+    public Vector2Int FindChild(Cube targetCube)
+    {
+        for(int row = 0; row < childCubes.GetLength(0); row++)
+        {
+            for (int column = 0; column < childCubes.GetLength(1); column++)
+            {
+                if (childCubes[row, column] == targetCube) return new(row, column);
+            }
+        }
+        return new(-1, -1);
+    }
+
+    public void RemoveChild(Cube targetCube)
+    {
+        for (int row = 0; row < childCubes.GetLength(0); row++)
+        {
+            for (int column = 0; column < childCubes.GetLength(1); column++)
+            {
+                if (childCubes[row, column] == targetCube)
+                {
+                    childCubes[row, column] = null;
+                }
+            }
+        }
+    }
+
     // This functions if call when a cube is trying to move within / entering this cube
     public float RequestToMove(Vector2 cRPos, Vector2 cRScl, Cube requestedCube, PlayerInputsManager.MovementInputs direction, int requestedRow, int requestedColumn, bool external = false, bool specialMove = false)
     {

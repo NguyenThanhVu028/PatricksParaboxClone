@@ -28,6 +28,7 @@ public class Cube : MonoBehaviour
     [SerializeField] protected Texture possessableFaceTexture;
     [Header("Cube stats")]
     [SerializeField] protected EnterableCube parent;
+    [SerializeField] protected EnterableCube previousParent; // Record self cube's previous parent to record history
     [SerializeField] protected Vector2 relativeScale = new(1, 1);
     [SerializeField] protected Vector2 relativePosition = new(0, 0);
     [Header("Other cube settings")]
@@ -42,6 +43,7 @@ public class Cube : MonoBehaviour
     public ColorPalette.ColorEnum CubeColor { get => cubeColor; set => cubeColor = value; }
     public bool NeedInstantiating { get => needInstantiating; }
     public EnterableCube Parent { get => parent; set { parent = value; onParentChanged.Invoke(); } }
+    public EnterableCube PreviousParent { get => previousParent; set => previousParent = value; }
     public Vector2 RelativeScale { get => relativeScale; set => relativeScale = value; }
     public Vector2 RelativePosition { get => relativePosition; set => relativePosition = value; }
     public UnityEvent OnInit { get => onInit; }
@@ -52,6 +54,8 @@ public class Cube : MonoBehaviour
         {
             MainCamera.Instance.SetNewTargetCube(parent);
         }
+
+        previousParent = parent;
 
         onInit.Invoke();
     }
