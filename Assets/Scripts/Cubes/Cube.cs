@@ -32,6 +32,7 @@ public class Cube : MonoBehaviour
     [SerializeField] protected Vector2 relativePosition = new(0, 0);
     [Header("Other cube settings")]
     [SerializeField] protected float possessingTime = 0.5f;
+    [SerializeField] protected UnityEvent onInit = new();
 
     protected UnityEvent onParentChanged = new();
 
@@ -43,6 +44,7 @@ public class Cube : MonoBehaviour
     public EnterableCube Parent { get => parent; set { parent = value; onParentChanged.Invoke(); } }
     public Vector2 RelativeScale { get => relativeScale; set => relativeScale = value; }
     public Vector2 RelativePosition { get => relativePosition; set => relativePosition = value; }
+    public UnityEvent OnInit { get => onInit; }
 
     public virtual void Init()
     {
@@ -50,6 +52,8 @@ public class Cube : MonoBehaviour
         {
             MainCamera.Instance.SetNewTargetCube(parent);
         }
+
+        onInit.Invoke();
     }
 
     public virtual void Draw(Rect position, float depth = 0)

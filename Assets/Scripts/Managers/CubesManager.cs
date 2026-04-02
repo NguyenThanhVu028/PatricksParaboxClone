@@ -22,6 +22,14 @@ public class CubesManager : MonoBehaviour
         instance = this;
     }
 
+    private void Start()
+    {
+        if (PlayerInputsManager.Instance != null)
+        {
+            PlayerInputsManager.Instance.OnUndoEvent.AddListener(OnUndo);
+        }
+    }
+
     public Cube GetCube(int id)
     {
         foreach(var cube in allCubes)
@@ -36,6 +44,46 @@ public class CubesManager : MonoBehaviour
             }
         }
         return null;
+    }
+
+    public void OnUndo()
+    {
+        if (HistoryManager.Instance == null) return;
+        HistoryRecord lastestRecord = HistoryManager.Instance.GetLatestRecord();
+        if (lastestRecord == null) return;
+        Debug.Log("Begin undo");
+
+        foreach(var historyEvent in lastestRecord.Events)
+        {
+            if (historyEvent == null || historyEvent.TargetCube == null) continue;
+
+            // Let target cube leave its current parent
+            if (historyEvent.TargetCube.Parent != null)
+            {
+                Vector2Int targetCubeCurrentPosInParent = Relativity.GridPosFromRPos(historyEvent.TargetCube.Parent.Tiling, historyEvent.TargetCube.Parent.Tiling, historyEvent.TargetCube.RelativePosition);
+                if (historyEvent.TargetCube.Parent.CheckValidGridPosition(targetCubeCurrentPosInParent.x, targetCubeCurrentPosInParent.y))
+                {
+                    if (historyEvent.TargetCube.Parent.CubesGrid[targetCubeCurrentPosInParent.x, targetCubeCurrentPosInParent.y] == historyEvent.TargetCube)
+                    {
+                        historyEvent.TargetCube.Parent.CubesGrid[targetCubeCurrentPosInParent.x, targetCubeCurrentPosInParent.y] = null;
+                    }
+                }
+            }
+
+            // Let target cube return to its previous parent
+            if (historyEvent.PreviousParent == null)
+            {
+                historyEvent.TargetCube.Parent = null;
+                continue;
+            }
+            Vector2Int targetCubePrevPosInParent = Relativity.GridPosFromRPos(historyEvent.PreviousParent.Tiling, historyEvent.PreviousParent.Tiling, historyEvent.PreviousRPos);
+            if (!historyEvent.PreviousParent.CheckValidGridPosition(targetCubePrevPosInParent.x, targetCubePrevPosInParent.y)) return;
+            historyEvent.PreviousParent.CubesGrid[targetCubePrevPosInParent.x, targetCubePrevPosInParent.y] = historyEvent.TargetCube;
+            historyEvent.TargetCube.Parent = historyEvent.PreviousParent;
+            historyEvent.TargetCube.RelativePosition = historyEvent.PreviousRPos;
+            historyEvent.TargetCube.RelativeScale = historyEvent.PreviousRScl;
+
+        }
     }
 }
 

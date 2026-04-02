@@ -145,6 +145,15 @@ public partial class @MainInputSystem: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Undo"",
+                    ""type"": ""Button"",
+                    ""id"": ""9e02ffaf-3ef2-4bef-aee3-b9b75d69a2ab"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -356,6 +365,17 @@ public partial class @MainInputSystem: IInputActionCollection2, IDisposable
                     ""action"": ""Reset"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""946a0321-700a-4201-9be0-4bc87dcd69fc"",
+                    ""path"": ""<Keyboard>/z"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Undo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -370,6 +390,7 @@ public partial class @MainInputSystem: IInputActionCollection2, IDisposable
         m_Normal_MoveLeft = m_Normal.FindAction("MoveLeft", throwIfNotFound: true);
         m_Normal_MoveRight = m_Normal.FindAction("MoveRight", throwIfNotFound: true);
         m_Normal_Reset = m_Normal.FindAction("Reset", throwIfNotFound: true);
+        m_Normal_Undo = m_Normal.FindAction("Undo", throwIfNotFound: true);
     }
 
     ~@MainInputSystem()
@@ -456,6 +477,7 @@ public partial class @MainInputSystem: IInputActionCollection2, IDisposable
     private readonly InputAction m_Normal_MoveLeft;
     private readonly InputAction m_Normal_MoveRight;
     private readonly InputAction m_Normal_Reset;
+    private readonly InputAction m_Normal_Undo;
     /// <summary>
     /// Provides access to input actions defined in input action map "Normal".
     /// </summary>
@@ -491,6 +513,10 @@ public partial class @MainInputSystem: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Normal/Reset".
         /// </summary>
         public InputAction @Reset => m_Wrapper.m_Normal_Reset;
+        /// <summary>
+        /// Provides access to the underlying input action "Normal/Undo".
+        /// </summary>
+        public InputAction @Undo => m_Wrapper.m_Normal_Undo;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -535,6 +561,9 @@ public partial class @MainInputSystem: IInputActionCollection2, IDisposable
             @Reset.started += instance.OnReset;
             @Reset.performed += instance.OnReset;
             @Reset.canceled += instance.OnReset;
+            @Undo.started += instance.OnUndo;
+            @Undo.performed += instance.OnUndo;
+            @Undo.canceled += instance.OnUndo;
         }
 
         /// <summary>
@@ -564,6 +593,9 @@ public partial class @MainInputSystem: IInputActionCollection2, IDisposable
             @Reset.started -= instance.OnReset;
             @Reset.performed -= instance.OnReset;
             @Reset.canceled -= instance.OnReset;
+            @Undo.started -= instance.OnUndo;
+            @Undo.performed -= instance.OnUndo;
+            @Undo.canceled -= instance.OnUndo;
         }
 
         /// <summary>
@@ -646,5 +678,12 @@ public partial class @MainInputSystem: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnReset(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Undo" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnUndo(InputAction.CallbackContext context);
     }
 }

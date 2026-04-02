@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
-public class PlayerInputsManager : MonoBehaviour
+public class PlayerInputsManager : MonoBehaviour, MainInputSystem.INormalActions
 {
     public enum MovementInputs { Up, Down, Left, Right, None }
 
@@ -10,6 +12,10 @@ public class PlayerInputsManager : MonoBehaviour
 
     [SerializeField] bool allowTakingMovementInput = true;
     [SerializeField] bool allowUsingMovementInput = true;
+    [SerializeField] UnityEvent onUndoEvent = new();
+
+    public UnityEvent OnUndoEvent { get => onUndoEvent; }
+
     private List<MovementInputs> movementInputsList = new(); // Store all the receivec inputs
 
     private MainInputSystem mainInputSystem;
@@ -24,15 +30,7 @@ public class PlayerInputsManager : MonoBehaviour
         mainInputSystem = new MainInputSystem();
 
         // Subscribe actions 
-        mainInputSystem.Normal.MoveUp.started += onMoveUpStarted => { OnMoveUp(true); };
-        mainInputSystem.Normal.MoveUp.canceled += onMoveUpCanceled => { OnMoveUp(false); };
-        mainInputSystem.Normal.MoveDown.started += onMoveDownStarted => { OnMoveDown(true); };
-        mainInputSystem.Normal.MoveDown.canceled += onMoveDownCanceled => { OnMoveDown(false); };
-        mainInputSystem.Normal.MoveLeft.started += onMoveLeftStarted => { OnMoveLeft(true); };
-        mainInputSystem.Normal.MoveLeft.canceled += onMoveLeftCanceled => { OnMoveLeft(false); };
-        mainInputSystem.Normal.MoveRight.started += onMoveRightStarted => { OnMoveRight(true); };
-        mainInputSystem.Normal.MoveRight.canceled += onMoveRightCanceled => { OnMoveRight(false); };
-        mainInputSystem.Normal.Reset.started += onResetPerformed => { OnReset(); };
+        mainInputSystem.Normal.SetCallbacks(this);
     }
 
     private void OnEnable()
@@ -89,6 +87,28 @@ public class PlayerInputsManager : MonoBehaviour
         else RemoveFromInputList(MovementInputs.Right);
     }
 
+    public void OnMoveUp(InputAction.CallbackContext context)
+    {
+        Debug.Log("Move up");
+        if (context.started) OnMoveUp(true);
+        if (context.canceled) OnMoveUp(false);
+    }
+    public void OnMoveDown(InputAction.CallbackContext context)
+    {
+        if (context.started) OnMoveDown(true);
+        if (context.canceled) OnMoveDown(false);
+    }
+    public void OnMoveLeft(InputAction.CallbackContext context)
+    {
+        if (context.started) OnMoveLeft(true);
+        if (context.canceled) OnMoveLeft(false);
+    }
+    public void OnMoveRight(InputAction.CallbackContext context)
+    {
+        if (context.started) OnMoveRight(true);
+        if (context.canceled) OnMoveRight(false);
+    }
+
     // Actions on movement inputs list
     private void AddToInputList(MovementInputs movementInput)
     {
@@ -97,7 +117,6 @@ public class PlayerInputsManager : MonoBehaviour
         movementInputsList.Remove(movementInput); // Remove the input if it already exists to avoid duplicates and add it to the end of the list
         movementInputsList.Add(movementInput);
     }
-
     private void RemoveFromInputList(MovementInputs movementInput)
     {
         movementInputsList.Remove(movementInput);
@@ -110,11 +129,17 @@ public class PlayerInputsManager : MonoBehaviour
     }
 
     // Other inputs
-    public void OnReset()
+
+    public void OnReset(InputAction.CallbackContext context)
     {
         SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
     }
-    
+
+    public void OnUndo(InputAction.CallbackContext context)
+    {
+        if (context.started) onUndoEvent.Invoke();
+    }
+
     //Helper functions
     public static Vector2Int ConvertMovementInputToGridDirection(MovementInputs input)
     {
@@ -164,5 +189,9 @@ public class PlayerInputsManager : MonoBehaviour
             default:
                 return MovementInputs.None;
         }
+    }
+
+    public void OnMove(InputAction.CallbackContext context)
+    {
     }
 }

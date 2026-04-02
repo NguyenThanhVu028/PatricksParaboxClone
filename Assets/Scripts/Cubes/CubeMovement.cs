@@ -11,12 +11,14 @@ public class CubeMovement : MonoBehaviour
     [SerializeField] float coolDownTime = 0.075f;
 
     [SerializeField] protected Cube selfCube;
+
+    protected EnterableCube previousParent; // Record self cube's previous parent to record history
     protected PlayerInputsManager playerMovementInputsManager;
     protected Coroutine movingCoroutine = null;
-    protected Vector2 targetRPos = Vector2.zero;
-    protected Vector2 previousRPos = Vector2.zero;
-    protected Vector2 targetRScl = Vector2.zero;
-    protected Vector2 previousRScl = Vector2.zero;
+    //protected Vector2 targetRPos = Vector2.zero;
+    //protected Vector2 previousRPos = Vector2.zero;
+    //protected Vector2 targetRScl = Vector2.zero;
+    //protected Vector2 previousRScl = Vector2.zero;
     protected float coolDownTimer = 0f;
     protected UnityEvent onMoveStart = new();
     protected UnityEvent onMoveEnd = new();
@@ -30,9 +32,10 @@ public class CubeMovement : MonoBehaviour
     public UnityEvent OnMoveStart { get => onMoveStart; }
     public UnityEvent OnMoveEnd { get => onMoveEnd; }
 
-    private void Start()
+    private void OnEnable()
     {
         selfCube = GetComponent<Cube>();
+        selfCube.OnInit.AddListener(OnSelfCubeInit);
         playerMovementInputsManager = PlayerInputsManager.Instance;
     }
     private void Update()
@@ -59,6 +62,10 @@ public class CubeMovement : MonoBehaviour
         if (coolDownTimer < 0) coolDownTimer = 0;
     }
 
+    private void OnSelfCubeInit()
+    {
+        previousParent = selfCube.Parent;
+    }
 
     // Called by parent cube
     public float StartMoving(Vector2 startRPos, Vector2 startRScl, Vector2 endRPos, Vector2 endRScl, float targetTime)
@@ -67,6 +74,15 @@ public class CubeMovement : MonoBehaviour
 
         // If this cube is a player -> update camera
         UpdateCamera(selfCube, startRPos, startRScl, targetTime);
+
+        // Record history event
+        Debug.Log($"Cube {selfCube.name} moves");
+        if (HistoryManager.Instance != null)
+        {
+            HistoryManager.Instance.RecordNewEvent(selfCube, previousParent, selfCube.RelativePosition, selfCube.RelativeScale);
+            previousParent = selfCube.Parent; // Update current parent after recording
+            if (selfCube.IsPlayer) HistoryManager.Instance.ArchiveHistoryRecord(); // Player will archive the record
+        }
 
         movingCoroutine = StartCoroutine(MovingCoroutine(startRPos, startRScl, endRPos, endRScl, targetTime));
         return targetTime;

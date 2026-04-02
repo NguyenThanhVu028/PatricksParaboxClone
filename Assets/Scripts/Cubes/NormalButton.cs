@@ -55,6 +55,8 @@ public class NormalButton : Cube
         {
             positionInParent = Relativity.GridPosFromRPos(parent.Tiling, parent.Tiling, relativePosition);
         }
+
+        base.Init();
     }
 
     private void OnDisable()
