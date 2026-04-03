@@ -18,16 +18,16 @@ EditorBuildSettings:
     path: Assets/Scenes/Enter/Enter1.unity
     guid: c4568e0ab23791e4a82347419b167359
   - enabled: 1
-    path: Assets/Scenes/RealGameLevels/Enter2.unity
+    path: Assets/Scenes/Enter/Enter2.unity
     guid: 86c3fe001e168104abcc3847e7332b4b
   - enabled: 1
-    path: Assets/Scenes/RealGameLevels/Enter3.unity
+    path: Assets/Scenes/Enter/Enter3.unity
     guid: b81162c115818bf428c5108e73132c5a
   - enabled: 1
-    path: Assets/Scenes/RealGameLevels/Empty1.unity
+    path: Assets/Scenes/Empty/Empty1.unity
     guid: 11378803e63c3564db1fcc16e374cbfa
   - enabled: 1
-    path: Assets/Scenes/RealGameLevels/Empty2.unity
+    path: Assets/Scenes/Empty/Empty2.unity
     guid: 95f18cb4effede0499e41e642b776e08
   - enabled: 1
     path: Assets/Scenes/RealGameLevels/Empty3.unity

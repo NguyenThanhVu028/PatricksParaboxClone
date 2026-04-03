@@ -82,11 +82,11 @@ public class Cube : MonoBehaviour
         if (colorPalette != null) cubeColor = colorPalette.GetColor(this.cubeColor);
         if (IsPlayer && playerFaceTexture != null)
         {
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, cubeMat, playerFaceTexture, cubeColor, position.position, position.size, depth - 0.2f);
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, cubeMat, playerFaceTexture, cubeColor, position.position, position.size, depth);
         }
         else if (!IsPlayer && canBePlayer && possessableFaceTexture != null)
         {
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, cubeMat, possessableFaceTexture, cubeColor, position.position, position.size, depth - 0.2f);
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, cubeMat, possessableFaceTexture, cubeColor, position.position, position.size, depth);
         }
     }
     protected virtual void DrawSurfaceEffects(Rect position, float depth)

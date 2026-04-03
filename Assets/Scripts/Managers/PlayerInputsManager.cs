@@ -89,7 +89,6 @@ public class PlayerInputsManager : MonoBehaviour, MainInputSystem.INormalActions
 
     public void OnMoveUp(InputAction.CallbackContext context)
     {
-        Debug.Log("Move up");
         if (context.started) OnMoveUp(true);
         if (context.canceled) OnMoveUp(false);
     }

@@ -215,9 +215,7 @@ public class MainCamera : MonoBehaviour
          */
 
         targetCube = newTarget;
-        // Calculate old target new Rect
         Rect oldTargetNewRect = Relativity.CRectFromPRect(renderPosition, prevRSclToNew, prevRPosToNew);
-        // Calculate camera relative values from the old target
         float cameraRelativeOrthoSize = mainCamera.orthographicSize / renderPosition.height;
         Vector2 cameraRPosToOldTarget = Relativity.CRPosFromCRealPos(renderPosition, transform.position);
 

@@ -25,6 +25,8 @@ public class EnterableCube : Cube
     private List<Cube> emptyCubes = new(); // Seperate empty cubes from other cubes, empty cubes are only be rendered but ignore checking for interactions by other cubes
     private Cube[,] childCubes;
 
+    private bool useDebug = true;
+
     public int Tiling { get => tiling; }
     public ChildCubeInitDetail[] ChildCubesInitDetails { get => childCubesInitDetails; }
     public ChildCubeInitDetail GetChildCubeInitDetails(int row, int col)
@@ -235,7 +237,7 @@ public class EnterableCube : Cube
         // Drawing moving cubes on top of other cubes to avoid being covered
         foreach (var movingCube in movingCubes)
         {
-            movingCube.Draw(Relativity.CRectFromPRect(position, movingCube.RelativeScale, movingCube.RelativePosition), depth - 0.1f);
+            movingCube.Draw(Relativity.CRectFromPRect(position, movingCube.RelativeScale, movingCube.RelativePosition), depth);
         }
     }
 
@@ -288,15 +290,18 @@ public class EnterableCube : Cube
             if (CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) CubesGrid[requestedCubePosition.x, requestedCubePosition.y] = null;
         }
 
-        if (external) Debug.Log($"{requestedCube.name} requests to enter {gameObject.name} from {direction} to {requestedRow}, {requestedColumn}");
-        else Debug.Log($"{requestedCube.name} requests to move within {gameObject.name} with {direction}");
+        if (useDebug)
+        {
+            if (external) Debug.Log($"{requestedCube.name} requests to enter {gameObject.name} from {direction} to {requestedRow}, {requestedColumn}");
+            else Debug.Log($"{requestedCube.name} requests to move within {gameObject.name} with {direction}");
+        }
 
         float targetTime = (specialMove) ? requestedCubeMovement.SpecialMoveTime : requestedCubeMovement.NormalMoveTime;
 
         // if the requested position is out of range -> try to move the requested cube outside
         if (!CheckValidGridPosition(requestedRow, requestedColumn))
         {
-            Debug.Log($"{requestedCube.name} try to move out of {gameObject.name}");
+            if (useDebug) Debug.Log($"{requestedCube.name} try to move out of {gameObject.name}");
             targetTime = TryPushRequestedCubeOutside(cRPos, cRScl, requestedCube, direction, external);
             if (targetTime <= 0) 
                 if (!external && CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) CubesGrid[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
@@ -340,10 +345,10 @@ public class EnterableCube : Cube
         // If target position is empty (either originally or after moving the blockage cube) -> Move to that position
         if (childCubes[requestedRow, requestedColumn] == null)
         {
-            Debug.Log($"{requestedCube.name} successfully move to an empty position {requestedRow}, {requestedColumn} of {gameObject.name}!");
+            if (useDebug) Debug.Log($"{requestedCube.name} successfully move to an empty position {requestedRow}, {requestedColumn} of {gameObject.name}!");
             Vector2 childCubeTargetRPos = Relativity.RPosFromGridTile(tiling, tiling, requestedRow, requestedColumn);
             Vector2 childCubeTargetRScl = new Vector2(1.0f / tiling, 1.0f / tiling);
-            Debug.Log($"{requestedCube.name} new relative vallues: {childCubeTargetRPos}, {childCubeTargetRScl}, targetTime: {targetTime}");
+            if (useDebug) Debug.Log($"{requestedCube.name} new relative vallues: {childCubeTargetRPos}, {childCubeTargetRScl}, targetTime: {targetTime}");
             childCubes[requestedRow, requestedColumn] = requestedCube;
             return requestedCubeMovement.StartMoving(cRPos, cRScl, childCubeTargetRPos, childCubeTargetRScl, targetTime);
         }
@@ -351,7 +356,7 @@ public class EnterableCube : Cube
         // If there is another cube that is trying to move into this position first
         if (childCubes[requestedRow, requestedColumn].GetComponent<CubeMovement>() != null && childCubes[requestedRow, requestedColumn].GetComponent<CubeMovement>().IsMoving)
         {
-            Debug.Log($"{requestedCube.name} fail to move because another cube is entering {requestedRow}, {requestedColumn} of {gameObject.name}!");
+            if (useDebug) Debug.Log($"{requestedCube.name} fail to move because another cube is entering {requestedRow}, {requestedColumn} of {gameObject.name}!");
             if (!external && CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) CubesGrid[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
             return 0;
         }
@@ -368,14 +373,14 @@ public class EnterableCube : Cube
     {
         if (Parent == null)
         {
-            Debug.Log($"{requestedCube.name} cant move out of {gameObject.name} because there is no parent cube!");
+            if (useDebug) Debug.Log($"{requestedCube.name} cant move out of {gameObject.name} because there is no parent cube!");
             return 0;
         }
         if (external && Parent == this)
         {
             // Inifite loop -> teleport to the void instead
             // This is just a placeholder code for testing
-            Debug.Log($"{requestedCube.name} cant move out of {gameObject.name} because of infinite loop!");
+            if (useDebug) Debug.Log($"{requestedCube.name} cant move out of {gameObject.name} because of infinite loop!");
             return 0;
         }
 
@@ -403,20 +408,20 @@ public class EnterableCube : Cube
         parent.UnModifyChildCube(requestedCube);
         requestedCube.Parent = this;
 
-        Debug.Log($"{requestedCube.name} cant move out of {gameObject.name} because its parent rejected!");
+        if (useDebug) Debug.Log($"{requestedCube.name} cant move out of {gameObject.name} because its parent rejected!");
 
         return 0;
     }
 
     private float TryPushBlockageCubeAway(Cube blockageCube, int row, int column, PlayerInputsManager.MovementInputs direction, bool specialMove)
     {
-        Debug.Log($"Try to push {blockageCube.name} away");
+        if (useDebug) Debug.Log($"Try to push {blockageCube.name} away");
         var blockageCubeMovement = blockageCube.GetComponent<CubeMovement>();
         if (blockageCubeMovement != null && blockageCubeMovement.Movable)
         {
             if (blockageCubeMovement.IsMoving)
             {
-                Debug.Log($"Try to push {blockageCubeMovement.gameObject.name} but it's moving!");
+                if (useDebug) Debug.Log($"Try to push {blockageCubeMovement.gameObject.name} but it's moving!");
                 return -1; //  Immediately stop, not continue to try other options
             }
             Vector2Int targetPositionToPushTo = new Vector2Int(row, column) + PlayerInputsManager.ConvertMovementInputToGridDirection(direction);
@@ -443,13 +448,13 @@ public class EnterableCube : Cube
         blockageCube.UnModifyChildCube(requestedCube);
         requestedCube.Parent = this;
 
-        Debug.Log($"{requestedCube.name} fail to enter {blockageCube.gameObject.name}!");
+        if (useDebug) Debug.Log($"{requestedCube.name} fail to enter {blockageCube.gameObject.name}!");
         return 0;
     }
 
     private float TryLetBlockageCubeEnterRequestedCube(Cube blockageCube, EnterableCube requestedCube, Vector2 requestedCubeRPos, Vector2 requestedCubeRScl, PlayerInputsManager.MovementInputs direction)
     {
-        Debug.Log($"Try to let {blockageCube.name} enter {requestedCube.name}");
+        if (useDebug) Debug.Log($"Try to let {blockageCube.name} enter {requestedCube.name}");
 
         var blockageCubeMovement = blockageCube.GetComponent<CubeMovement>();
         if (blockageCubeMovement != null && blockageCubeMovement.Movable)
@@ -457,7 +462,7 @@ public class EnterableCube : Cube
             Vector2 blockageCubeRPosToRequestedCube = Relativity.SRPosFromSameParent(requestedCubeRPos, requestedCubeRScl, blockageCube.RelativePosition);
             Vector2 blockageCubeRSclToRequestedCube = Relativity.SRSclFromSameParent(requestedCubeRScl, blockageCube.RelativeScale);
 
-            Debug.Log(blockageCubeRPosToRequestedCube + " " + blockageCubeRSclToRequestedCube);
+            if (useDebug) Debug.Log(blockageCubeRPosToRequestedCube + " " + blockageCubeRSclToRequestedCube);
 
             Vector2Int targetPositionToPushTo = requestedCube.GetEnterPosition(PlayerInputsManager.ReverseMovementInput(direction), blockageCubeRPosToRequestedCube);
 
@@ -476,18 +481,33 @@ public class EnterableCube : Cube
 
     private Vector2Int GetEnterPosition(PlayerInputsManager.MovementInputs direction, Vector2 rPos)
     {
+        int column = 0, row = 0;
         switch (direction)
         {
             case PlayerInputsManager.MovementInputs.Up:
-                return new Vector2Int(tiling - 1, Mathf.RoundToInt((tiling - 1) * (rPos.x + 1) * 0.5f));
+                column = Mathf.RoundToInt((tiling - 1) * (rPos.x + 1) * 0.5f);
+                row = tiling - 1;
+                break;
             case PlayerInputsManager.MovementInputs.Down:
-                return new Vector2Int(0, Mathf.RoundToInt((tiling - 1) * (rPos.x + 1) * 0.5f));
+                column = Mathf.RoundToInt((tiling - 1) * (rPos.x + 1) * 0.5f);
+                row = 0;
+                break;
             case PlayerInputsManager.MovementInputs.Right:
-                return new Vector2Int(Mathf.RoundToInt((tiling - 1) * (1 - rPos.y) * 0.5f), 0);
+                row = Mathf.RoundToInt((tiling - 1) * (1 - rPos.y) * 0.5f);
+                column = 0;
+                break;
             case PlayerInputsManager.MovementInputs.Left:
-                return new Vector2Int(Mathf.RoundToInt((tiling - 1) * (1 - rPos.y) * 0.5f), tiling - 1);
+                row = Mathf.RoundToInt((tiling - 1) * (1 - rPos.y) * 0.5f);
+                column = tiling - 1;
+                break;
         }
-        return Vector2Int.zero;
+        //if (column < 0) column = 0;
+        //if (column > tiling - 1) column = tiling - 1;
+        if (column < 0 || column > tiling - 1) column = Mathf.RoundToInt((tiling - 1) * 0.5f);
+        //if (row < 0) row = 0;
+        //if (row > tiling - 1) row = tiling - 1;
+        if (row < 0 || row > tiling - 1) row = Mathf.RoundToInt((tiling - 1) * 0.5f);
+        return new Vector2Int(row, column);
     }
 
     public bool CheckValidGridPosition(int row, int column)

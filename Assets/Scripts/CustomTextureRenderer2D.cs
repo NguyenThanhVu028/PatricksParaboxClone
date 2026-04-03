@@ -112,6 +112,8 @@ public class CustomTextureRenderer2D
 
     public static Vector2 ConvertScaleToPixel(Vector2 scale)
     {
+        if (Camera.main == null) return Vector2.zero;
+
         int pixelPerUnit = Mathf.RoundToInt((float)Camera.main.pixelHeight / (Camera.main.orthographicSize * 2.0f));
         return new Vector2(Mathf.Abs(scale.x) * pixelPerUnit, Mathf.Abs(scale.y) * pixelPerUnit);
     }

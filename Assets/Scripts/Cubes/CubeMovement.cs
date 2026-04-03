@@ -21,6 +21,8 @@ public class CubeMovement : MonoBehaviour
     protected UnityEvent onMoveStart = new();
     protected UnityEvent onMoveEnd = new();
 
+    private bool debugMovement = false;
+
     public bool Movable { get { return selfCube != null && selfCube.CubeType != Cube.CubeTypes.Static && selfCube.CubeType != Cube.CubeTypes.Empty; } }
     public bool IsMoving { get => movingCoroutine != null; }
     public bool IsCoolingDown { get => (coolDownTimer > 0); }
@@ -66,17 +68,20 @@ public class CubeMovement : MonoBehaviour
         if (IsMoving || (selfCube.IsPlayer && IsCoolingDown)) return 0;
 
         // Record history event
-        Debug.Log($"Cube {selfCube.name} moves");
+        if (debugMovement) Debug.Log($"Cube {selfCube.name} moves");
         if (HistoryManager.Instance != null)
         {
             HistoryManager.Instance.RecordNewEvent(selfCube, selfCube.PreviousParent, selfCube.RelativePosition, selfCube.RelativeScale);
             if (selfCube.IsPlayer) HistoryManager.Instance.ArchiveHistoryRecord(); // Player will archive the record
         }
 
-        // If this cube is a player -> update camera
-        UpdateCamera(selfCube, startRPos, startRScl, targetTime);
+        Vector2 cubeOldRPos = selfCube.RelativePosition;
+        Vector2 cubeOldRScl = selfCube.RelativeScale;
 
         movingCoroutine = StartCoroutine(MovingCoroutine(startRPos, startRScl, endRPos, endRScl, targetTime));
+
+        // If this cube is a player -> update camera
+        UpdateCamera(selfCube, cubeOldRPos, cubeOldRScl, startRPos, startRScl, targetTime);
 
         return targetTime;
     }
@@ -90,14 +95,14 @@ public class CubeMovement : MonoBehaviour
         onMoveEnd.Invoke();
     }
 
-    private void UpdateCamera(Cube player, Vector2 playerStartRPos, Vector2 playerStartRScl, float targetTime)
+    private void UpdateCamera(Cube player, Vector2 playerOldRPos, Vector2 playerOldRScl, Vector2 playerStartRPos, Vector2 playerStartRScl, float targetTime)
     {
-        Debug.Log("Update cam");
+        if (debugMovement) Debug.Log("Update cam");
         if (!player.IsPlayer) return;
         if (MainCamera.Instance != null)
         {
-            Vector2 oldParentRPos = Relativity.PRPosToAChild(player.RelativePosition, player.RelativeScale);
-            Vector2 oldParentRScl = Relativity.PRSclToAChild(player.RelativeScale);
+            Vector2 oldParentRPos = Relativity.PRPosToAChild(playerOldRPos, playerOldRScl);
+            Vector2 oldParentRScl = Relativity.PRSclToAChild(playerOldRScl);
 
             Vector2 newParentRPos = Relativity.PRPosToAChild(playerStartRPos, playerStartRScl);
             Vector2 newParentRScl = Relativity.PRSclToAChild(playerStartRScl);
