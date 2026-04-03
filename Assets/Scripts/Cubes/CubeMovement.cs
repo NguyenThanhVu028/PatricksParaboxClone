@@ -33,7 +33,6 @@ public class CubeMovement : MonoBehaviour
     private void OnEnable()
     {
         selfCube = GetComponent<Cube>();
-        //selfCube.OnInit.AddListener(OnSelfCubeInit);
         playerMovementInputsManager = PlayerInputsManager.Instance;
     }
     private void Update()

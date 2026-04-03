@@ -2,11 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 [RequireComponent(typeof(Camera))]
 public class MainCamera : MonoBehaviour
 {
     public enum MainCameraRenderMode { SingleCube, MultipleCubes };
+    public enum CameraMovements { ZoomIn, ZoomOut }
 
     private static MainCamera instance;
 
@@ -37,10 +39,12 @@ public class MainCamera : MonoBehaviour
         if (instance != null && instance != this) Destroy(instance);
         instance = this;
     }
+
     private void Update()
     {
         Render();
     }
+
     private void Render()
     {
         switch (renderMode)
@@ -107,8 +111,6 @@ public class MainCamera : MonoBehaviour
 
         //Debug.Log("Ideal ortho size: " + GetIdealOrthographicSize(renderPosition, targetCube));
     }
-
-    public enum CameraMovements { ZoomIn, ZoomOut }
     public void ChangeTarget(Vector2 prevRPosToNew, Vector2 prevRSclToNew, EnterableCube newTarget, float time = 0.5f)
     {
         // rPos and rScl are relative values of the old target to the new target
@@ -125,6 +127,12 @@ public class MainCamera : MonoBehaviour
         if (prevRSclToNew.x <= 1 || prevRSclToNew.y <= 1) zoomCoroutine = StartCoroutine(ZoomOutCoroutine(prevRPosToNew, prevRSclToNew, newTarget, time));
         // Zooming in
         else zoomCoroutine = StartCoroutine(ZoomInCoroutine(prevRPosToNew, prevRSclToNew, newTarget, time));
+    }
+
+    public void StopZooming()
+    {
+        if (zoomCoroutine != null) StopCoroutine(zoomCoroutine);
+        zoomCoroutine = null;
     }
 
     public float GetIdealOrthographicSize(Rect renderPosition, EnterableCube target)
@@ -223,6 +231,7 @@ public class MainCamera : MonoBehaviour
         transform.position = oldPos;
 
         Render();
+
         //bool skippedFirstFrame = false;
 
         while (elapsedTime < time)
@@ -245,12 +254,6 @@ public class MainCamera : MonoBehaviour
         }
         FocusOnTargetCube();
         zoomCoroutine= null;
-    }
-
-    public void StopZooming()
-    {
-        if (zoomCoroutine != null) StopCoroutine(zoomCoroutine);
-        zoomCoroutine = null;
     }
 
     private void OnDrawGizmos()

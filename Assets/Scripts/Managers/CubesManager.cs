@@ -84,7 +84,6 @@ public class CubesManager : MonoBehaviour
             historyEvent.TargetCube.RelativePosition = historyEvent.PreviousRPos;
             historyEvent.TargetCube.RelativeScale = historyEvent.PreviousRScl;
             ResetCamera(historyEvent.TargetCube);
-
         }
     }
 

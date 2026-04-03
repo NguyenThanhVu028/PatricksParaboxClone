@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45a9a51092f1379479af066130c28062, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHistoryRecordCount: 100
+  maxHistoryRecordCount: 250
   historyRecords: []
   currentHistoryRecord:
     events: []
