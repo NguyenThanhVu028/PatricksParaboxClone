@@ -20,17 +20,36 @@ public static class Relativity
      * - RealPos: Real position
      * - RScl: Relative scale
      * - RealScl: Real scale
-     * - CRect: Child rectangle
-     * - PRect: Parent rectangle
+     * - C: Child
+     * - P: Parent
+     * - S: Sibling
      */
 
+    // Get relative position based on the grid position of the tile in the parent cube
     public static Vector2 RPosFromGridTile(int gridWidth, int gridHeight, int row, int col)
     {
         Vector2 tileSize = new Vector2(2.0f / gridWidth, 2.0f / gridHeight);
         Vector2 topLeftRelativePos = new Vector2(-1.0f + tileSize.x * 0.5f, 1.0f - tileSize.y * 0.5f);
         return new Vector2(topLeftRelativePos.x + col * tileSize.x, topLeftRelativePos.y - row * tileSize.y);
     }
-
+    // Get the rectangle of the child cube based on the grid position of the tile in the parent cube
+    public static Rect CRectFromGridTile(int gridWidth, int gridHeight, int row, int col)
+    {
+        Rect resRect = new();
+        resRect.position = RPosFromGridTile(gridWidth, gridHeight, row, col);
+        resRect.size = new Vector2(1.0f / gridWidth, 1.0f / gridHeight);
+        return resRect;
+    }
+    // Get grid position of the tile in the parent cube based on the relative position of the child cube
+    public static Vector2Int GridPosFromRPos(int gridWidth, int gridHeight, Vector2 rPos)
+    {
+        Vector2 center = new Vector2(gridHeight * 0.5f - 0.5f, gridWidth * 0.5f - 0.5f);
+        Vector2Int resPos = new();
+        resPos.x = Mathf.RoundToInt(center.x - rPos.y * gridHeight * 0.5f);
+        resPos.y = Mathf.RoundToInt(center.y + rPos.x * gridWidth * 0.5f);
+        return resPos;
+    }
+    // Get child's rectangle based on parent's rectangle and child's relative values
     public static Rect CRectFromPRect(Rect pRect, Vector2 rScl, Vector2 rPos)
     {
         Rect cRect = new Rect();
@@ -39,7 +58,7 @@ public static class Relativity
         cRect.y = pRect.y + pRect.height * 0.5f * rPos.y;
         return cRect;
     }
-
+    // Get parent's rectangle based on child's rectangle and child's relative values
     public static Rect PRectFromCRect(Rect cRect, Vector2 rScl, Vector2 rPos)
     {
         Rect pRect = new Rect();
@@ -47,5 +66,51 @@ public static class Relativity
         pRect.x = cRect.x - pRect.width * 0.5f * rPos.x;
         pRect.y = cRect.y - pRect.height * 0.5f * rPos.y;
         return pRect;
+    }
+    // Get relative position to a parent of the child cube based on the real position of the child cube
+    public static Vector2 CRPosFromCRealPos(Rect pRect, Vector2 cRealPos)
+    {
+        Vector2 cRPos = new();
+        cRPos.x = (cRealPos.x - pRect.x) / ((float)pRect.width * 0.5f);
+        cRPos.y = (cRealPos.y - pRect.y) / ((float)pRect.height * 0.5f);
+        return cRPos;
+    }
+    // Get real position of the child cube based on the relative position to its parent
+    public static Vector2 CRealPosFromCRPos(Rect pRect, Vector2 cRPos)
+    {
+        Vector2 cRealPos = new();
+        cRealPos.x = pRect.x + cRPos.x * pRect.width;
+        cRealPos.y = pRect.y + cRPos.y * pRect.height;
+        return cRealPos;
+    }
+    // Get relative position to a parent to its child cube
+    public static Vector2 PRPosToAChild(Vector2 cRPos, Vector2 cRScl)
+    {
+        Vector2 pRPos = new();
+        pRPos.x = -cRPos.x / cRScl.x;
+        pRPos.y = -cRPos.y / cRScl.y;
+        return pRPos;
+    }
+    // Get relative position of sub child to main child based on their relative positions to the same parent
+    public static Vector2 PRSclToAChild(Vector2 cRScl)
+    {
+        Vector2 pRScl = new();
+        pRScl.x = 1.0f / cRScl.x;
+        pRScl.y = 1.0f / cRScl.y;
+        return pRScl;
+    }
+    public static Vector2 SRPosFromSameParent(Vector2 mainCRPos, Vector2 mainRScl, Vector2 subRPos)
+    {
+        Vector2 sRPos = subRPos - mainCRPos;
+        sRPos.x /= mainRScl.x; sRPos.y /= mainRScl.y;
+        return sRPos;
+    }
+    // Get relative scale of sub child to main child based on their relative scales to the same parent
+    public static Vector2 SRSclFromSameParent(Vector2 mainRScl, Vector2 subRScl)
+    {
+        Vector2 sRScl = new();
+        sRScl.x = subRScl.x / mainRScl.x;
+        sRScl.y = subRScl.y / mainRScl.y;
+        return sRScl;
     }
 }
