@@ -67,12 +67,35 @@ public class CubeMovement : MonoBehaviour
     {
         if (IsMoving || (selfCube.IsPlayer && IsCoolingDown)) return 0;
 
-        // Record history event
+        // Modify the current record and store new record
         if (debugMovement) Debug.Log($"Cube {selfCube.name} moves");
-        if (HistoryManager.Instance != null)
+        HistoryManager historyManager = HistoryManager.Instance;
+        if (historyManager != null)
         {
-            HistoryManager.Instance.RecordNewEvent(selfCube, selfCube.PreviousParent, selfCube.RelativePosition, selfCube.RelativeScale);
-            if (selfCube.IsPlayer) HistoryManager.Instance.ArchiveHistoryRecord(); // Player will archive the record
+
+            // Modify current record to save its previous details
+            var currentRecord = historyManager.GetCurrentRecord();
+            if (currentRecord != null)
+            {
+                bool foundPreviousEvent = false;
+                foreach(var historyEvent in currentRecord.Events)
+                {
+                    if (historyEvent == null) continue;
+                    if (historyEvent.TargetCube == selfCube)
+                    {
+                        historyEvent.PreviousParent = selfCube.PreviousParent;
+                        historyEvent.PreviousRPos = selfCube.RelativePosition;
+                        historyEvent.PreviousRScl = selfCube.RelativeScale;
+                        foundPreviousEvent = true;
+                        break;
+                    }
+                }
+                if (!foundPreviousEvent) currentRecord.Events.Add(new HistoryEvent(selfCube, selfCube.PreviousParent, selfCube.RelativePosition, selfCube.RelativeScale));
+            }
+
+            // Add new record for its new details
+            historyManager.RecordNewEvent(selfCube, selfCube.Parent, endRPos, endRScl);
+            if (selfCube.IsPlayer) historyManager.ArchiveHistoryRecord(); // Player will archive the record
         }
 
         Vector2 cubeOldRPos = selfCube.RelativePosition;

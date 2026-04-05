@@ -6,7 +6,6 @@ using UnityEngine;
 public class CubesManagerEditor : Editor
 {
     private CubesManager cubesManager;
-    private float detailsOnScreenSpacing = 1f;
     private void OnEnable()
     {
         cubesManager = (CubesManager)target;

@@ -14,10 +14,9 @@ public class MainCamera : MonoBehaviour
 
     [Header("Render settings")]
     [SerializeField] MainCameraRenderMode renderMode = MainCameraRenderMode.SingleCube;
-    [SerializeField] bool flipHorizontally = false;
 
     [Header("Single Cube mode")]
-    [SerializeField] EnterableCube targetCube;
+    [SerializeField] ContainerCube targetCube;
     [SerializeField] Rect renderPosition;
     [SerializeField] bool renderParents = true; // Used for SingleCube mode
     [SerializeField] int numberOfParentsToTraverse = 3;
@@ -74,7 +73,7 @@ public class MainCamera : MonoBehaviour
         if (renderParents)
         {
             // Traverse through the target cube's parents
-            EnterableCube newTargetCube = targetCube;
+            ContainerCube newTargetCube = targetCube;
             Rect newRenderPosition = renderPosition;
             int parentCount = 0;
             while(parentCount < numberOfParentsToTraverse)
@@ -93,7 +92,7 @@ public class MainCamera : MonoBehaviour
         else targetCube.Draw(renderPosition);
     }
 
-    public void SetNewTargetCube(EnterableCube newTarget)
+    public void SetNewTargetCube(ContainerCube newTarget)
     {
         if (newTarget == null || newTarget == this) return;
         targetCube = newTarget;
@@ -111,7 +110,7 @@ public class MainCamera : MonoBehaviour
 
         //Debug.Log("Ideal ortho size: " + GetIdealOrthographicSize(renderPosition, targetCube));
     }
-    public void ChangeTarget(Vector2 prevRPosToNew, Vector2 prevRSclToNew, EnterableCube newTarget, float time = 0.5f)
+    public void ChangeTarget(Vector2 prevRPosToNew, Vector2 prevRSclToNew, ContainerCube newTarget, float time = 0.5f)
     {
         // rPos and rScl are relative values of the old target to the new target
 
@@ -135,7 +134,7 @@ public class MainCamera : MonoBehaviour
         zoomCoroutine = null;
     }
 
-    public float GetIdealOrthographicSize(Rect renderPosition, EnterableCube target)
+    public float GetIdealOrthographicSize(Rect renderPosition, ContainerCube target)
     {
         if (renderMode != MainCameraRenderMode.SingleCube) return mainCamera.orthographicSize;
         if (targetCube == null) return mainCamera.orthographicSize;
@@ -153,7 +152,7 @@ public class MainCamera : MonoBehaviour
         }
     }
 
-    private IEnumerator ZoomInCoroutine(Vector2 prevRPosToNew, Vector2 prevRSclToNew, EnterableCube newTarget, float time)
+    private IEnumerator ZoomInCoroutine(Vector2 prevRPosToNew, Vector2 prevRSclToNew, ContainerCube newTarget, float time)
     {
         /* Zoom in logic:
          * - Target cube is still the old target at first
@@ -203,7 +202,7 @@ public class MainCamera : MonoBehaviour
         FocusOnTargetCube();
         zoomCoroutine = null;
     }
-    private IEnumerator ZoomOutCoroutine(Vector2 prevRPosToNew, Vector2 prevRSclToNew, EnterableCube newTarget, float time)
+    private IEnumerator ZoomOutCoroutine(Vector2 prevRPosToNew, Vector2 prevRSclToNew, ContainerCube newTarget, float time)
     {
         /* Zoom out logic:
          * - Target cube is set to the new target

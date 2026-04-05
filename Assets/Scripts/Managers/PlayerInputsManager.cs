@@ -12,9 +12,13 @@ public class PlayerInputsManager : MonoBehaviour, MainInputSystem.INormalActions
 
     [SerializeField] bool allowTakingMovementInput = true;
     [SerializeField] bool allowUsingMovementInput = true;
+    [SerializeField] UnityEvent onResetEvent = new();
     [SerializeField] UnityEvent onUndoEvent = new();
+    [SerializeField] UnityEvent onRedoEvent = new();
 
+    public UnityEvent OnResetEvent { get => onResetEvent; }
     public UnityEvent OnUndoEvent { get => onUndoEvent; }
+    public UnityEvent OnRedoEvent { get => onRedoEvent; }
 
     private List<MovementInputs> movementInputsList = new(); // Store all the receivec inputs
 
@@ -131,12 +135,18 @@ public class PlayerInputsManager : MonoBehaviour, MainInputSystem.INormalActions
 
     public void OnReset(InputAction.CallbackContext context)
     {
-        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
+        //SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
+        if (context.started) onResetEvent.Invoke();
     }
 
     public void OnUndo(InputAction.CallbackContext context)
     {
         if (context.started) onUndoEvent.Invoke();
+    }
+
+    public void OnRedo(InputAction.CallbackContext context)
+    {
+        if (context.started) onRedoEvent.Invoke();
     }
 
     //Helper functions

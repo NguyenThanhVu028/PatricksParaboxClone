@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CubesManager : MonoBehaviour
 {
@@ -24,10 +25,17 @@ public class CubesManager : MonoBehaviour
 
     private void Start()
     {
-        if (PlayerInputsManager.Instance != null)
+        PlayerInputsManager playerInputsManager = PlayerInputsManager.Instance;
+        if (playerInputsManager != null)
         {
-            PlayerInputsManager.Instance.OnUndoEvent.AddListener(OnUndo);
+            playerInputsManager.OnResetEvent.AddListener(OnReset);
+            playerInputsManager.OnUndoEvent.AddListener(OnUndo);
+            playerInputsManager.OnRedoEvent.AddListener(OnRedo);
         }
+
+        // Save the initial empty history record
+        HistoryManager historyManager = HistoryManager.Instance;
+        historyManager.ArchiveHistoryRecord();
     }
 
     public Cube GetCube(int id)
@@ -38,7 +46,7 @@ public class CubesManager : MonoBehaviour
             if (cube.ID == id)
             {
                 if (cube.Cube == null) return null;
-                if (cube.Cube.NeedInstantiating)
+                if (cube.Cube.NeedInstantiating) 
                     return Instantiate(cube.Cube);
                 else return cube.Cube;
             }
@@ -46,14 +54,52 @@ public class CubesManager : MonoBehaviour
         return null;
     }
 
+    public void OnReset()
+    {
+        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
+
+        //HistoryManager historyManager = HistoryManager.Instance;
+        //if (historyManager == null) return;
+        //var previousRecords = historyManager.HistoryRecords;
+
+        //for(int i = previousRecords.Count - 1; i >= 0; i--)
+        //{
+        //    TranslateHistoryRecord(previousRecords[i]);
+        //}
+
+        //HistoryRecord historyRecord = historyManager.GetRecordAt(0);
+        //if (historyRecord != null)
+        //{
+        //    historyManager.CurrentHistoryRecord = historyRecord;
+        //    historyManager.ArchiveHistoryRecord();
+        //}
+
+        //TranslateHistoryRecord(historyRecord);
+    }
+
     public void OnUndo()
     {
-        if (HistoryManager.Instance == null) return;
-        HistoryRecord lastestRecord = HistoryManager.Instance.GetLatestRecord();
-        if (lastestRecord == null) return;
-        Debug.Log("Begin undo");
+        HistoryManager historyManager = HistoryManager.Instance;
+        if (historyManager == null) return;
+        HistoryRecord historyRecord = historyManager.ReturnToPreviousRecord();
 
-        foreach(var historyEvent in lastestRecord.Events)
+        TranslateHistoryRecord(historyRecord);
+    }
+
+    public void OnRedo()
+    {
+        HistoryManager historyManager = HistoryManager.Instance;
+        if (historyManager == null) return;
+        HistoryRecord historyRecord = historyManager.SkipToNextRecord();
+
+        TranslateHistoryRecord(historyRecord);
+    }
+
+    private void TranslateHistoryRecord(HistoryRecord historyRecord)
+    {
+        if (historyRecord == null) return;
+
+        foreach (var historyEvent in historyRecord.Events)
         {
             if (historyEvent == null || historyEvent.TargetCube == null) continue;
 

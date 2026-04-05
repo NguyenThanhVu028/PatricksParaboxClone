@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(EnterableCube))]
+[CustomEditor(typeof(ContainerCube))]
 public class EnterableCubeEditor : Editor
 {
     #region SerializedProperties
@@ -9,10 +9,10 @@ public class EnterableCubeEditor : Editor
     #endregion
 
 
-    EnterableCube targetEnterableCube;
+    ContainerCube targetEnterableCube;
     private void OnEnable()
     {
-        targetEnterableCube = (EnterableCube)target;
+        targetEnterableCube = (ContainerCube)target;
         tiling = serializedObject.FindProperty("tiling");
     }
     public override void OnInspectorGUI()

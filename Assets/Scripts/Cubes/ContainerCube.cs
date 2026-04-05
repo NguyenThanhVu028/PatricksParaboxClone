@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class EnterableCube : Cube
+public class ContainerCube : Cube
 {
-    [Header("Enterable cube properties")]
+    [Header("Container cube properties")]
     [HideInInspector]
     [Min(1)]
     [SerializeField] int tiling = 9;
@@ -56,7 +56,7 @@ public class EnterableCube : Cube
     {
         needInstantiating = false;
     }
-    private void Start()
+    public void Start()
     {
         InitChildCubes();
         CalculateStaticTextures();
@@ -237,7 +237,7 @@ public class EnterableCube : Cube
         // Drawing moving cubes on top of other cubes to avoid being covered
         foreach (var movingCube in movingCubes)
         {
-            movingCube.Draw(Relativity.CRectFromPRect(position, movingCube.RelativeScale, movingCube.RelativePosition), depth);
+            movingCube.Draw(Relativity.CRectFromPRect(position, movingCube.RelativeScale, movingCube.RelativePosition), depth - 0.1f);
         }
     }
 
@@ -321,14 +321,14 @@ public class EnterableCube : Cube
         }
 
         // If that blockage cube has not been moved -> Let the requested cube try to enter it
-        if (childCubes[requestedRow, requestedColumn] != null && childCubes[requestedRow, requestedColumn] is EnterableCube enterableCube)
+        if (childCubes[requestedRow, requestedColumn] != null && childCubes[requestedRow, requestedColumn] is ContainerCube enterableCube)
         {
             var tempTargetTime = TryLetRequestedCubeEnterBlockageCube(cRPos, cRScl, enterableCube, requestedCube, direction);
             if (tempTargetTime > 0) return tempTargetTime;
         }
 
         // If the requested cube cannot move the blockage cube nor enter it -> Try to let the blockage cube enter the requested cube instead
-        if (childCubes[requestedRow, requestedColumn] != null && requestedCube is EnterableCube enterable)
+        if (childCubes[requestedRow, requestedColumn] != null && requestedCube is ContainerCube enterable)
         {
             Cube blockageCube = childCubes[requestedRow, requestedColumn];
             childCubes[requestedRow, requestedColumn] = null;
@@ -432,7 +432,7 @@ public class EnterableCube : Cube
         return 0;
     }
 
-    private float TryLetRequestedCubeEnterBlockageCube(Vector2 requestedCubeRPos, Vector2 requestedCubeRScl, EnterableCube blockageCube, Cube requestedCube, PlayerInputsManager.MovementInputs direction)
+    private float TryLetRequestedCubeEnterBlockageCube(Vector2 requestedCubeRPos, Vector2 requestedCubeRScl, ContainerCube blockageCube, Cube requestedCube, PlayerInputsManager.MovementInputs direction)
     {
         Vector2 childCubeRPosToBlockageCube = Relativity.SRPosFromSameParent(blockageCube.RelativePosition, blockageCube.RelativeScale, requestedCubeRPos);
         Vector2 childCubeRSclToBlockageCube = Relativity.SRSclFromSameParent(blockageCube.RelativeScale, requestedCubeRScl);
@@ -452,7 +452,7 @@ public class EnterableCube : Cube
         return 0;
     }
 
-    private float TryLetBlockageCubeEnterRequestedCube(Cube blockageCube, EnterableCube requestedCube, Vector2 requestedCubeRPos, Vector2 requestedCubeRScl, PlayerInputsManager.MovementInputs direction)
+    private float TryLetBlockageCubeEnterRequestedCube(Cube blockageCube, ContainerCube requestedCube, Vector2 requestedCubeRPos, Vector2 requestedCubeRScl, PlayerInputsManager.MovementInputs direction)
     {
         if (useDebug) Debug.Log($"Try to let {blockageCube.name} enter {requestedCube.name}");
 
