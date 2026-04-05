@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CubeMaterial
-  m_Shader: {fileID: 4800000, guid: ea21a2ea7752b9345a15b61b4ac7fb2d, type: 3}
+  m_Name: OutlinedCubeMaterial
+  m_Shader: {fileID: 4800000, guid: a48d84a50c71b8d43b879681b48d0df9, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -83,7 +83,7 @@ Material:
     m_Floats:
     - PixelSnap: 0
     - _BorderDarkness: 0.95
-    - _BorderMaxPercentThickness: 0.05
+    - _BorderMaxPercentThickness: 0.03
     - _BorderThickness: 5
     - _BumpScale: 1
     - _ColorMask: 15

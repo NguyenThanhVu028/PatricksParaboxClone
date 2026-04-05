@@ -14,7 +14,6 @@ public class Cube : MonoBehaviour
     [SerializeField] protected bool isPlayer = false;
     //[HideInInspector]
     [SerializeField] protected bool canBePlayer = false;
-
     [SerializeField] protected CubeTypes cubeType;
     [SerializeField] protected ColorPalette colorPalette;
     [SerializeField] protected ColorPalette.ColorEnum cubeColor;

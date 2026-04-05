@@ -1,0 +1,93 @@
+Shader "Custom/CustomOutlinedShader"
+{
+    Properties
+    {
+        _MainTex ("Sprite Texture", 2D) = "white" {}
+        _Color ("Tint", Color) = (1,1,1,1)
+        //_Thickness ("Border Thickness", float) = 0.02
+        [Toggle] _IsHighlighted ("Is Highlightes", float) = 0
+        _BorderThickness ("Border Thickness", float) = 5
+        _BorderMaxPercentThickness ("Border Max Percent Thickness", float) = 0.02
+        _BorderDarkness ("Border Darkness", float) = 0.8
+    }
+
+    SubShader
+    {
+        Tags { "Queue"="Transparent" "RenderType"="Transparent" }
+        Cull Off 
+        ZWrite Off
+        Blend SrcAlpha OneMinusSrcAlpha
+
+        Pass
+        {
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            #pragma multi_compile_instancing // This is the magic line
+            #include "UnityCG.cginc"
+
+            struct appdata {
+                float4 vertex : POSITION;
+                float2 uv : TEXCOORD0;
+                UNITY_VERTEX_INPUT_INSTANCE_ID // Required for ID
+            };
+
+            struct v2f {
+                float4 pos : SV_POSITION;
+                float2 uv : TEXCOORD0;
+                UNITY_VERTEX_INPUT_INSTANCE_ID // Required to pass ID
+            };
+
+            sampler2D _MainTex;
+
+            // Define the property buffer
+            UNITY_INSTANCING_BUFFER_START(Props)
+                UNITY_DEFINE_INSTANCED_PROP(fixed4, _Color)
+            UNITY_INSTANCING_BUFFER_END(Props)
+
+            v2f vert (appdata v) {
+                v2f o;
+                UNITY_SETUP_INSTANCE_ID(v);
+                UNITY_TRANSFER_INSTANCE_ID(v, o);
+
+                // This line uses the Matrix4x4 you passed in C#
+                o.pos = UnityObjectToClipPos(v.vertex);
+                o.uv = v.uv;
+                return o;
+            }
+
+            float _BorderThickness;
+            float _BorderMaxPercentThickness;
+            fixed4 _BorderColor;
+            float _BorderDarkness;
+
+            fixed4 frag (v2f i) : SV_Target {
+                UNITY_SETUP_INSTANCE_ID(i);
+                fixed4 col = tex2D(_MainTex, i.uv) * UNITY_ACCESS_INSTANCED_PROP(Props, _Color);
+
+                // Calculate border thickness
+                float borderThickness = fwidth(i.uv) * _BorderThickness;
+                if (borderThickness > _BorderMaxPercentThickness) borderThickness = _BorderMaxPercentThickness;
+
+                // Calculate border and border darkness
+                float border = 0;
+                float borderDarkness = _BorderDarkness;
+                // The border is brighter if it's either the top or left edge -> Create a 3D illusion
+                border =    step(1.0 - borderThickness, i.uv.y) + 
+                            step(i.uv.x, borderThickness);
+                if (border > 0) borderDarkness = borderDarkness * 0.5f;
+                else border =   step(1.0 - borderThickness, i.uv.x) + 
+                                step(i.uv.y, borderThickness);
+
+                float mask = saturate(border); // Clamp the border value between 0 and 1
+                fixed4 borderColor = _Color;
+                borderColor.rgb = lerp(borderColor.rgb, float3(0, 0, 0), borderDarkness);
+                fixed4 finalColor = lerp(col, borderColor, mask);
+
+                //return col;
+                return finalColor;
+            }
+            ENDCG
+        }
+    }
+}

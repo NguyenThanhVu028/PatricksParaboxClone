@@ -35,7 +35,8 @@ public class CubesManager : MonoBehaviour
 
         // Save the initial empty history record
         HistoryManager historyManager = HistoryManager.Instance;
-        historyManager.ArchiveHistoryRecord();
+        if (historyManager != null)
+            historyManager.ArchiveHistoryRecord();
     }
 
     public Cube GetCube(int id)
