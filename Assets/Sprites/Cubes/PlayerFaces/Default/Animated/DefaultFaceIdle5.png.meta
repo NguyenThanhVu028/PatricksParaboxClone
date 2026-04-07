@@ -1,55 +1,13 @@
 fileFormatVersion: 2
-guid: 20dac7765cd6e9f46a76826b37be1421
+guid: d415c64f89b414d42bf3925e5e063772
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2521409195606705084
-    second: Tutorial_0
+      213: 279505333756187721
+    second: DefaultFaceIdle5_0
   - first:
-      213: 6875079111340007291
-    second: Tutorial_1
-  - first:
-      213: 8746059415684039367
-    second: Tutorial_2
-  - first:
-      213: 4165041436626036476
-    second: Tutorial_3
-  - first:
-      213: 3422399714171777717
-    second: Tutorial_4
-  - first:
-      213: 6718306707676705251
-    second: Tutorial_5
-  - first:
-      213: -2599143105346636691
-    second: Tutorial_6
-  - first:
-      213: -4191322583509088375
-    second: Tutorial_7
-  - first:
-      213: -3790966502919606100
-    second: Tutorial_8
-  - first:
-      213: -7537239731214296419
-    second: Tutorial_9
-  - first:
-      213: -854253366884684044
-    second: Tutorial_10
-  - first:
-      213: 3910068832165871416
-    second: Tutorial_11
-  - first:
-      213: 3635365891621732145
-    second: Tutorial_12
-  - first:
-      213: 4128806777136391499
-    second: Tutorial_13
-  - first:
-      213: -2214099604904780696
-    second: Tutorial_14
-  - first:
-      213: 5003259399734257001
-    second: Tutorial_15
+      213: -125980259420813975
+    second: DefaultFaceIdle5_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -158,45 +116,45 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Tutorial_0
+      name: DefaultFaceIdle5_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 38
-        height: 98
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 44c757212b7220dd0800000000000000
-      internalID: -2521409195606705084
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Tutorial_2
-      rect:
-        serializedVersion: 2
-        x: 42
-        y: 65
-        width: 21
-        height: 14
+        x: 4
+        y: 8
+        width: 19
+        height: 15
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 90199440392385c45935913b7b47d802
-      internalID: 8746059415684039367
+      spriteID: 9445d53ce9001e300800000000000000
+      internalID: 279505333756187721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DefaultFaceIdle5_1
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 15
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 965c28c1f9d604ef0800000000000000
+      internalID: -125980259420813975
       vertices: []
       indices: 
       edges: []
@@ -205,7 +163,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 293cd9489a4a1c24eb896a5c5fb7c1cd
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -215,23 +173,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Tutorial_0: -2521409195606705084
-      Tutorial_1: 6875079111340007291
-      Tutorial_10: -854253366884684044
-      Tutorial_11: 3910068832165871416
-      Tutorial_12: 3635365891621732145
-      Tutorial_13: 4128806777136391499
-      Tutorial_14: -2214099604904780696
-      Tutorial_15: 5003259399734257001
-      Tutorial_16: 252057365
-      Tutorial_2: 8746059415684039367
-      Tutorial_3: 4165041436626036476
-      Tutorial_4: 3422399714171777717
-      Tutorial_5: 6718306707676705251
-      Tutorial_6: -2599143105346636691
-      Tutorial_7: -4191322583509088375
-      Tutorial_8: -3790966502919606100
-      Tutorial_9: -7537239731214296419
+      DefaultFaceIdle5_0: 279505333756187721
+      DefaultFaceIdle5_1: -125980259420813975
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

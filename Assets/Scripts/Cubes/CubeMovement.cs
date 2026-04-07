@@ -21,7 +21,7 @@ public class CubeMovement : MonoBehaviour
     protected UnityEvent onMoveStart = new();
     protected UnityEvent onMoveEnd = new();
 
-    private bool debugMovement = false;
+    private bool debugMovement = true;
 
     public bool Movable { get { return selfCube != null && selfCube.CubeType != Cube.CubeTypes.Static && selfCube.CubeType != Cube.CubeTypes.Empty; } }
     public bool IsMoving { get => movingCoroutine != null; }
@@ -68,7 +68,6 @@ public class CubeMovement : MonoBehaviour
         if (IsMoving || (selfCube.IsPlayer && IsCoolingDown)) return 0;
 
         // Modify the current record and store new record
-        if (debugMovement) Debug.Log($"Cube {selfCube.name} moves");
         HistoryManager historyManager = HistoryManager.Instance;
         if (historyManager != null)
         {
@@ -102,6 +101,8 @@ public class CubeMovement : MonoBehaviour
         Vector2 cubeOldRScl = selfCube.RelativeScale;
 
         movingCoroutine = StartCoroutine(MovingCoroutine(startRPos, startRScl, endRPos, endRScl, targetTime));
+
+        if (debugMovement) Debug.Log($"Cube {selfCube.name} moves {IsMoving}");
 
         // If this cube is a player -> update camera
         UpdateCamera(selfCube, cubeOldRPos, cubeOldRScl, startRPos, startRScl, targetTime);

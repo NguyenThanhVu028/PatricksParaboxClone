@@ -2420,7 +2420,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   renderMode: 0
-  flipHorizontally: 0
   targetCube: {fileID: 0}
   renderPosition:
     serializedVersion: 2

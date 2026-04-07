@@ -4,7 +4,6 @@ Shader "Custom/CustomOutlinedShader"
     {
         _MainTex ("Sprite Texture", 2D) = "white" {}
         _Color ("Tint", Color) = (1,1,1,1)
-        //_Thickness ("Border Thickness", float) = 0.02
         [Toggle] _IsHighlighted ("Is Highlightes", float) = 0
         _BorderThickness ("Border Thickness", float) = 5
         _BorderMaxPercentThickness ("Border Max Percent Thickness", float) = 0.02
@@ -56,6 +55,7 @@ Shader "Custom/CustomOutlinedShader"
                 return o;
             }
 
+            float _IsHighlighted;
             float _BorderThickness;
             float _BorderMaxPercentThickness;
             fixed4 _BorderColor;
@@ -73,15 +73,20 @@ Shader "Custom/CustomOutlinedShader"
                 float border = 0;
                 float borderDarkness = _BorderDarkness;
                 // The border is brighter if it's either the top or left edge -> Create a 3D illusion
-                border =    step(1.0 - borderThickness, i.uv.y) + 
-                            step(i.uv.x, borderThickness);
-                if (border > 0) borderDarkness = borderDarkness * 0.5f;
-                else border =   step(1.0 - borderThickness, i.uv.x) + 
-                                step(i.uv.y, borderThickness);
+
+                border =    step(1.0 - borderThickness, i.uv.x) + 
+                            step(i.uv.y, borderThickness);
+                if (!(border > 0))
+                {
+                    border =    step(1.0 - borderThickness, i.uv.y) + 
+                                step(i.uv.x, borderThickness);
+                    borderDarkness = borderDarkness * 0.75;
+                }
 
                 float mask = saturate(border); // Clamp the border value between 0 and 1
-                fixed4 borderColor = _Color;
+                fixed4 borderColor = fixed4(_Color.rgb, 1.0);
                 borderColor.rgb = lerp(borderColor.rgb, float3(0, 0, 0), borderDarkness);
+                if (_IsHighlighted == 1) borderColor.rgb = fixed3(1, 1, 1);
                 fixed4 finalColor = lerp(col, borderColor, mask);
 
                 //return col;

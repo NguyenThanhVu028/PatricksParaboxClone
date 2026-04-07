@@ -21,10 +21,14 @@ public class Cube : MonoBehaviour
     [Header("Rendering")]
     [SerializeField] protected int minPixelToRender = 2; // Don't render if the render rectangle size in pixel is smaller than this value
     [SerializeField] protected Material cubeMat;
+    [SerializeField] protected Material faceMat;
+    [SerializeField] protected Material surfaceEffectsMat;
     [SerializeField] protected Mesh cubeMesh;
     // Protorype
-    [SerializeField] protected Texture playerFaceTexture;
+    //[SerializeField] protected Texture playerFaceTexture;
+    [SerializeField] protected string faceAnimationID;
     [SerializeField] protected Texture possessableFaceTexture;
+    [SerializeField] protected string surfaceEffectsAnimationID;
     [Header("Cube stats")]
     [SerializeField] protected ContainerCube parent;
     [SerializeField] protected ContainerCube previousParent; // Record self cube's previous parent to record history
@@ -35,12 +39,15 @@ public class Cube : MonoBehaviour
     [SerializeField] protected UnityEvent onInit = new();
 
     protected UnityEvent onParentChanged = new();
+    protected CustomTextureAnimation faceAnimation;
+    protected CustomTextureAnimation surfaceEffectsAnimation;
 
     public bool IsPlayer { get => isPlayer; set => isPlayer = value; }
     public bool CanBePlayer { get => canBePlayer; set => canBePlayer = value; }
     public CubeTypes CubeType { get => cubeType; }
     public ColorPalette.ColorEnum CubeColor { get => cubeColor; set => cubeColor = value; }
     public bool NeedInstantiating { get => needInstantiating; }
+    public Material CubeMat { get => cubeMat; }
     public ContainerCube Parent { get => parent; set { parent = value; onParentChanged.Invoke(); } }
     public ContainerCube PreviousParent { get => previousParent; set => previousParent = value; }
     public Vector2 RelativeScale { get => relativeScale; set => relativeScale = value; }
@@ -55,6 +62,14 @@ public class Cube : MonoBehaviour
         }
 
         previousParent = parent;
+
+        //if (faceAnimation != null) faceAnimation = Instantiate(faceAnimation);
+        AnimationsManager animationsManager = AnimationsManager.Instance;
+        if (animationsManager != null)
+        {
+            faceAnimation = animationsManager.GetPlayerFaceTextureAnimation(faceAnimationID);
+            surfaceEffectsAnimation = animationsManager.GetNormalTextureAnimation(surfaceEffectsAnimationID);
+        }
 
         onInit.Invoke();
     }
@@ -79,9 +94,9 @@ public class Cube : MonoBehaviour
         // Get player face texture
         var cubeColor = Color.white;
         if (colorPalette != null) cubeColor = colorPalette.GetColor(this.cubeColor);
-        if (IsPlayer && playerFaceTexture != null)
+        if (IsPlayer && faceAnimation != null)
         {
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, cubeMat, playerFaceTexture, cubeColor, position.position, position.size, depth);
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, faceMat, faceAnimation.GetCurrentTexture(), cubeColor, position.position, position.size, depth);
         }
         else if (!IsPlayer && canBePlayer && possessableFaceTexture != null)
         {
@@ -90,7 +105,18 @@ public class Cube : MonoBehaviour
     }
     protected virtual void DrawSurfaceEffects(Rect position, float depth)
     {
+        var cubeColor = Color.white;
+        if (colorPalette != null) cubeColor = colorPalette.GetColor(this.cubeColor);
 
+        if (surfaceEffectsAnimation != null)
+        {
+            if (surfaceEffectsMat != null) CustomTextureRenderer2D.RenderMesh(cubeMesh, surfaceEffectsMat, surfaceEffectsAnimation.GetCurrentTexture(), cubeColor, position.position, position.size, depth);
+        }
+        else
+        {
+            cubeColor.a = 0f;
+            if (surfaceEffectsMat != null) CustomTextureRenderer2D.RenderMesh(cubeMesh, surfaceEffectsMat, Texture2D.whiteTexture, cubeColor, position.position, position.size, depth);
+        }
     }
 
     public bool StartPossessing(Cube targetCube)

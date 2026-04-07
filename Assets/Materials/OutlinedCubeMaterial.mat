@@ -16,7 +16,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 3000
   stringTagMap: {}
   disabledShaderPasses: []
   m_LockedProperties: 
@@ -83,8 +83,8 @@ Material:
     m_Floats:
     - PixelSnap: 0
     - _BorderDarkness: 0.95
-    - _BorderMaxPercentThickness: 0.03
-    - _BorderThickness: 5
+    - _BorderMaxPercentThickness: 0.05
+    - _BorderThickness: 10
     - _BumpScale: 1
     - _ColorMask: 15
     - _Cutoff: 0.5

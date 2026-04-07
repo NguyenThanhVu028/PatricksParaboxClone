@@ -48,6 +48,7 @@ MonoBehaviour:
   historyRecords: []
   currentHistoryRecord:
     events: []
+  currentIndex: -1
 --- !u!1 &3596413527691504233
 GameObject:
   m_ObjectHideFlags: 0
@@ -141,9 +142,63 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allowTakingMovementInput: 1
   allowUsingMovementInput: 1
+  onResetEvent:
+    m_PersistentCalls:
+      m_Calls: []
   onUndoEvent:
     m_PersistentCalls:
       m_Calls: []
+  onRedoEvent:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!1 &4291025293103202411
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3599178927768456676}
+  - component: {fileID: 2649484662815147800}
+  m_Layer: 0
+  m_Name: AnimationsManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3599178927768456676
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4291025293103202411}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1166582527545103324}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2649484662815147800
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4291025293103202411}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da2d0f8548f07d54ea2ee81e4f7d4760, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  normalTextureAnimations: []
+  playerFacesTextureAnimation:
+  - aniID: Default
+    animation: {fileID: 11400000, guid: a2eb29ecdd7846d4c9b6e1123bb5c001, type: 2}
 --- !u!1 &5478760104357305090
 GameObject:
   m_ObjectHideFlags: 0
@@ -231,5 +286,6 @@ Transform:
   - {fileID: 8106876184544732329}
   - {fileID: 7461892977166398095}
   - {fileID: 8761179803492781043}
+  - {fileID: 3599178927768456676}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

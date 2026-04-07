@@ -1,0 +1,80 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+[CreateAssetMenu(fileName = "CustomTextureAnimation", menuName = "Scriptable Objects/CustomTextureAnimation")]
+public class CustomTextureAnimation : ScriptableObject
+{
+    [SerializeField] List<FrameDetails> frames = new();
+
+    private bool isRunning = false;
+    private float lastFrameTime = 0;
+    private int currentFrameIndex = 0;
+    private float totalDuration = 0;
+
+    public void StartAnimation() 
+    {
+        Debug.Log("Start " + name);
+        currentFrameIndex = 0;
+
+        ContinueAnimation();
+    }
+
+    public void StopAnimation()
+    {
+        isRunning = false;
+    }
+
+    private void ContinueAnimation()
+    {
+        isRunning = true;
+        lastFrameTime = Time.timeSinceLevelLoad;
+
+        Debug.Log("Continue: " + lastFrameTime);
+
+        totalDuration = 0;
+        foreach (var frame in frames)
+        {
+            if (frame == null) continue;
+            totalDuration += frame.Duration;
+        }
+    }
+
+    public Texture GetCurrentTexture()
+    {
+        if (frames.Count == 0 || totalDuration == 0) return null;
+        if (currentFrameIndex < 0) currentFrameIndex = 0;
+        if (currentFrameIndex >= frames.Count) currentFrameIndex = frames.Count - 1;
+
+        if (!isRunning) return frames[currentFrameIndex].Texture;
+
+        int tempIndex = currentFrameIndex;
+        float secondsElapsed = (Time.timeSinceLevelLoad - lastFrameTime) % totalDuration;
+        //Debug.Log($"Last frame: {lastFrameTime}, current time: {Time.timeSinceLevelLoad}, seconds elapsed: {secondsElapsed}");
+        do
+        {
+            if (secondsElapsed <= frames[tempIndex].Duration)
+            {
+                if (tempIndex != currentFrameIndex) lastFrameTime = Time.timeSinceLevelLoad - secondsElapsed;
+                currentFrameIndex = tempIndex;
+                return frames[currentFrameIndex].Texture;
+            }
+            secondsElapsed -= frames[tempIndex].Duration;
+            tempIndex++;
+            tempIndex %= frames.Count;
+        }
+        while (tempIndex != currentFrameIndex);
+        return null;
+    }
+}
+
+[Serializable]
+class FrameDetails
+{
+    [SerializeField] Texture texture;
+    [Min(0)]
+    [SerializeField] float duration = 0.1f;
+
+    public Texture Texture { get => texture; }
+    public float Duration { get => duration; }
+}

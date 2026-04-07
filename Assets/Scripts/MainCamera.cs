@@ -13,6 +13,7 @@ public class MainCamera : MonoBehaviour
     private static MainCamera instance;
 
     [Header("Render settings")]
+    [SerializeField] bool isRendering = true;
     [SerializeField] MainCameraRenderMode renderMode = MainCameraRenderMode.SingleCube;
 
     [Header("Single Cube mode")]
@@ -44,30 +45,31 @@ public class MainCamera : MonoBehaviour
         Render();
     }
 
-    private void Render()
+    private void Render(float depth = 0)
     {
+        if (!isRendering) return;
         switch (renderMode)
         {
             case MainCameraRenderMode.SingleCube:
-                RenderSingleCube();
+                RenderSingleCube(depth);
                 break;
             case MainCameraRenderMode.MultipleCubes:
-                RenderMultipleCubes();
+                RenderMultipleCubes(depth);
                 break;
         }
     }
 
-    private void RenderMultipleCubes()
+    private void RenderMultipleCubes(float depth)
     {
         // Not render parents by default
         foreach (var cubeRenderDetail in cubesToRender)
         {
             if (cubeRenderDetail == null || cubeRenderDetail.TargetCube == null) return;
-            cubeRenderDetail.TargetCube.Draw(cubeRenderDetail.RenderPosition);
+            cubeRenderDetail.TargetCube.Draw(cubeRenderDetail.RenderPosition, depth);
         }
     }
 
-    private void RenderSingleCube()
+    private void RenderSingleCube(float depth)
     {
         if (targetCube == null) return;
         if (renderParents)
@@ -86,10 +88,10 @@ public class MainCamera : MonoBehaviour
 
             if (newTargetCube != null)
             {
-                newTargetCube.Draw(newRenderPosition);
+                newTargetCube.Draw(newRenderPosition, depth);
             }
         }
-        else targetCube.Draw(renderPosition);
+        else targetCube.Draw(renderPosition, depth);
     }
 
     public void SetNewTargetCube(ContainerCube newTarget)
@@ -227,7 +229,7 @@ public class MainCamera : MonoBehaviour
         mainCamera.orthographicSize = oldOrthoSize;
         transform.position = oldPos;
 
-        Render();
+        Render(-0.1f);
 
         //bool skippedFirstFrame = false;
 

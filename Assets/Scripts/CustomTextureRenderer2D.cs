@@ -59,7 +59,7 @@ public class CustomTextureRenderer2D
         RenderTexture.active = null;
     }
 
-    public static void DrawTexturesToRenderTextureGrid(ref RenderTexture targetRenderTexture, Dictionary<Texture2D, List<TexturePositionInGrid>> texturesInGrid, Material material)
+    public static void DrawTexturesToRenderTextureGrid(ref RenderTexture targetRenderTexture, Dictionary<Texture2D, List<TexturePositionInGrid>> texturesInGrid)
     {
         if (targetRenderTexture == null) { Debug.LogWarning("Trying to render into an invalid Render Texture!"); return; }
 
@@ -85,7 +85,7 @@ public class CustomTextureRenderer2D
                 rectToDraw.y = positionInGrid.PositionInGrid.x * tileSize.y;
                 rectToDraw.size = tileSize;
 
-                Graphics.DrawTexture(rectToDraw, entry.Key, material);
+                Graphics.DrawTexture(rectToDraw, entry.Key, positionInGrid.Material);
             }
         }
 
@@ -124,16 +124,19 @@ public class CustomTextureRenderer2D
         [SerializeField] int gridWidth = 1;
         [SerializeField] int gridHeight = 1;
         [SerializeField] Vector2Int positionInGrid = new();
+        [SerializeField] Material material;
 
-        public TexturePositionInGrid(int gridWidth, int gridHeight, Vector2Int positionInGrid)
+        public TexturePositionInGrid(int gridWidth, int gridHeight, Vector2Int positionInGrid, Material material)
         {
             this.gridWidth = gridWidth;
             this.gridHeight = gridHeight;
             this.positionInGrid = positionInGrid;
+            this.material = material;
         }
 
         public int GridWidth { get => gridWidth; }
         public int GridHeight { get => gridHeight; }
         public Vector2Int PositionInGrid { get => positionInGrid; }
+        public Material Material { get => material; }
     }
 }

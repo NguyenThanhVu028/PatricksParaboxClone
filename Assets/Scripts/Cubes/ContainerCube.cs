@@ -112,13 +112,13 @@ public class ContainerCube : Cube
 
                         // Tell the staticTextures dictionary that this wall texture will be drawn in wallsGrid at (wallsGridRow, wallsGridColumn) 
                         if (!staticTextures.ContainsKey(wallTex)) staticTextures.Add(wallTex, new());
-                        staticTextures[wallTex].Add(new(wallsGrid.GetLength(0), wallsGrid.GetLength(1), new Vector2Int(wallsGridRow, wallsGridColumn)));
+                        staticTextures[wallTex].Add(new(wallsGrid.GetLength(0), wallsGrid.GetLength(1), new Vector2Int(wallsGridRow, wallsGridColumn), childCubes[cubesGridRow, cubesGridColumn].CubeMat));
                     }
                 }
             }
         }
 
-        CustomTextureRenderer2D.DrawTexturesToRenderTextureGrid(ref staticTexturesRT, staticTextures, cubeMat);
+        CustomTextureRenderer2D.DrawTexturesToRenderTextureGrid(ref staticTexturesRT, staticTextures);
 
         /* To draw static textures on different layers:
          * After drawing textures of one layer
@@ -320,6 +320,14 @@ public class ContainerCube : Cube
             if (tempTargetTime > 0) targetTime = tempTargetTime;
         }
 
+        // If there is another cube that is trying to move into this position first
+        if (childCubes[requestedRow, requestedColumn] != null && childCubes[requestedRow, requestedColumn].GetComponent<CubeMovement>() != null && childCubes[requestedRow, requestedColumn].GetComponent<CubeMovement>().IsMoving)
+        {
+            if (useDebug) Debug.Log($"{requestedCube.name} fail to move because another cube is entering {requestedRow}, {requestedColumn} of {gameObject.name}!");
+            if (!external && CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) CubesGrid[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
+            return 0;
+        }
+
         // If that blockage cube has not been moved -> Let the requested cube try to enter it
         if (childCubes[requestedRow, requestedColumn] != null && childCubes[requestedRow, requestedColumn] is ContainerCube enterableCube)
         {
@@ -351,14 +359,6 @@ public class ContainerCube : Cube
             if (useDebug) Debug.Log($"{requestedCube.name} new relative vallues: {childCubeTargetRPos}, {childCubeTargetRScl}, targetTime: {targetTime}");
             childCubes[requestedRow, requestedColumn] = requestedCube;
             return requestedCubeMovement.StartMoving(cRPos, cRScl, childCubeTargetRPos, childCubeTargetRScl, targetTime);
-        }
-
-        // If there is another cube that is trying to move into this position first
-        if (childCubes[requestedRow, requestedColumn].GetComponent<CubeMovement>() != null && childCubes[requestedRow, requestedColumn].GetComponent<CubeMovement>().IsMoving)
-        {
-            if (useDebug) Debug.Log($"{requestedCube.name} fail to move because another cube is entering {requestedRow}, {requestedColumn} of {gameObject.name}!");
-            if (!external && CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) CubesGrid[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
-            return 0;
         }
 
         // If all above fail, try to possess the cube
