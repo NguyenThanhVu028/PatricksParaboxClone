@@ -53,7 +53,7 @@ public class PlayerButton : Cube
 
         if (parent != null)
         {
-            positionInParent = Relativity.GridPosFromRPos(parent.Tiling, parent.Tiling, relativePosition);
+            positionInParent = Relativity.GridPosFromRPos(parent.Tiling.y, parent.Tiling.x, relativePosition);
         }
 
         base.Init();

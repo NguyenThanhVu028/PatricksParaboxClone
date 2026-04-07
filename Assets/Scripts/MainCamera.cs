@@ -143,13 +143,11 @@ public class MainCamera : MonoBehaviour
 
         if (Screen.width > Screen.height)
         {
-            int tiling = target.Tiling;
-            return renderPosition.height * 0.5f + ((float)renderPosition.height / tiling);
+            return renderPosition.height * 0.5f + ((float)renderPosition.height / target.Tiling.x);
         }
         else
         {
-            int tiling = target.Tiling;
-            float horizontalOrthographicSize = renderPosition.width * 0.5f + ((float)renderPosition.width / tiling);
+            float horizontalOrthographicSize = renderPosition.width * 0.5f + ((float)renderPosition.width / target.Tiling.y);
             return horizontalOrthographicSize * (Screen.height / Screen.width);
         }
     }

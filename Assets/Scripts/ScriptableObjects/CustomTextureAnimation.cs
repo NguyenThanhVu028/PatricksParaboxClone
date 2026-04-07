@@ -49,7 +49,7 @@ public class CustomTextureAnimation : ScriptableObject
 
         int tempIndex = currentFrameIndex;
         float secondsElapsed = (Time.timeSinceLevelLoad - lastFrameTime) % totalDuration;
-        Debug.Log($"Last frame: {lastFrameTime}, current time: {Time.timeSinceLevelLoad}, seconds elapsed: {secondsElapsed}");
+        //Debug.Log($"Last frame: {lastFrameTime}, current time: {Time.timeSinceLevelLoad}, seconds elapsed: {secondsElapsed}");
         do
         {
             if (secondsElapsed <= frames[tempIndex].Duration)

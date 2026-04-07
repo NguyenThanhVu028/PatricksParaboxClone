@@ -7,7 +7,7 @@ public class ContainerCube : Cube
     [Header("Container cube properties")]
     [HideInInspector]
     [Min(1)]
-    [SerializeField] int tiling = 9;
+    [SerializeField] Vector2Int tiling = new(9, 9);
     [Min(1)]
     [SerializeField] int wallSubdivision = 2; // Wall texture might be smaller than a tile
     [SerializeField] CustomRuleTile wallRuleTile;
@@ -24,13 +24,13 @@ public class ContainerCube : Cube
     private List<Cube> emptyCubes = new(); // Seperate empty cubes from other cubes, empty cubes are only be rendered but ignore checking for interactions by other cubes
     private Cube[,] childCubes;
 
-    private bool useDebug = true;
+    private bool useDebug = false;
 
-    public int Tiling { get => tiling; }
+    public Vector2Int Tiling { get => tiling; }
     public ChildCubeInitDetail[] ChildCubesInitDetails { get => childCubesInitDetails; }
     public ChildCubeInitDetail GetChildCubeInitDetails(int row, int col)
     {
-        int index = row * tiling + col;
+        int index = row * tiling.y + col;
         if (index >= childCubesInitDetails.Length) return null;
         return childCubesInitDetails[index];
     }
@@ -39,7 +39,7 @@ public class ContainerCube : Cube
     // Used by the Editor
     public void SetChildCubeInitDetails(int row, int col, ChildCubeInitDetail details)
     {
-        int index = row * tiling + col;
+        int index = row * tiling.y + col;
         if (index >= childCubesInitDetails.Length) return;
         childCubesInitDetails[index] = details;
     }
@@ -65,14 +65,14 @@ public class ContainerCube : Cube
     // Init functions
     public void ReGenerateCubesIDGrid()
     {
-        childCubesInitDetails = new ChildCubeInitDetail[tiling * tiling];
+        childCubesInitDetails = new ChildCubeInitDetail[tiling.x * tiling.y];
     }
     public void CalculateStaticTextures()
     {
         if (staticTexturesRT == null)
         {
-            int renderTextureSize = tiling * wallSubdivision * tileTextureSize;
-            staticTexturesRT = new RenderTexture(renderTextureSize, renderTextureSize, staticTilesRTDepth);
+            //int renderTextureSize = ((tiling.x > tiling.y) ? tiling.x : tiling.y) * wallSubdivision * tileTextureSize;
+            staticTexturesRT = new RenderTexture(tiling.y * wallSubdivision * tileTextureSize, tiling.x * wallSubdivision * tileTextureSize, staticTilesRTDepth);
             staticTexturesRT.filterMode = FilterMode.Point;
         }
 
@@ -112,7 +112,8 @@ public class ContainerCube : Cube
 
                         // Tell the staticTextures dictionary that this wall texture will be drawn in wallsGrid at (wallsGridRow, wallsGridColumn) 
                         if (!staticTextures.ContainsKey(wallTex)) staticTextures.Add(wallTex, new());
-                        staticTextures[wallTex].Add(new(wallsGrid.GetLength(0), wallsGrid.GetLength(1), new Vector2Int(wallsGridRow, wallsGridColumn), childCubes[cubesGridRow, cubesGridColumn].NormalMat));
+                        staticTextures[wallTex].Add(new(wallsGrid.GetLength(1), wallsGrid.GetLength(0), new Vector2Int(wallsGridRow, wallsGridColumn), childCubes[cubesGridRow, cubesGridColumn].NormalMat));
+                        Debug.Log(name + " wall height: " + wallsGrid.GetLength(0));
                     }
                 }
             }
@@ -132,7 +133,7 @@ public class ContainerCube : Cube
     {
         if (childCubes == null) return null;
 
-        int[,] wallsGrid = new int[tiling * wallSubdivision, tiling * wallSubdivision];
+        int[,] wallsGrid = new int[tiling.x * wallSubdivision, tiling.y * wallSubdivision];
 
         for (int cubesGridRow = 0; cubesGridRow < childCubes.GetLength(0); cubesGridRow++)
         {
@@ -158,10 +159,10 @@ public class ContainerCube : Cube
         if (cubesManager == null ) { Debug.LogWarning("No cubes manager is found in this scene to spawn cubes!"); return; }
 
         // Init cubes
-        childCubes = new Cube[tiling, tiling];
-        for(int row = 0; row < tiling; row++)
+        childCubes = new Cube[tiling.x, tiling.y];
+        for(int row = 0; row < tiling.x; row++)
         {
-            for(int column = 0; column < tiling; column++)
+            for(int column = 0; column < tiling.y; column++)
             {
                 var cubeToSpawnDetails = GetChildCubeInitDetails(row, column);
                 if (cubeToSpawnDetails == null) continue;
@@ -169,8 +170,8 @@ public class ContainerCube : Cube
                 var spawnedCube = cubesManager.GetCube(cubeToSpawnDetails.CubeID);
                 if (spawnedCube == null) continue;
 
-                spawnedCube.RelativeScale = new Vector2(1.0f / tiling, 1.0f / tiling);
-                spawnedCube.RelativePosition = Relativity.RPosFromGridTile(tiling, tiling, row, column);
+                spawnedCube.RelativeScale = new Vector2(1.0f / tiling.y, 1.0f / tiling.x);
+                spawnedCube.RelativePosition = Relativity.RPosFromGridTile(tiling.y, tiling.x, row, column);
                 spawnedCube.Parent = this;
                 spawnedCube.IsPlayer = cubeToSpawnDetails.IsPlayer;
                 spawnedCube.CanBePlayer = cubeToSpawnDetails.CanBePlayer;
@@ -276,7 +277,7 @@ public class ContainerCube : Cube
         var requestedCubeMovement = requestedCube.GetComponent<CubeMovement>();
         if (requestedCubeMovement == null) return 0;
 
-        Vector2Int requestedCubePosition = Relativity.GridPosFromRPos(tiling, tiling, cRPos);
+        Vector2Int requestedCubePosition = Relativity.GridPosFromRPos(tiling.y, tiling.x, cRPos);
         Vector2Int requestedPosition;
         if (!CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y))
         {
@@ -360,8 +361,8 @@ public class ContainerCube : Cube
         if (childCubes[requestedPosition.x, requestedPosition.y] == null)
         {
             if (useDebug) Debug.Log($"{requestedCube.name} successfully move to an empty position {requestedPosition.x}, {requestedPosition.y} of {gameObject.name}!");
-            Vector2 childCubeTargetRPos = Relativity.RPosFromGridTile(tiling, tiling, requestedPosition.x, requestedPosition.y);
-            Vector2 childCubeTargetRScl = new Vector2(1.0f / tiling, 1.0f / tiling);
+            Vector2 childCubeTargetRPos = Relativity.RPosFromGridTile(tiling.y, tiling.x, requestedPosition.x, requestedPosition.y);
+            Vector2 childCubeTargetRScl = new Vector2(1.0f / tiling.y, 1.0f / tiling.x);
             if (useDebug) Debug.Log($"{requestedCube.name} new relative vallues: {childCubeTargetRPos}, {childCubeTargetRScl}, targetTime: {targetTime}");
             childCubes[requestedPosition.x, requestedPosition.y] = requestedCube;
             return requestedCubeMovement.StartMoving(cRPos, cRScl, childCubeTargetRPos, childCubeTargetRScl, targetTime);
@@ -484,31 +485,31 @@ public class ContainerCube : Cube
         switch (direction)
         {
             case PlayerInputsManager.MovementInputs.Up:
-                column = Mathf.RoundToInt((tiling - 1) * (rPos.x + 1) * 0.5f);
-                row = tiling - 1;
+                column = Mathf.RoundToInt((tiling.y - 1) * (rPos.x + 1) * 0.5f);
+                row = tiling.x - 1;
                 break;
             case PlayerInputsManager.MovementInputs.Down:
-                column = Mathf.RoundToInt((tiling - 1) * (rPos.x + 1) * 0.5f);
+                column = Mathf.RoundToInt((tiling.y - 1) * (rPos.x + 1) * 0.5f);
                 row = 0;
                 break;
             case PlayerInputsManager.MovementInputs.Right:
-                row = Mathf.RoundToInt((tiling - 1) * (1 - rPos.y) * 0.5f);
+                row = Mathf.RoundToInt((tiling.x - 1) * (1 - rPos.y) * 0.5f);
                 column = 0;
                 break;
             case PlayerInputsManager.MovementInputs.Left:
-                row = Mathf.RoundToInt((tiling - 1) * (1 - rPos.y) * 0.5f);
-                column = tiling - 1;
+                row = Mathf.RoundToInt((tiling.x - 1) * (1 - rPos.y) * 0.5f);
+                column = tiling.y - 1;
                 break;
         }
 
-        if (column < 0 || column > tiling - 1) column = Mathf.RoundToInt((tiling - 1) * 0.5f);
-        if (row < 0 || row > tiling - 1) row = Mathf.RoundToInt((tiling - 1) * 0.5f);
+        if (column < 0 || column > tiling.y - 1) column = Mathf.RoundToInt((tiling.y - 1) * 0.5f);
+        if (row < 0 || row > tiling.x - 1) row = Mathf.RoundToInt((tiling.x - 1) * 0.5f);
         return new Vector2Int(row, column);
     }
 
     public bool CheckValidGridPosition(int row, int column)
     {
-        if (row < 0 || column < 0 || row >= tiling || column >= tiling) return false;
+        if (row < 0 || column < 0 || row >= tiling.x || column >= tiling.y) return false;
         return true;
     }
 

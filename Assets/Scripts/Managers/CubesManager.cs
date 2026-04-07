@@ -122,7 +122,7 @@ public class CubesManager : MonoBehaviour
                 continue;
             }
 
-            Vector2Int targetCubePrevPosInParent = Relativity.GridPosFromRPos(historyEvent.PreviousParent.Tiling, historyEvent.PreviousParent.Tiling, historyEvent.PreviousRPos);
+            Vector2Int targetCubePrevPosInParent = Relativity.GridPosFromRPos(historyEvent.PreviousParent.Tiling.y, historyEvent.PreviousParent.Tiling.x, historyEvent.PreviousRPos);
             if (!historyEvent.PreviousParent.CheckValidGridPosition(targetCubePrevPosInParent.x, targetCubePrevPosInParent.y)) return;
             Debug.Log($"Reset {historyEvent.TargetCube} parent to {historyEvent.PreviousParent}");
             historyEvent.PreviousParent.CubesGrid[targetCubePrevPosInParent.x, targetCubePrevPosInParent.y] = historyEvent.TargetCube;

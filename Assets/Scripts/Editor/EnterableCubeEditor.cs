@@ -27,7 +27,7 @@ public class EnterableCubeEditor : Editor
         }
         EditorGUI.BeginChangeCheck();
         EditorGUILayout.LabelField("Cubes Init Details Grid: ");
-        for(int row = 0; row < targetEnterableCube.Tiling; row++)
+        for(int row = 0; row < targetEnterableCube.Tiling.x; row++)
         {
             EditorGUILayout.BeginHorizontal();
             // Row headers
@@ -37,7 +37,7 @@ public class EnterableCubeEditor : Editor
             EditorGUILayout.LabelField("Can Be Player", GUILayout.Width(80));
             EditorGUILayout.LabelField("Edit details: ", GUILayout.Width(80));
             EditorGUILayout.EndVertical();
-            for (int column = 0; column < targetEnterableCube.Tiling; column++)
+            for (int column = 0; column < targetEnterableCube.Tiling.y; column++)
             {
                 var childCubeInitDetail = targetEnterableCube.GetChildCubeInitDetails(row, column);
                 if (childCubeInitDetail == null) continue;
