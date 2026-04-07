@@ -383,7 +383,7 @@ public class ContainerCube : Cube
             if (useDebug) Debug.Log($"{requestedCube.name} cant move out of {gameObject.name} because there is no parent cube!");
             return 0;
         }
-        if (external && Parent == this)
+        if (external && Parent == requestedCube.PreviousParent)
         {
             // Inifite loop -> teleport to the void
             // This is just a placeholder code for testing
