@@ -163,7 +163,7 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 38
+        width: 64
         height: 98
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -175,28 +175,6 @@ TextureImporter:
       bones: []
       spriteID: 44c757212b7220dd0800000000000000
       internalID: -2521409195606705084
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Tutorial_2
-      rect:
-        serializedVersion: 2
-        x: 42
-        y: 65
-        width: 21
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 90199440392385c45935913b7b47d802
-      internalID: 8746059415684039367
       vertices: []
       indices: 
       edges: []

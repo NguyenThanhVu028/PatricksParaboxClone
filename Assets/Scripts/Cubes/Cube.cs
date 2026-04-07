@@ -28,7 +28,7 @@ public class Cube : MonoBehaviour
     //[SerializeField] protected Texture playerFaceTexture;
     [SerializeField] protected string faceAnimationID;
     [SerializeField] protected Texture possessableFaceTexture;
-    [SerializeField] protected string surfaceEffectsAnimationID;
+    //[SerializeField] protected string surfaceEffectsAnimationID;
     [Header("Cube stats")]
     [SerializeField] protected ContainerCube parent;
     [SerializeField] protected ContainerCube previousParent; // Record self cube's previous parent to record history
@@ -68,7 +68,7 @@ public class Cube : MonoBehaviour
         if (animationsManager != null)
         {
             faceAnimation = animationsManager.GetPlayerFaceTextureAnimation(faceAnimationID);
-            surfaceEffectsAnimation = animationsManager.GetNormalTextureAnimation(surfaceEffectsAnimationID);
+            //surfaceEffectsAnimation = animationsManager.GetNormalTextureAnimation(surfaceEffectsAnimationID);
         }
 
         onInit.Invoke();
@@ -117,6 +117,13 @@ public class Cube : MonoBehaviour
             cubeColor.a = 0f;
             if (surfaceEffectsMat != null) CustomTextureRenderer2D.RenderMesh(cubeMesh, surfaceEffectsMat, Texture2D.whiteTexture, cubeColor, position.position, position.size, depth);
         }
+    }
+
+    public void SetSurfaceEffects(string aniID)
+    {
+        AnimationsManager animationsManager = AnimationsManager.Instance;
+        if (animationsManager != null)
+            surfaceEffectsAnimation = animationsManager.GetNormalTextureAnimation(aniID);
     }
 
     public bool StartPossessing(Cube targetCube)

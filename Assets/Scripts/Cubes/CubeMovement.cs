@@ -47,9 +47,7 @@ public class CubeMovement : MonoBehaviour
             PlayerInputsManager.MovementInputs movementInput = playerMovementInputsManager.GetLatestMovementInput();
             if (movementInput != PlayerInputsManager.MovementInputs.None)
             {
-                Vector2Int currentPosInGrid = Relativity.GridPosFromRPos(selfCube.Parent.Tiling, selfCube.Parent.Tiling, selfCube.RelativePosition);
-                Vector2Int targetPosInGrid = currentPosInGrid + PlayerInputsManager.ConvertMovementInputToGridDirection(movementInput);
-                if (selfCube.Parent.RequestToMove(selfCube.RelativePosition, selfCube.RelativeScale, selfCube, movementInput, targetPosInGrid.x, targetPosInGrid.y) == 0)
+                if (selfCube.Parent.RequestToMove(selfCube.RelativePosition, selfCube.RelativeScale, selfCube, movementInput) == 0)
                 {
                     // If fail to move
                     coolDownTimer = coolDownTime;
