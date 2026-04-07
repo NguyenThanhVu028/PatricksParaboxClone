@@ -10,7 +10,10 @@ public class CustomTextureAnimation : ScriptableObject
     private bool isRunning = false;
     private float lastFrameTime = 0;
     private int currentFrameIndex = 0;
-    private float totalDuration = 0;
+    [SerializeField] float totalDuration = 0;
+
+    public List<FrameDetails> Frames { get => frames; }
+    public float TotalDuration { get => totalDuration; set => totalDuration = value; }
 
     public void StartAnimation() 
     {
@@ -32,12 +35,6 @@ public class CustomTextureAnimation : ScriptableObject
 
         Debug.Log("Continue: " + lastFrameTime);
 
-        totalDuration = 0;
-        foreach (var frame in frames)
-        {
-            if (frame == null) continue;
-            totalDuration += frame.Duration;
-        }
     }
 
     public Texture GetCurrentTexture()
@@ -66,15 +63,15 @@ public class CustomTextureAnimation : ScriptableObject
         while (tempIndex != currentFrameIndex);
         return null;
     }
-}
 
-[Serializable]
-class FrameDetails
-{
-    [SerializeField] Texture texture;
-    [Min(0)]
-    [SerializeField] float duration = 0.1f;
+    [Serializable]
+    public class FrameDetails
+    {
+        [SerializeField] Texture texture;
+        [Min(0)]
+        [SerializeField] float duration = 0.1f;
 
-    public Texture Texture { get => texture; }
-    public float Duration { get => duration; }
+        public Texture Texture { get => texture; }
+        public float Duration { get => duration; }
+    }
 }

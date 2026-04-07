@@ -58,6 +58,7 @@ public class ContainerCube : Cube
     }
     public void Start()
     {
+        Init();
         InitChildCubes();
         CalculateStaticTextures();
     }

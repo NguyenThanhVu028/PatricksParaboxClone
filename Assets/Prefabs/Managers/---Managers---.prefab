@@ -195,7 +195,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da2d0f8548f07d54ea2ee81e4f7d4760, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalTextureAnimations: []
+  normalTextureAnimations:
+  - aniID: RegularShiny
+    animation: {fileID: 11400000, guid: 85889fba1a8fd05419051f9256512ad6, type: 2}
   playerFacesTextureAnimation:
   - aniID: Default
     animation: {fileID: 11400000, guid: a2eb29ecdd7846d4c9b6e1123bb5c001, type: 2}
