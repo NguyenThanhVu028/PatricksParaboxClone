@@ -5,6 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "CustomTextureAnimation", menuName = "Scriptable Objects/CustomTextureAnimation")]
 public class CustomTextureAnimation : ScriptableObject
 {
+    [SerializeField] string iD = "";
     [SerializeField] List<FrameDetails> frames = new();
 
     private bool isRunning = false;
@@ -12,6 +13,7 @@ public class CustomTextureAnimation : ScriptableObject
     private int currentFrameIndex = 0;
     [SerializeField] float totalDuration = 0;
 
+    public string ID { get => iD; }
     public List<FrameDetails> Frames { get => frames; }
     public float TotalDuration { get => totalDuration; set => totalDuration = value; }
 
@@ -47,7 +49,7 @@ public class CustomTextureAnimation : ScriptableObject
 
         int tempIndex = currentFrameIndex;
         float secondsElapsed = (Time.timeSinceLevelLoad - lastFrameTime) % totalDuration;
-        //Debug.Log($"Last frame: {lastFrameTime}, current time: {Time.timeSinceLevelLoad}, seconds elapsed: {secondsElapsed}");
+        Debug.Log($"Last frame: {lastFrameTime}, current time: {Time.timeSinceLevelLoad}, seconds elapsed: {secondsElapsed}");
         do
         {
             if (secondsElapsed <= frames[tempIndex].Duration)

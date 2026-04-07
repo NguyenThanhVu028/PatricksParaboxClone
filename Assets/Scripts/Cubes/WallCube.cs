@@ -49,7 +49,7 @@ public class WallCube : Cube
             for (int col = 0; col < wallSubdivision; col++)
             {
                 Vector2 texPos = new Vector2(startingPos.x + col * texSize.x, startingPos.y - row * texSize.y);
-                CustomTextureRenderer2D.RenderMesh(cubeMesh, cubeMat, cubeTex[row, col], cubeColor, texPos, texSize, depth);
+                CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, cubeTex[row, col], cubeColor, texPos, texSize, depth);
             }
         }
     }

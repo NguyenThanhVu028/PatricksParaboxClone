@@ -20,9 +20,9 @@ public class Cube : MonoBehaviour
     [SerializeField] protected bool needInstantiating = true;
     [Header("Rendering")]
     [SerializeField] protected int minPixelToRender = 2; // Don't render if the render rectangle size in pixel is smaller than this value
-    [SerializeField] protected Material cubeMat;
-    [SerializeField] protected Material faceMat;
-    [SerializeField] protected Material surfaceEffectsMat;
+    [SerializeField] protected Material normalMat;
+    //[SerializeField] protected Material faceMat;
+    [SerializeField] protected Material outlineMat;
     [SerializeField] protected Mesh cubeMesh;
     // Protorype
     //[SerializeField] protected Texture playerFaceTexture;
@@ -47,7 +47,7 @@ public class Cube : MonoBehaviour
     public CubeTypes CubeType { get => cubeType; }
     public ColorPalette.ColorEnum CubeColor { get => cubeColor; set => cubeColor = value; }
     public bool NeedInstantiating { get => needInstantiating; }
-    public Material CubeMat { get => cubeMat; }
+    public Material NormalMat { get => normalMat; }
     public ContainerCube Parent { get => parent; set { parent = value; onParentChanged.Invoke(); } }
     public ContainerCube PreviousParent { get => previousParent; set => previousParent = value; }
     public Vector2 RelativeScale { get => relativeScale; set => relativeScale = value; }
@@ -82,8 +82,8 @@ public class Cube : MonoBehaviour
         if (rectSizeInPixel.x < minPixelToRender || rectSizeInPixel.y < minPixelToRender) return; // Don't draw if the requested rectangle is too small (To avoid infinite rendering)
 
         DrawCube(position, depth);
-        DrawPlayerFace(position, depth);
-        DrawSurfaceEffects(position, depth);
+        DrawPlayerFace(position, depth - 0.05f);
+        DrawSurfaceEffects(position, depth - 0.075f);
     }
     protected virtual void DrawCube(Rect position, float depth)
     {
@@ -96,11 +96,11 @@ public class Cube : MonoBehaviour
         if (colorPalette != null) cubeColor = colorPalette.GetColor(this.cubeColor);
         if (IsPlayer && faceAnimation != null)
         {
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, faceMat, faceAnimation.GetCurrentTexture(), cubeColor, position.position, position.size, depth);
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, faceAnimation.GetCurrentTexture(), cubeColor, position.position, position.size, depth);
         }
         else if (!IsPlayer && canBePlayer && possessableFaceTexture != null)
         {
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, cubeMat, possessableFaceTexture, cubeColor, position.position, position.size, depth);
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, possessableFaceTexture, cubeColor, position.position, position.size, depth);
         }
     }
     protected virtual void DrawSurfaceEffects(Rect position, float depth)
@@ -110,12 +110,7 @@ public class Cube : MonoBehaviour
 
         if (surfaceEffectsAnimation != null)
         {
-            if (surfaceEffectsMat != null) CustomTextureRenderer2D.RenderMesh(cubeMesh, surfaceEffectsMat, surfaceEffectsAnimation.GetCurrentTexture(), cubeColor, position.position, position.size, depth);
-        }
-        else
-        {
-            cubeColor.a = 0f;
-            if (surfaceEffectsMat != null) CustomTextureRenderer2D.RenderMesh(cubeMesh, surfaceEffectsMat, Texture2D.whiteTexture, cubeColor, position.position, position.size, depth);
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, surfaceEffectsAnimation.GetCurrentTexture(), cubeColor, position.position, position.size, depth);
         }
     }
 

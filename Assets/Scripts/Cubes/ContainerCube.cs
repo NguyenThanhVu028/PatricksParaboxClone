@@ -112,7 +112,7 @@ public class ContainerCube : Cube
 
                         // Tell the staticTextures dictionary that this wall texture will be drawn in wallsGrid at (wallsGridRow, wallsGridColumn) 
                         if (!staticTextures.ContainsKey(wallTex)) staticTextures.Add(wallTex, new());
-                        staticTextures[wallTex].Add(new(wallsGrid.GetLength(0), wallsGrid.GetLength(1), new Vector2Int(wallsGridRow, wallsGridColumn), childCubes[cubesGridRow, cubesGridColumn].CubeMat));
+                        staticTextures[wallTex].Add(new(wallsGrid.GetLength(0), wallsGrid.GetLength(1), new Vector2Int(wallsGridRow, wallsGridColumn), childCubes[cubesGridRow, cubesGridColumn].NormalMat));
                     }
                 }
             }
@@ -201,13 +201,13 @@ public class ContainerCube : Cube
     {
         Color cubeColor = Color.white;
         if (colorPalette != null) cubeColor = colorPalette.GetColor(base.cubeColor);
-        CustomTextureRenderer2D.RenderMesh(cubeMesh, cubeMat, floorTexture, cubeColor, position.position, position.size, depth);
+        CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, floorTexture, cubeColor, position.position, position.size, depth);
     }
     public void DrawWalls(Rect position, float depth)
     {
         Color cubeColor = Color.white;
         if (colorPalette != null) cubeColor = colorPalette.GetColor(base.cubeColor);
-        if (staticTexturesRT != null) CustomTextureRenderer2D.RenderMesh(cubeMesh, cubeMat, staticTexturesRT, cubeColor, position.position, position.size, depth);
+        if (staticTexturesRT != null) CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, staticTexturesRT, cubeColor, position.position, position.size, depth);
     }
     private void DrawChildCubes(Rect position, float depth)
     {

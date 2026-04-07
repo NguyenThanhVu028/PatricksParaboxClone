@@ -71,6 +71,6 @@ public class NormalButton : Cube
     protected override void DrawCube(Rect position, float depth)
     {
         Color color = new Color(1, 1, 1, 0.5f);
-        CustomTextureRenderer2D.RenderMesh(cubeMesh, cubeMat, buttonTexture, color, position.position, position.size, depth);
+        CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, buttonTexture, color, position.position, position.size, depth);
     }
 }

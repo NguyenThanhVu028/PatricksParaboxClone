@@ -139,13 +139,11 @@ MonoBehaviour:
   cubeColor: 0
   needInstantiating: 1
   minPixelToRender: 2
-  cubeMat: {fileID: 2100000, guid: 78b9e2b83bf5d0643b88372fc8f8b336, type: 2}
-  faceMat: {fileID: 0}
-  surfaceEffectsMat: {fileID: 0}
+  normalMat: {fileID: 2100000, guid: 78b9e2b83bf5d0643b88372fc8f8b336, type: 2}
+  outlineMat: {fileID: 2100000, guid: 5f0c8b0400fd3074d84c1d22d0c58c68, type: 2}
   cubeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   faceAnimationID: 
   possessableFaceTexture: {fileID: 0}
-  surfaceEffectsAnimationID: 
   parent: {fileID: 0}
   previousParent: {fileID: 0}
   relativeScale: {x: 1, y: 1}

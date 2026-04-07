@@ -1,4 +1,4 @@
-Shader "Custom/CustomOutlinedShader"
+Shader "Custom/CustomOutlineShader"
 {
     Properties
     {
@@ -42,6 +42,7 @@ Shader "Custom/CustomOutlinedShader"
             // Define the property buffer
             UNITY_INSTANCING_BUFFER_START(Props)
                 UNITY_DEFINE_INSTANCED_PROP(fixed4, _Color)
+                UNITY_DEFINE_INSTANCED_PROP(float, _IsHighlighted)
             UNITY_INSTANCING_BUFFER_END(Props)
 
             v2f vert (appdata v) {
@@ -55,7 +56,7 @@ Shader "Custom/CustomOutlinedShader"
                 return o;
             }
 
-            float _IsHighlighted;
+            //float _IsHighlighted;
             float _BorderThickness;
             float _BorderMaxPercentThickness;
             fixed4 _BorderColor;
@@ -84,12 +85,18 @@ Shader "Custom/CustomOutlinedShader"
                 }
 
                 float mask = saturate(border); // Clamp the border value between 0 and 1
-                fixed4 borderColor = fixed4(_Color.rgb, 1.0);
-                borderColor.rgb = lerp(borderColor.rgb, float3(0, 0, 0), borderDarkness);
-                if (_IsHighlighted == 1) borderColor.rgb = fixed3(1, 1, 1);
+
+                fixed4 borderColor = fixed4(1, 1, 1, 1);
+                if (UNITY_ACCESS_INSTANCED_PROP(Props, _IsHighlighted) == 1) borderColor = fixed4(1, 1, 1, 1);
+                else
+                {
+                    borderColor = fixed4(_Color.rgb, 1.0); // Calculate border's color
+                    borderColor.rgb = lerp(borderColor.rgb, float3(0, 0, 0), borderDarkness); // Calculate border's darkness
+                    if (col.a == 0) borderColor.a = 0.5; // Calculate border's opacity
+                }
+
                 fixed4 finalColor = lerp(col, borderColor, mask);
 
-                //return col;
                 return finalColor;
             }
             ENDCG
