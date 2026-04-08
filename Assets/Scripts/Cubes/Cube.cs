@@ -35,6 +35,7 @@ public class Cube : MonoBehaviour
     protected UnityEvent onParentChanged = new();
     protected CustomTextureAnimation faceAnimation;
     protected CustomTextureAnimation surfaceEffectsAnimation;
+    protected MaterialPropertyBlock materialPropertyBlock;
 
     public bool IsPlayer { get => isPlayer; set => isPlayer = value; }
     public bool CanBePlayer { get => canBePlayer; set => canBePlayer = value; }

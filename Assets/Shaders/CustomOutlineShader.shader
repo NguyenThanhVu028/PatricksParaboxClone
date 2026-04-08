@@ -4,7 +4,7 @@ Shader "Custom/CustomOutlineShader"
     {
         _MainTex ("Sprite Texture", 2D) = "white" {}
         _Color ("Tint", Color) = (1,1,1,1)
-        [Toggle] _IsHighlighted ("Is Highlightes", float) = 0
+        [Toggle] _IsHighlighted ("Is Highlighted", float) = 0
         _BorderThickness ("Border Thickness", float) = 5
         _BorderMaxPercentThickness ("Border Max Percent Thickness", float) = 0.02
         _BorderDarkness ("Border Darkness", float) = 0.8
@@ -86,11 +86,10 @@ Shader "Custom/CustomOutlineShader"
 
                 float mask = saturate(border); // Clamp the border value between 0 and 1
 
-                fixed4 borderColor = fixed4(1, 1, 1, 1);
-                if (UNITY_ACCESS_INSTANCED_PROP(Props, _IsHighlighted) == 1) borderColor = fixed4(1, 1, 1, 1);
-                else
+                fixed4 borderColor = fixed4(_Color.rgb, 1.0); // Calculate border's color
+                // If highlighted -> dont calculate darkness and opacity
+                if (UNITY_ACCESS_INSTANCED_PROP(Props, _IsHighlighted) < 1) 
                 {
-                    borderColor = fixed4(_Color.rgb, 1.0); // Calculate border's color
                     borderColor.rgb = lerp(borderColor.rgb, float3(0, 0, 0), borderDarkness); // Calculate border's darkness
                     if (col.a == 0) borderColor.a = 0.5; // Calculate border's opacity
                 }

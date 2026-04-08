@@ -7,6 +7,7 @@ public class CustomTextureRenderer2D
 {
     public static readonly int mainTexID = Shader.PropertyToID("_MainTex");
     public static readonly int colorID = Shader.PropertyToID("_Color");
+    public static readonly int isHighlightedID = Shader.PropertyToID("_IsHighlighted");
 
     public static void RenderMesh(Mesh mesh,
                                     Material material,

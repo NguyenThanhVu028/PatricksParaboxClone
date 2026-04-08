@@ -153,12 +153,17 @@ MonoBehaviour:
   onInit:
     m_PersistentCalls:
       m_Calls: []
-  tiling: 5
+  isEnterable: 1
+  isLeavable: 1
+  childGrid:
+    tiling: {x: 9, y: 9}
   wallSubdivision: 2
   wallRuleTile: {fileID: 11400000, guid: 2d82bc5300df33a458823857725fba15, type: 2}
   floorTexture: {fileID: 2800000, guid: 02ace0b2ae698254b9ec0db27a6deea9, type: 3}
   tileTextureSize: 16
   staticTilesRTDepth: 16
+  unenterableColor: {r: 0, g: 0, b: 0, a: 0.9}
+  unleavableColor: {r: 1, g: 0, b: 0, a: 0}
   childCubesInitDetails:
   - cubeID: 1
     isPlayer: 0

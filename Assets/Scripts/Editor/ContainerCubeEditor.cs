@@ -12,7 +12,7 @@ public class ContainerCubeEditor : Editor
     SerializedProperty cubeColor;
     SerializedProperty needInstantiating;
     SerializedProperty isEnterable;
-    SerializedProperty isExitable;
+    SerializedProperty isLeavable;
 
     // Rendering
     SerializedProperty minPixelToRender;
@@ -26,6 +26,8 @@ public class ContainerCubeEditor : Editor
     SerializedProperty floorTexture;
     SerializedProperty tileTextureSize;
     SerializedProperty staticTilesRTDepth;
+    SerializedProperty unenterableColor;
+    SerializedProperty unleavableColor;
 
     // Cube status
     SerializedProperty parent;
@@ -52,7 +54,7 @@ public class ContainerCubeEditor : Editor
         cubeColor = serializedObject.FindProperty("cubeColor");
         needInstantiating = serializedObject.FindProperty("needInstantiating");
         isEnterable = serializedObject.FindProperty("isEnterable");
-        isExitable = serializedObject.FindProperty("isExitable");
+        isLeavable = serializedObject.FindProperty("isLeavable");
 
         // Rendering
         minPixelToRender = serializedObject.FindProperty("minPixelToRender");
@@ -66,6 +68,8 @@ public class ContainerCubeEditor : Editor
         floorTexture = serializedObject.FindProperty("floorTexture");
         tileTextureSize = serializedObject.FindProperty("tileTextureSize");
         staticTilesRTDepth = serializedObject.FindProperty("staticTilesRTDepth");
+        unenterableColor = serializedObject.FindProperty("unenterableColor");
+        unleavableColor = serializedObject.FindProperty("unleavableColor");
 
         // Cube status
         parent = serializedObject.FindProperty("parent");
@@ -87,7 +91,7 @@ public class ContainerCubeEditor : Editor
 
         EditorGUILayout.LabelField("General Infos", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(isEnterable);
-        EditorGUILayout.PropertyField(isExitable);
+        EditorGUILayout.PropertyField(isLeavable);
         EditorGUILayout.PropertyField(cubeType);
         EditorGUILayout.PropertyField(colorPalette);
         EditorGUILayout.PropertyField(cubeColor);
@@ -106,6 +110,8 @@ public class ContainerCubeEditor : Editor
         EditorGUILayout.PropertyField(floorTexture);
         EditorGUILayout.PropertyField(tileTextureSize);
         EditorGUILayout.PropertyField(staticTilesRTDepth);
+        EditorGUILayout.PropertyField(unenterableColor);
+        EditorGUILayout.PropertyField(unleavableColor);
 
         EditorGUILayout.Space();
 

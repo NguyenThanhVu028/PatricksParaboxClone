@@ -5,7 +5,7 @@ using UnityEngine;
 public class ContainerCube : Cube
 {
     [SerializeField] protected bool isEnterable = true;
-    [SerializeField] protected bool isExitable = true;
+    [SerializeField] protected bool isLeavable = true;
     [SerializeField] protected CustomGrid<Cube> childGrid = new();
     [Min(1)]
     [SerializeField] protected int wallSubdivision = 2; // Wall texture might be smaller than a tile
@@ -13,14 +13,15 @@ public class ContainerCube : Cube
     [SerializeField] protected Texture2D floorTexture;
     [SerializeField] protected int tileTextureSize = 16;
     [SerializeField] protected int staticTilesRTDepth = 16;
+    [SerializeField] Color unenterableColor = new(0, 0, 0, 0.9f);
+    [SerializeField] Color unleavableColor = new(1, 0, 0, 0);
+
 
     [SerializeField]
     [Min(0)]
     ChildCubeInitDetail[] childCubesInitDetails = {new()};
 
     protected List<Cube> emptyCubes = new(); // Seperate empty cubes from other cubes, empty cubes are only be rendered but ignore checking for interactions by other cubes
-    //private Cube[,] childCubes;
-
     protected bool useDebug = false;
 
     public bool IsEnterable { get => isEnterable; set => isEnterable = value; }
@@ -243,8 +244,17 @@ public class ContainerCube : Cube
     protected override void DrawSurfaceEffects(Rect position, float depth)
     {
         base.DrawSurfaceEffects(position, depth);
-        Color invalidColor = new Color(0, 0, 0, 0.9f);
-        if (!isEnterable) CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, Texture2D.whiteTexture, invalidColor, position.position, position.size, depth);
+        if (!isEnterable) CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, Texture2D.whiteTexture, unenterableColor, position.position, position.size, depth);
+        if (!isLeavable)
+        {
+            if (materialPropertyBlock == null) materialPropertyBlock = new();
+            else materialPropertyBlock.Clear();
+            materialPropertyBlock.SetColor(CustomTextureRenderer2D.colorID, unleavableColor);
+            materialPropertyBlock.SetTexture(CustomTextureRenderer2D.mainTexID, Texture2D.whiteTexture);
+            materialPropertyBlock.SetFloat(CustomTextureRenderer2D.isHighlightedID, 1);
+
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, materialPropertyBlock, position.position, position.size, depth);
+        }
     }
 
     // This functions if call when a cube is trying to move within / entering this cube
@@ -361,7 +371,7 @@ public class ContainerCube : Cube
 
     private float TryPushRequestedCubeOutside(Vector2 cRPos, Vector2 cRScl, Cube requestedCube, PlayerInputsManager.MovementInputs direction, bool external)
     {
-        if (!isExitable) return 0;
+        if (!isLeavable) return 0;
         if (Parent == null)
         {
             // Teleport to the void

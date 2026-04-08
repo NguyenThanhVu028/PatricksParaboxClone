@@ -11,7 +11,7 @@ public class MapSelectionCubeEditor : Editor
     SerializedProperty cubeColor;
     SerializedProperty needInstantiating;
     SerializedProperty isEnterable;
-    SerializedProperty isExitable;
+    SerializedProperty isLeavable;
 
     // Rendering
     SerializedProperty minPixelToRender;
@@ -20,6 +20,8 @@ public class MapSelectionCubeEditor : Editor
     SerializedProperty outlineMat;
     SerializedProperty cubeMesh;
     SerializedProperty staticTilesRTDepth;
+    SerializedProperty unenterableColor;
+    SerializedProperty unleavableColor;
 
     // Other settings
     SerializedProperty onInit;
@@ -38,7 +40,7 @@ public class MapSelectionCubeEditor : Editor
         cubeColor = serializedObject.FindProperty("cubeColor");
         needInstantiating = serializedObject.FindProperty("needInstantiating");
         isEnterable = serializedObject.FindProperty("isEnterable");
-        isExitable = serializedObject.FindProperty("isExitable");
+        isLeavable = serializedObject.FindProperty("isLeavable");
 
         // Rendering
         minPixelToRender = serializedObject.FindProperty("minPixelToRender");
@@ -47,6 +49,8 @@ public class MapSelectionCubeEditor : Editor
         cubeMesh = serializedObject.FindProperty("cubeMesh");
         floorTexture = serializedObject.FindProperty("floorTexture");
         staticTilesRTDepth = serializedObject.FindProperty("staticTilesRTDepth");
+        unenterableColor = serializedObject.FindProperty("unenterableColor");
+        unleavableColor = serializedObject.FindProperty("unleavableColor");
 
         // Other settings
         onInit = serializedObject.FindProperty("onInit");
@@ -58,7 +62,7 @@ public class MapSelectionCubeEditor : Editor
 
         EditorGUILayout.LabelField("General Infos", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(isEnterable);
-        EditorGUILayout.PropertyField(isExitable);
+        EditorGUILayout.PropertyField(isLeavable);
         EditorGUILayout.PropertyField(cubeType);
         EditorGUILayout.PropertyField(colorPalette);
         EditorGUILayout.PropertyField(cubeColor);
@@ -72,6 +76,8 @@ public class MapSelectionCubeEditor : Editor
         EditorGUILayout.PropertyField(cubeMesh);
         EditorGUILayout.PropertyField(floorTexture);
         EditorGUILayout.PropertyField(staticTilesRTDepth);
+        EditorGUILayout.PropertyField(unenterableColor);
+        EditorGUILayout.PropertyField(unleavableColor);
 
         EditorGUILayout.Space();
 
