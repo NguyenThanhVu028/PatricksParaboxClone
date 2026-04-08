@@ -17,7 +17,21 @@ public class ColorPalette : ScriptableObject
         return defaultColor;
     }
 
-    public enum ColorEnum { Red, Green, Blue, Yellow, Cyan, Purple, Pink, Silver, Player, SilverBlue, Orange }
+    public enum ColorEnum 
+    { 
+        Red, 
+        Green, 
+        Blue, 
+        Yellow, 
+        Cyan, 
+        Purple, 
+        Pink, 
+        Silver, 
+        Player, 
+        SilverBlue, 
+        Orange,
+        Black
+    }
 
     [Serializable]
     public class ColorInfo

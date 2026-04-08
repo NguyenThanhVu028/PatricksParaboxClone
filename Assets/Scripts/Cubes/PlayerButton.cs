@@ -1,15 +1,9 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-public class PlayerButton : Cube
+public class PlayerButton : TriggerButton
 {
-    [SerializeField] Texture2D buttonTexture;
-    [SerializeField] UnityEvent onButtonActivated = new();
-    [SerializeField] UnityEvent onButtonDeactivated = new();
-
-    private Vector2Int positionInParent = Vector2Int.zero;
     private bool hasAssignedToGameManager = false;
-    private bool isActivated = false;
 
     private void Update()
     {
@@ -20,27 +14,34 @@ public class PlayerButton : Cube
             {
                 if (targetCube.IsPlayer && !isActivated)
                 {
-                    isActivated = true;
-                    GameManager.Instance.AnnouncePlayerButtonActivated();
-                    onButtonActivated.Invoke();
+                    OnActivated();
                 }
                 if (!targetCube.IsPlayer && isActivated)
                 {
-                    isActivated = false;
-                    GameManager.Instance.AnnouncePlayerButtonDeactivated();
-                    onButtonDeactivated.Invoke();
+                    OnDeactivated();
                 }
             }
             else
             {
                 if (isActivated)
                 {
-                    isActivated = false;
-                    GameManager.Instance.AnnouncePlayerButtonDeactivated();
-                    onButtonDeactivated.Invoke();
+                    OnDeactivated();
                 }
             }
         }
+    }
+
+    protected override void OnActivated()
+    {
+
+        if (GameManager.Instance != null) GameManager.Instance.AnnouncePlayerButtonActivated();
+        base.OnActivated();
+    }
+
+    protected override void OnDeactivated()
+    {
+        if (GameManager.Instance != null) GameManager.Instance.AnnouncePlayerButtonDeactivated();
+        base.OnDeactivated();
     }
 
     public override void Init()
@@ -49,11 +50,6 @@ public class PlayerButton : Cube
         {
             GameManager.Instance.AssignPlayerButton();
             hasAssignedToGameManager = true;
-        }
-
-        if (parent != null)
-        {
-            positionInParent = Relativity.GridPosFromRPos(parent.Tiling.y, parent.Tiling.x, relativePosition);
         }
 
         base.Init();
@@ -66,11 +62,5 @@ public class PlayerButton : Cube
             GameManager.Instance.UnAssignPlayerButton();
             hasAssignedToGameManager = false;
         }
-    }
-
-    protected override void DrawCube(Rect position, float depth)
-    {
-        Color color = new Color(1, 1, 1, 0.5f);
-        CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, buttonTexture, color, position.position, position.size, depth);
     }
 }

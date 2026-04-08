@@ -114,7 +114,7 @@ public class MainCamera : MonoBehaviour
     }
     public void ChangeTarget(Vector2 prevRPosToNew, Vector2 prevRSclToNew, ContainerCube newTarget, float time = 0.5f)
     {
-        // rPos and rScl are relative values of the old target to the new target
+        if (renderMode != MainCameraRenderMode.SingleCube) return;
 
         if (newTarget == null || newTarget == targetCube) return;
         if (zoomCoroutine != null) StopCoroutine(zoomCoroutine);
