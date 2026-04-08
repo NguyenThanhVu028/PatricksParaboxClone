@@ -175,6 +175,14 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childGrid.tiling.x
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childGrid.tiling.y
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.size
       value: 9
       objectReference: {fileID: 0}
@@ -1327,12 +1335,12 @@ SceneRoots:
   - {fileID: 1411876561}
   - {fileID: 1038702594}
   - {fileID: 755045551}
+  - {fileID: 352600246}
   - {fileID: 375554311}
   - {fileID: 2126022781}
   - {fileID: 929107667}
   - {fileID: 400880456}
   - {fileID: 1596037500}
-  - {fileID: 352600246}
   - {fileID: 331930789}
   - {fileID: 697996021}
   - {fileID: 491366496}

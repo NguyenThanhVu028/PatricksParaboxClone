@@ -112,7 +112,7 @@ public class CubesManager : MonoBehaviour
             if (historyEvent.TargetCube.Parent != null)
             {
                 Debug.Log($"{historyEvent.TargetCube.Parent} removes {historyEvent.TargetCube}");
-                historyEvent.TargetCube.Parent.RemoveChild(historyEvent.TargetCube);
+                historyEvent.TargetCube.Parent.ChildGrid.RemoveChild(historyEvent.TargetCube);
             }
 
             // Let target cube return to its previous parent
@@ -123,9 +123,9 @@ public class CubesManager : MonoBehaviour
             }
 
             Vector2Int targetCubePrevPosInParent = Relativity.GridPosFromRPos(historyEvent.PreviousParent.Tiling.y, historyEvent.PreviousParent.Tiling.x, historyEvent.PreviousRPos);
-            if (!historyEvent.PreviousParent.CheckValidGridPosition(targetCubePrevPosInParent.x, targetCubePrevPosInParent.y)) return;
+            if (!historyEvent.PreviousParent.ChildGrid.CheckValidGridPosition(targetCubePrevPosInParent.x, targetCubePrevPosInParent.y)) return;
             Debug.Log($"Reset {historyEvent.TargetCube} parent to {historyEvent.PreviousParent}");
-            historyEvent.PreviousParent.CubesGrid[targetCubePrevPosInParent.x, targetCubePrevPosInParent.y] = historyEvent.TargetCube;
+            historyEvent.PreviousParent.ChildCubes[targetCubePrevPosInParent.x, targetCubePrevPosInParent.y] = historyEvent.TargetCube;
             historyEvent.TargetCube.Parent = historyEvent.PreviousParent;
             historyEvent.TargetCube.PreviousParent = historyEvent.PreviousParent;
             historyEvent.TargetCube.RelativePosition = historyEvent.PreviousRPos;

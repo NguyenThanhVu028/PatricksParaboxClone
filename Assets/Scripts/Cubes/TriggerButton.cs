@@ -25,9 +25,9 @@ public class TriggerButton : Cube
 
     private void Update()
     {
-        if (parent != null && parent.CubesGrid != null && parent.CheckValidGridPosition(positionInParent.x, positionInParent.y))
+        if (parent != null && parent.ChildGrid != null && parent.ChildGrid.CheckValidGridPosition(positionInParent.x, positionInParent.y))
         {
-            var targetCube = parent.CubesGrid[positionInParent.x, positionInParent.y];
+            var targetCube = parent.ChildCubes[positionInParent.x, positionInParent.y];
 
             if (targetCube != null)
             {

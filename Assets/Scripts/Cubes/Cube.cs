@@ -10,9 +10,7 @@ public class Cube : MonoBehaviour
     public enum CubeTypes { Normal, Static, Empty }
 
     [Header("General Info")]
-    //[HideInInspector]
     [SerializeField] protected bool isPlayer = false;
-    //[HideInInspector]
     [SerializeField] protected bool canBePlayer = false;
     [SerializeField] protected CubeTypes cubeType;
     [SerializeField] protected ColorPalette colorPalette;
@@ -21,14 +19,10 @@ public class Cube : MonoBehaviour
     [Header("Rendering")]
     [SerializeField] protected int minPixelToRender = 2; // Don't render if the render rectangle size in pixel is smaller than this value
     [SerializeField] protected Material normalMat;
-    //[SerializeField] protected Material faceMat;
     [SerializeField] protected Material outlineMat;
     [SerializeField] protected Mesh cubeMesh;
-    // Protorype
-    //[SerializeField] protected Texture playerFaceTexture;
     [SerializeField] protected string faceAnimationID;
     [SerializeField] protected Texture possessableFaceTexture;
-    //[SerializeField] protected string surfaceEffectsAnimationID;
     [Header("Cube stats")]
     [SerializeField] protected ContainerCube parent;
     [SerializeField] protected ContainerCube previousParent; // Record self cube's previous parent to record history
