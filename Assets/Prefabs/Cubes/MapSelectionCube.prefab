@@ -81,7 +81,7 @@ MonoBehaviour:
     isPlayer: 0
     canBePlayer: 0
   staticTexturesRT: {fileID: 0}
-  triggerButtonPrefab: {fileID: 0}
+  triggerButtonPrefab: {fileID: 3839724426737372632, guid: b9482e3b2b0c4164c94463150519c410, type: 3}
   mapIndex: 1
   mapName: Intro1
   openMapDelayTime: 0.49

@@ -472,7 +472,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2189149525163440033, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
       propertyPath: nextLevelSceneName
-      value: Enter3
+      value: MapSelection
       objectReference: {fileID: 0}
     - target: {fileID: 6333287652591081063, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
       propertyPath: allCubes.Array.size

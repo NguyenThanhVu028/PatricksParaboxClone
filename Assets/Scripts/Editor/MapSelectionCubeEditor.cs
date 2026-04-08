@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEditor;
 using UnityEngine;
 
@@ -12,6 +13,14 @@ public class MapSelectionCubeEditor : Editor
     SerializedProperty needInstantiating;
     SerializedProperty isEnterable;
     SerializedProperty isLeavable;
+    SerializedProperty triggerButtonPrefab;
+
+    // Map info
+    SerializedProperty mapIndex;
+    SerializedProperty mapName;
+    SerializedProperty openMapDelayTime;
+    SerializedProperty mapIndexText;
+    SerializedProperty mapIndexTextPadding;
 
     // Rendering
     SerializedProperty minPixelToRender;
@@ -41,6 +50,14 @@ public class MapSelectionCubeEditor : Editor
         needInstantiating = serializedObject.FindProperty("needInstantiating");
         isEnterable = serializedObject.FindProperty("isEnterable");
         isLeavable = serializedObject.FindProperty("isLeavable");
+        triggerButtonPrefab = serializedObject.FindProperty("triggerButtonPrefab");
+
+        // Map info
+        mapIndex = serializedObject.FindProperty("mapIndex");
+        mapName = serializedObject.FindProperty("mapName");
+        openMapDelayTime = serializedObject.FindProperty("openMapDelayTime");
+        mapIndexText = serializedObject.FindProperty("mapIndexText");
+        mapIndexTextPadding = serializedObject.FindProperty("mapIndexTextPadding");
 
         // Rendering
         minPixelToRender = serializedObject.FindProperty("minPixelToRender");
@@ -67,6 +84,15 @@ public class MapSelectionCubeEditor : Editor
         EditorGUILayout.PropertyField(colorPalette);
         EditorGUILayout.PropertyField(cubeColor);
         EditorGUILayout.PropertyField(needInstantiating);
+        EditorGUILayout.PropertyField(triggerButtonPrefab);
+
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("Map Infos", EditorStyles.boldLabel);
+        EditorGUILayout.PropertyField(mapIndex);
+        EditorGUILayout.PropertyField(mapName);
+        EditorGUILayout.PropertyField(openMapDelayTime);
+        EditorGUILayout.PropertyField(mapIndexText);
+        EditorGUILayout.PropertyField(mapIndexTextPadding);
 
         EditorGUILayout.Space();
 

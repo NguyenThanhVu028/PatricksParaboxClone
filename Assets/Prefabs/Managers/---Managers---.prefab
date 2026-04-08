@@ -252,7 +252,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   onLevelCompletedDelay: 1
-  nextLevelSceneName: Intro1
+  nextLevelSceneName: MapSelection
 --- !u!1 &8169652284322544178
 GameObject:
   m_ObjectHideFlags: 0
