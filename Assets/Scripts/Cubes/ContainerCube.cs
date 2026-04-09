@@ -55,6 +55,12 @@ public class ContainerCube : Cube
     {
         needInstantiating = false;
     }
+
+    private void OnEnable()
+    {
+        childGrid.Init();
+    }
+
     public void Start()
     {
         InitChildCubes();
@@ -159,7 +165,6 @@ public class ContainerCube : Cube
 
         // Init cubes
         //childCubes = new Cube[tiling.x, tiling.y];
-        childGrid.Init();
         for(int row = 0; row < childGrid.Tiling.x; row++)
         {
             for(int column = 0; column < childGrid.Tiling.y; column++)

@@ -11,12 +11,8 @@ public class CubeMovement : MonoBehaviour
     [SerializeField] float coolDownTime = 0.075f;
 
     [SerializeField] protected Cube selfCube;
-    protected PlayerInputsManager playerMovementInputsManager;
+    //protected PlayerInputsManager playerMovementInputsManager;
     protected Coroutine movingCoroutine = null;
-    //protected Vector2 targetRPos = Vector2.zero;
-    //protected Vector2 previousRPos = Vector2.zero;
-    //protected Vector2 targetRScl = Vector2.zero;
-    //protected Vector2 previousRScl = Vector2.zero;
     protected float coolDownTimer = 0f;
     protected UnityEvent onMoveStart = new();
     protected UnityEvent onMoveEnd = new();
@@ -35,18 +31,18 @@ public class CubeMovement : MonoBehaviour
     private void OnEnable()
     {
         selfCube = GetComponent<Cube>();
-        playerMovementInputsManager = PlayerInputsManager.Instance;
     }
     private void Update()
     {
         if (selfCube.IsPlayer &&
-            selfCube.Parent != null && 
-            playerMovementInputsManager != null &&
+            selfCube.Parent != null &&
+            PlayerInputsManager.Instance != null &&
             !IsMoving && !IsCoolingDown)
         {
-            PlayerInputsManager.MovementInputs movementInput = playerMovementInputsManager.GetLatestMovementInput();
+            PlayerInputsManager.MovementInputs movementInput = PlayerInputsManager.Instance.GetLatestMovementInput();
             if (movementInput != PlayerInputsManager.MovementInputs.None)
             {
+                Debug.Log($"{name} tries to move {movementInput}");
                 if (selfCube.Parent.RequestToMove(selfCube.RelativePosition, selfCube.RelativeScale, selfCube, movementInput) == 0)
                 {
                     // If fail to move

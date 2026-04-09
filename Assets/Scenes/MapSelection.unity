@@ -452,6 +452,10 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5057256903072216264, guid: f998a292d19cc0042ba5bd8fc59a4cff, type: 3}
+      propertyPath: worldName
+      value: Enter
+      objectReference: {fileID: 0}
+    - target: {fileID: 5057256903072216264, guid: f998a292d19cc0042ba5bd8fc59a4cff, type: 3}
       propertyPath: mapSelectionCubesList.Array.size
       value: 3
       objectReference: {fileID: 0}
@@ -558,8 +562,16 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 3330600575587197656, guid: a9d5fe7847b3a894fa714f95f94030dc, type: 3}
+      propertyPath: isPlayer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3330600575587197656, guid: a9d5fe7847b3a894fa714f95f94030dc, type: 3}
       propertyPath: cubeColor
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3330600575587197656, guid: a9d5fe7847b3a894fa714f95f94030dc, type: 3}
+      propertyPath: canBePlayer
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4745218084157380791, guid: a9d5fe7847b3a894fa714f95f94030dc, type: 3}
       propertyPath: m_LocalPosition.x
@@ -703,6 +715,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 330361562}
+  - component: {fileID: 330361563}
   m_Layer: 0
   m_Name: MapSelection
   m_TagString: Untagged
@@ -725,6 +738,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &330361563
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330361561}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11d3d466cac416a49b58277d54286832, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  allWorldCubes:
+  - {fileID: 7043020996977654428}
+  - {fileID: 1993484223}
+  playerCube: {fileID: 1365485257}
 --- !u!1001 &432299470
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1587,6 +1616,10 @@ PrefabInstance:
       value: IntroWorld
       objectReference: {fileID: 0}
     - target: {fileID: 5057256903072216264, guid: f998a292d19cc0042ba5bd8fc59a4cff, type: 3}
+      propertyPath: worldName
+      value: Intro
+      objectReference: {fileID: 0}
+    - target: {fileID: 5057256903072216264, guid: f998a292d19cc0042ba5bd8fc59a4cff, type: 3}
       propertyPath: requiredMapCount
       value: 3
       objectReference: {fileID: 0}
@@ -1614,6 +1647,14 @@ PrefabInstance:
       propertyPath: 'mapSelectionCubesList.Array.data[2]'
       value: 
       objectReference: {fileID: 461175899}
+    - target: {fileID: 5057256903072216264, guid: f998a292d19cc0042ba5bd8fc59a4cff, type: 3}
+      propertyPath: childCubesInitDetails.Array.data[10].cubeID
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5057256903072216264, guid: f998a292d19cc0042ba5bd8fc59a4cff, type: 3}
+      propertyPath: childCubesInitDetails.Array.data[10].isPlayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8332820837208702817, guid: f998a292d19cc0042ba5bd8fc59a4cff, type: 3}
       propertyPath: m_LocalPosition.x
       value: -3.1

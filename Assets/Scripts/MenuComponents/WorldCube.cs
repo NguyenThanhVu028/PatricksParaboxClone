@@ -4,12 +4,15 @@ using UnityEngine;
 
 public class WorldCube : ContainerCube
 {
+    [SerializeField] string worldName = "";
     [SerializeField] List<MapSelectionCube> mapSelectionCubesList = new();
     [SerializeField] List<WorldCube> dependentWorldCubes = new();
     [SerializeField] int requiredMapCount = 2;
     [SerializeField] TextMeshPro requiredMapCountText;
 
     private bool hasUnlocked = false;
+
+    public string WorldName { get => worldName; }
 
     // This init is called after all the map select cubes of this cube have been init
     public override void Init()

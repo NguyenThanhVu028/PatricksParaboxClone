@@ -16,6 +16,7 @@ public class WorldCubeEditor : Editor
     SerializedProperty isLeavable;
 
     // World info
+    SerializedProperty worldName;
     SerializedProperty mapSelectionCubesList;
     SerializedProperty dependentWorldCubes;
     SerializedProperty requiredMapCount;
@@ -62,6 +63,7 @@ public class WorldCubeEditor : Editor
         isLeavable = serializedObject.FindProperty("isLeavable");
 
         // World info
+        worldName = serializedObject.FindProperty("worldName");
         mapSelectionCubesList = serializedObject.FindProperty("mapSelectionCubesList");
         dependentWorldCubes = serializedObject.FindProperty("dependentWorldCubes");
         requiredMapCount = serializedObject.FindProperty("requiredMapCount");
@@ -107,6 +109,7 @@ public class WorldCubeEditor : Editor
 
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("World Infos", EditorStyles.boldLabel);
+        EditorGUILayout.PropertyField(worldName);
         EditorGUILayout.PropertyField(mapSelectionCubesList);
         EditorGUILayout.PropertyField(dependentWorldCubes);
         EditorGUILayout.PropertyField(requiredMapCount);

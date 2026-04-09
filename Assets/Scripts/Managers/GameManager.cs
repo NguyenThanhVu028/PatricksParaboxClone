@@ -28,6 +28,18 @@ public class GameManager : MonoBehaviour
         instance = this;
     }
 
+    private void Start()
+    {
+        if (SaveAndLoadManager.Instance != null)
+        {
+            SaveAndLoadManager.GameData gameData = SaveAndLoadManager.Instance.GeneralGameData;
+            if (gameData != null)
+            {
+                gameData.LastOpenedMapName = SceneManager.GetActiveScene().name;
+            }
+        }
+    }
+
     private void Update()
     {
         if ((playerButtonCount > 0 || normalButtonCount > 0) && activatedPlayerButtons >= playerButtonCount && activatedNormalButtons >= normalButtonCount)

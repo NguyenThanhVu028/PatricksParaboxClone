@@ -4,6 +4,7 @@ using UnityEngine;
 [Serializable]
 public class CustomGrid <T> where T: Cube
 {
+    [Min(1)]
     [SerializeField] Vector2Int tiling = new(9, 9);
 
     public Vector2Int Tiling { get => tiling; set => tiling = value; }
