@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class MapSelectionCube : ContainerCube
 {
+    [SerializeField] MapSelectionCube requiredMap;
     [SerializeField] TriggerButton triggerButtonPrefab;
     [Min(1)]
     [SerializeField] int mapIndex = 1;
@@ -12,8 +13,12 @@ public class MapSelectionCube : ContainerCube
     [SerializeField] float openMapDelayTime = 0.5f;
     [SerializeField] TextMeshPro mapIndexText;
     [SerializeField] float mapIndexTextPadding = 0.75f;
+
     private bool hasInit = false;
+    private bool hasFinished = false;
     private Coroutine openMapCoroutine;
+
+    public bool HasFinished { get => hasFinished; set => hasFinished = value; }
 
     public override void Init()
     {
@@ -41,6 +46,28 @@ public class MapSelectionCube : ContainerCube
 
         previousParent = parent;
 
+        if (SaveAndLoadManager.Instance != null)
+        {
+            SaveAndLoadManager.GameData gameData = SaveAndLoadManager.Instance.GeneralGameData;
+            if (gameData != null)
+            {
+                foreach(var mapID in gameData.FinishedMapIDs)
+                {
+                    if (mapID == mapName)
+                    {
+                        hasFinished = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (!hasFinished && surfaceEffectsAnimation == null)
+        {
+            SetSurfaceEffects("RegularShiny");
+        }
+        else if (hasFinished) surfaceEffectsAnimation = null;
+
         onInit.Invoke();
     }
 
@@ -60,6 +87,16 @@ public class MapSelectionCube : ContainerCube
     {
         if (openMapCoroutine != null) return;
         openMapCoroutine = StartCoroutine(OpenMapCoroutine());
+    }
+
+    public void CheckRequiredMap()
+    {
+        if (requiredMap == null || hasFinished)
+        {
+            isEnterable = true;
+            return;
+        }
+        if (!requiredMap.hasFinished) isEnterable = false;
     }
 
     private IEnumerator OpenMapCoroutine()

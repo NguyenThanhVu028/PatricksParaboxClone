@@ -101,7 +101,7 @@ public class Cube : MonoBehaviour
     protected virtual void DrawSurfaceEffects(Rect position, float depth)
     {
         var cubeColor = Color.white;
-        if (colorPalette != null) cubeColor = colorPalette.GetColor(this.cubeColor);
+        //if (colorPalette != null) cubeColor = colorPalette.GetColor(this.cubeColor);
 
         if (surfaceEffectsAnimation != null)
         {

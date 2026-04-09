@@ -74,6 +74,14 @@ public class GameManager : MonoBehaviour
     IEnumerator LevelCompletedCoroutine()
     {
         yield return new WaitForSeconds(onLevelCompletedDelay);
+        if (SaveAndLoadManager.Instance != null)
+        {
+            SaveAndLoadManager.GameData gameData = SaveAndLoadManager.Instance.GeneralGameData;
+            if (gameData != null)
+            {
+                gameData.AddFinishedMap(SceneManager.GetActiveScene().name);
+            }
+        }
         if (!string.IsNullOrEmpty(nextLevelSceneName))
             SceneManager.LoadSceneAsync(nextLevelSceneName);
     }
