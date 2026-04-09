@@ -16,7 +16,6 @@ public class MapSelectionCube : ContainerCube
     [SerializeField] TextMeshPro mapIndexText;
     [SerializeField] float mapIndexTextPadding = 0.75f;
 
-    private bool hasInit = false;
     private bool hasFinished = false;
     private Coroutine openMapCoroutine;
 
@@ -24,14 +23,11 @@ public class MapSelectionCube : ContainerCube
 
     public override void Init()
     {
-        if (hasInit) return;
-
-        hasInit = true;
-
         isPlayer = false;
         childGrid.Tiling = Vector2Int.one;
         childGrid.Init();
 
+        // Add triger button at the center to detect when player enters
         if (triggerButtonPrefab != null)
         {
             var triggerButton = Instantiate(triggerButtonPrefab);
@@ -45,8 +41,6 @@ public class MapSelectionCube : ContainerCube
 
             triggerButton.OnButtonActivated.AddListener(OpenMap);
         }
-
-        previousParent = parent;
 
         // Check hasFinished status
         if (SaveAndLoadManager.Instance != null)
@@ -73,7 +67,7 @@ public class MapSelectionCube : ContainerCube
             foreach(var dependentMap in dependentMapSelectionCubes)
             {
                 if (dependentMap == null) continue;
-                dependentMap.OnRequiredMapSelectionCubeFinished(false);
+                dependentMap.OnRequiredMapFinished(false);
             }
         }
         else if (hasFinished)
@@ -82,7 +76,7 @@ public class MapSelectionCube : ContainerCube
             foreach (var dependentMap in dependentMapSelectionCubes)
             {
                 if (dependentMap == null) continue;
-                dependentMap.OnRequiredMapSelectionCubeFinished(true);
+                dependentMap.OnRequiredMapFinished(true);
             }
         }
 
@@ -101,13 +95,7 @@ public class MapSelectionCube : ContainerCube
         }
     }
 
-    public void OpenMap()
-    {
-        if (openMapCoroutine != null) return;
-        openMapCoroutine = StartCoroutine(OpenMapCoroutine());
-    }
-
-    public void OnRequiredMapSelectionCubeFinished(bool hasFinished)
+    public void OnRequiredMapFinished(bool hasFinished)
     {
         if (this.hasFinished)
         {
@@ -116,6 +104,13 @@ public class MapSelectionCube : ContainerCube
         }
         isEnterable = hasFinished;
     }
+
+    public void OpenMap()
+    {
+        if (openMapCoroutine != null) return;
+        openMapCoroutine = StartCoroutine(OpenMapCoroutine());
+    }
+
 
     private IEnumerator OpenMapCoroutine()
     {

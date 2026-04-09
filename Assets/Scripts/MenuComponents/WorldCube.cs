@@ -10,11 +10,9 @@ public class WorldCube : ContainerCube
     [SerializeField] int requiredMapCount = 2;
     [SerializeField] TextMeshPro requiredMapCountText;
 
-    private bool hasUnlocked = false;
-
     public string WorldName { get => worldName; }
 
-    // This init is called after all the map select cubes of this cube have been init
+    // This init is called after all the map selection cubes of this cube have been init
     public override void Init()
     {
         base.Init();
@@ -63,11 +61,6 @@ public class WorldCube : ContainerCube
 
     public void OnRequiredWorldUnlocked(bool hasUnlocked)
     {
-        if (this.hasUnlocked)
-        {
-            isEnterable = true;
-            return;
-        }
         isEnterable = hasUnlocked;
     }
 }
