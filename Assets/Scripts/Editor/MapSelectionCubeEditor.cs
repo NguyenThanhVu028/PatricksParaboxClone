@@ -21,6 +21,7 @@ public class MapSelectionCubeEditor : Editor
     SerializedProperty openMapDelayTime;
     SerializedProperty mapIndexText;
     SerializedProperty mapIndexTextPadding;
+    SerializedProperty dependentMapSelectionCubes;
 
     // Rendering
     SerializedProperty minPixelToRender;
@@ -58,6 +59,7 @@ public class MapSelectionCubeEditor : Editor
         openMapDelayTime = serializedObject.FindProperty("openMapDelayTime");
         mapIndexText = serializedObject.FindProperty("mapIndexText");
         mapIndexTextPadding = serializedObject.FindProperty("mapIndexTextPadding");
+        dependentMapSelectionCubes = serializedObject.FindProperty("dependentMapSelectionCubes");
 
         // Rendering
         minPixelToRender = serializedObject.FindProperty("minPixelToRender");
@@ -93,6 +95,7 @@ public class MapSelectionCubeEditor : Editor
         EditorGUILayout.PropertyField(openMapDelayTime);
         EditorGUILayout.PropertyField(mapIndexText);
         EditorGUILayout.PropertyField(mapIndexTextPadding);
+        EditorGUILayout.PropertyField(dependentMapSelectionCubes);
 
         EditorGUILayout.Space();
 

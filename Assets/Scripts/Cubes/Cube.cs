@@ -21,7 +21,6 @@ public class Cube : MonoBehaviour
     [SerializeField] protected Material normalMat;
     [SerializeField] protected Material outlineMat;
     [SerializeField] protected Mesh cubeMesh;
-    [SerializeField] protected string faceAnimationID;
     [SerializeField] protected Texture possessableFaceTexture;
     [Header("Cube stats")]
     [SerializeField] protected ContainerCube parent;
@@ -58,12 +57,11 @@ public class Cube : MonoBehaviour
 
         previousParent = parent;
 
-        //if (faceAnimation != null) faceAnimation = Instantiate(faceAnimation);
         AnimationsManager animationsManager = AnimationsManager.Instance;
-        if (animationsManager != null)
+        if (animationsManager != null && SaveAndLoadManager.Instance != null)
         {
-            faceAnimation = animationsManager.GetPlayerFaceTextureAnimation(faceAnimationID);
-            //surfaceEffectsAnimation = animationsManager.GetNormalTextureAnimation(surfaceEffectsAnimationID);
+            var gameData = SaveAndLoadManager.Instance.GeneralGameData;
+            faceAnimation = animationsManager.GetPlayerFaceTextureAnimation(gameData.LastUsedFaceAniID);
         }
 
         onInit.Invoke();

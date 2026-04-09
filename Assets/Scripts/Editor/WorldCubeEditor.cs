@@ -1,9 +1,10 @@
+using System.Collections.Generic;
+using TMPro;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Events;
 
-[CustomEditor(typeof(ContainerCube))]
-public class ContainerCubeEditor : Editor
+[CustomEditor(typeof(WorldCube))]
+public class WorldCubeEditor : Editor
 {
     #region SerializedProperties
     // General Infos
@@ -14,12 +15,17 @@ public class ContainerCubeEditor : Editor
     SerializedProperty isEnterable;
     SerializedProperty isLeavable;
 
+    // World info
+    SerializedProperty mapSelectionCubesList;
+    SerializedProperty dependentWorldCubes;
+    SerializedProperty requiredMapCount;
+    SerializedProperty requiredMapCountText;
+
     // Rendering
     SerializedProperty minPixelToRender;
     SerializedProperty normalMat;
     SerializedProperty outlineMat;
     SerializedProperty cubeMesh;
-    SerializedProperty possessableFaceTexture;
     SerializedProperty wallSubdivision;
     SerializedProperty wallRuleTile;
     SerializedProperty floorTexture;
@@ -35,7 +41,6 @@ public class ContainerCubeEditor : Editor
     SerializedProperty relativePosition;
 
     // Other settings
-    SerializedProperty possessingTime;
     SerializedProperty onInit;
 
     // Grid settings
@@ -43,10 +48,11 @@ public class ContainerCubeEditor : Editor
 
     #endregion
 
-    ContainerCube targetEnterableCube;
+    WorldCube targetWorldCube;
+
     private void OnEnable()
     {
-        targetEnterableCube = (ContainerCube)target;
+        targetWorldCube = (WorldCube)target;
 
         cubeType = serializedObject.FindProperty("cubeType");
         colorPalette = serializedObject.FindProperty("colorPalette");
@@ -55,12 +61,17 @@ public class ContainerCubeEditor : Editor
         isEnterable = serializedObject.FindProperty("isEnterable");
         isLeavable = serializedObject.FindProperty("isLeavable");
 
+        // World info
+        mapSelectionCubesList = serializedObject.FindProperty("mapSelectionCubesList");
+        dependentWorldCubes = serializedObject.FindProperty("dependentWorldCubes");
+        requiredMapCount = serializedObject.FindProperty("requiredMapCount");
+        requiredMapCountText = serializedObject.FindProperty("requiredMapCountText");
+
         // Rendering
         minPixelToRender = serializedObject.FindProperty("minPixelToRender");
         normalMat = serializedObject.FindProperty("normalMat");
         outlineMat = serializedObject.FindProperty("outlineMat");
         cubeMesh = serializedObject.FindProperty("cubeMesh");
-        possessableFaceTexture = serializedObject.FindProperty("possessableFaceTexture");
         wallSubdivision = serializedObject.FindProperty("wallSubdivision");
         wallRuleTile = serializedObject.FindProperty("wallRuleTile");
         floorTexture = serializedObject.FindProperty("floorTexture");
@@ -76,7 +87,6 @@ public class ContainerCubeEditor : Editor
         relativePosition = serializedObject.FindProperty("relativePosition");
 
         // Other settings
-        possessingTime = serializedObject.FindProperty("possessingTime");
         onInit = serializedObject.FindProperty("onInit");
 
         // Grid settings
@@ -96,12 +106,18 @@ public class ContainerCubeEditor : Editor
         EditorGUILayout.PropertyField(needInstantiating);
 
         EditorGUILayout.Space();
+        EditorGUILayout.LabelField("World Infos", EditorStyles.boldLabel);
+        EditorGUILayout.PropertyField(mapSelectionCubesList);
+        EditorGUILayout.PropertyField(dependentWorldCubes);
+        EditorGUILayout.PropertyField(requiredMapCount);
+        EditorGUILayout.PropertyField(requiredMapCountText);
+
+        EditorGUILayout.Space();
 
         EditorGUILayout.PropertyField(minPixelToRender);
         EditorGUILayout.PropertyField(normalMat);
         EditorGUILayout.PropertyField(outlineMat);
         EditorGUILayout.PropertyField(cubeMesh);
-        EditorGUILayout.PropertyField(possessableFaceTexture);
         EditorGUILayout.PropertyField(wallSubdivision);
         EditorGUILayout.PropertyField(wallRuleTile);
         EditorGUILayout.PropertyField(floorTexture);
@@ -119,18 +135,17 @@ public class ContainerCubeEditor : Editor
 
         EditorGUILayout.Space();
 
-        EditorGUILayout.PropertyField(possessingTime);
         EditorGUILayout.PropertyField(onInit);
 
         EditorGUILayout.Space();
         EditorGUILayout.PropertyField(childGrid);
         if (GUILayout.Button("Reset Cubes Init Details Grid"))
         {
-            targetEnterableCube.ReGenerateCubesIDGrid();
-            EditorUtility.SetDirty(targetEnterableCube);
+            targetWorldCube.ReGenerateCubesIDGrid();
+            EditorUtility.SetDirty(targetWorldCube);
         }
         EditorGUILayout.LabelField("Cubes Init Details Grid: ");
-        for(int row = 0; row < targetEnterableCube.Tiling.x; row++)
+        for (int row = 0; row < targetWorldCube.Tiling.x; row++)
         {
             EditorGUILayout.BeginHorizontal();
             // Row headers
@@ -140,13 +155,13 @@ public class ContainerCubeEditor : Editor
             EditorGUILayout.LabelField("Can Be Player", GUILayout.Width(80));
             EditorGUILayout.Space();
             EditorGUILayout.EndVertical();
-            for (int column = 0; column < targetEnterableCube.Tiling.y; column++)
+            for (int column = 0; column < targetWorldCube.Tiling.y; column++)
             {
-                var childCubeInitDetail = targetEnterableCube.GetChildCubeInitDetails(row, column);
+                var childCubeInitDetail = targetWorldCube.GetChildCubeInitDetails(row, column);
                 if (childCubeInitDetail == null) continue;
                 EditorGUILayout.BeginVertical();
                 childCubeInitDetail.CubeID = EditorGUILayout.IntField(childCubeInitDetail.CubeID, GUILayout.Width(30));
-                childCubeInitDetail.IsPlayer= EditorGUILayout.Toggle(childCubeInitDetail.IsPlayer, GUILayout.Width(30));
+                childCubeInitDetail.IsPlayer = EditorGUILayout.Toggle(childCubeInitDetail.IsPlayer, GUILayout.Width(30));
                 childCubeInitDetail.CanBePlayer = EditorGUILayout.Toggle(childCubeInitDetail.CanBePlayer, GUILayout.Width(30));
                 EditorGUILayout.EndVertical();
             }
@@ -154,7 +169,7 @@ public class ContainerCubeEditor : Editor
         }
         if (EditorGUI.EndChangeCheck())
         {
-            EditorUtility.SetDirty(targetEnterableCube);
+            EditorUtility.SetDirty(targetWorldCube);
         }
         serializedObject.ApplyModifiedProperties();
     }

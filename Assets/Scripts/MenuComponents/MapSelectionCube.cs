@@ -1,11 +1,13 @@
+using NUnit.Framework;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class MapSelectionCube : ContainerCube
 {
-    [SerializeField] MapSelectionCube requiredMap;
+    [SerializeField] List<MapSelectionCube> dependentMapSelectionCubes = new();
     [SerializeField] TriggerButton triggerButtonPrefab;
     [Min(1)]
     [SerializeField] int mapIndex = 1;
@@ -46,6 +48,7 @@ public class MapSelectionCube : ContainerCube
 
         previousParent = parent;
 
+        // Check hasFinished status
         if (SaveAndLoadManager.Instance != null)
         {
             SaveAndLoadManager.GameData gameData = SaveAndLoadManager.Instance.GeneralGameData;
@@ -62,11 +65,26 @@ public class MapSelectionCube : ContainerCube
             }
         }
 
-        if (!hasFinished && surfaceEffectsAnimation == null)
+        // Init effects and announce all dependent cubes
+        if (!hasFinished)
         {
-            SetSurfaceEffects("RegularShiny");
+            if (surfaceEffectsAnimation == null)
+                SetSurfaceEffects("RegularShiny");
+            foreach(var dependentMap in dependentMapSelectionCubes)
+            {
+                if (dependentMap == null) continue;
+                dependentMap.OnRequiredMapSelectionCubeFinished(false);
+            }
         }
-        else if (hasFinished) surfaceEffectsAnimation = null;
+        else if (hasFinished)
+        {
+            surfaceEffectsAnimation = null;
+            foreach (var dependentMap in dependentMapSelectionCubes)
+            {
+                if (dependentMap == null) continue;
+                dependentMap.OnRequiredMapSelectionCubeFinished(true);
+            }
+        }
 
         onInit.Invoke();
     }
@@ -89,14 +107,14 @@ public class MapSelectionCube : ContainerCube
         openMapCoroutine = StartCoroutine(OpenMapCoroutine());
     }
 
-    public void CheckRequiredMap()
+    public void OnRequiredMapSelectionCubeFinished(bool hasFinished)
     {
-        if (requiredMap == null || hasFinished)
+        if (this.hasFinished)
         {
             isEnterable = true;
             return;
         }
-        if (!requiredMap.hasFinished) isEnterable = false;
+        isEnterable = hasFinished;
     }
 
     private IEnumerator OpenMapCoroutine()

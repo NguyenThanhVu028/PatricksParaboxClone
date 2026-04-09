@@ -102,19 +102,21 @@ public class SaveAndLoadManager : MonoBehaviour
     [Serializable]
     public class GameData
     {
-        [SerializeField] List<string> unlockedWorldIDs = new();
+        //[SerializeField] List<string> unlockedWorldIDs = new();
         [SerializeField] List<string> finishedMapIDs = new();
         [SerializeField] string lastOpenedMapID = "";
+        [SerializeField] string lastUsedFaceAniID = "Default";
 
-        public List<string> UnLockedWorldIDs { get => unlockedWorldIDs; }
+        //public List<string> UnLockedWorldIDs { get => unlockedWorldIDs; }
         public List<string> FinishedMapIDs { get => finishedMapIDs; }
         public string LastOpenMapID { get => lastOpenedMapID; set => lastOpenedMapID = value; }
+        public string LastUsedFaceAniID { get => lastUsedFaceAniID; set => lastUsedFaceAniID = value; }
 
-        public void AddUnlockedWorld(string id)
-        {
-            if (unlockedWorldIDs.Contains(id)) return;
-            unlockedWorldIDs.Add(id);
-        }
+        //public void AddUnlockedWorld(string id)
+        //{
+        //    if (unlockedWorldIDs.Contains(id)) return;
+        //    unlockedWorldIDs.Add(id);
+        //}
 
         public void AddFinishedMap(string id)
         {
