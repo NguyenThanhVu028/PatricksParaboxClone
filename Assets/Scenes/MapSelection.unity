@@ -950,6 +950,8 @@ GameObject:
   - component: {fileID: 520034240}
   - component: {fileID: 520034239}
   - component: {fileID: 520034238}
+  - component: {fileID: 520034242}
+  - component: {fileID: 520034243}
   m_Layer: 5
   m_Name: PauseMenu
   m_TagString: Untagged
@@ -1040,6 +1042,33 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &520034242
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 520034237}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8da810cccad2b6341ae8e29f4a2275bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &520034243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 520034237}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a8143cf9dbbc8448a13f793f4f7eadc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionMap: 1
+  onEnable: 1
+  onDisable: 1
 --- !u!1001 &556593666
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1096,6 +1125,66 @@ PrefabInstance:
       propertyPath: 'playerFacesTextureAnimation.Array.data[0]'
       value: 
       objectReference: {fileID: 11400000, guid: a2eb29ecdd7846d4c9b6e1123bb5c001, type: 2}
+    - target: {fileID: 6082411181043555780, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
+      propertyPath: uiInputsReceiver.onReturnEvent.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6082411181043555780, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
+      propertyPath: gameplayInputsReceiver.onPauseEvent.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6082411181043555780, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
+      propertyPath: uiInputsReceiver.onReturnEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6082411181043555780, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
+      propertyPath: uiInputsReceiver.onReturnEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 520034242}
+    - target: {fileID: 6082411181043555780, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
+      propertyPath: gameplayInputsReceiver.onPauseEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6082411181043555780, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
+      propertyPath: uiInputsReceiver.onReturnEvent.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6082411181043555780, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
+      propertyPath: uiInputsReceiver.onReturnEvent.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnReturn
+      objectReference: {fileID: 0}
+    - target: {fileID: 6082411181043555780, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
+      propertyPath: gameplayInputsReceiver.onPauseEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 520034237}
+    - target: {fileID: 6082411181043555780, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
+      propertyPath: gameplayInputsReceiver.onPauseEvent.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6082411181043555780, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
+      propertyPath: gameplayInputsReceiver.onPauseEvent.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetActive
+      objectReference: {fileID: 0}
+    - target: {fileID: 6082411181043555780, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
+      propertyPath: uiInputsReceiver.onReturnEvent.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PauseMenu, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6082411181043555780, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
+      propertyPath: gameplayInputsReceiver.onPauseEvent.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: UnityEngine.GameObject, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 6082411181043555780, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
+      propertyPath: gameplayInputsReceiver.onPauseEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_BoolArgument
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6082411181043555780, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
+      propertyPath: uiInputsReceiver.onReturnEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 6082411181043555780, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
+      propertyPath: gameplayInputsReceiver.onPauseEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 6333287652591081063, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
       propertyPath: allCubes.Array.size
       value: 11

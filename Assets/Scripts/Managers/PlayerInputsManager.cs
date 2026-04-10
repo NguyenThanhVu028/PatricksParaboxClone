@@ -8,15 +8,17 @@ using UnityEngine.SceneManagement;
 public class PlayerInputsManager : MonoBehaviour 
 {
     public enum MovementInputs { Up, Down, Left, Right, None }
+    public enum ActionMaps { Gameplay, UI}
 
     private static PlayerInputsManager instance;
-
     public static PlayerInputsManager Instance { get => instance; }
 
-    private MainInputSystem mainInputSystem;
+    [SerializeField] ActionMaps defaultActionMap = ActionMaps.Gameplay;
+    [SerializeField] GameplayInputsReceiver gameplayInputsReceiver = new();
+    [SerializeField] UIInputsReceiver uiInputsReceiver = new();
 
-    private GameplayInputsReceiver gameplayInputsReceiver;
-    private UIInputsReceiver uiInputsReceiver;
+    private MainInputSystem mainInputSystem;
+    private Stack<ActionMaps> actionMapsStack = new();
 
     public GameplayInputsReceiver GameplayInputs { get => gameplayInputsReceiver; }
     public UIInputsReceiver UIInputs { get => uiInputsReceiver; }
@@ -27,23 +29,60 @@ public class PlayerInputsManager : MonoBehaviour
         instance = this;
 
         mainInputSystem = new MainInputSystem();
-        gameplayInputsReceiver = new();
-        uiInputsReceiver = new();
 
         // Subscribe actions 
         mainInputSystem.Normal.SetCallbacks(gameplayInputsReceiver);
+        mainInputSystem.UI.SetCallbacks(uiInputsReceiver);
+
     }
 
     private void OnEnable()
     {
-        if (mainInputSystem != null) mainInputSystem.Enable();
+        PushActionMap(defaultActionMap);
     }
     private void OnDisable()
     {
         if (mainInputSystem != null) mainInputSystem.Disable();
     }
 
-    //Helper functions
+    // Action map functions
+    public void PushActionMap(ActionMaps actionMap)
+    {
+        mainInputSystem.Disable();
+        actionMapsStack.Push(actionMap);
+        EnableActionMap(actionMap);
+    }
+    private void EnableActionMap(ActionMaps actionMap)
+    {
+        if (mainInputSystem == null) return;
+        switch (actionMap)
+        {
+            case ActionMaps.Gameplay:
+                mainInputSystem.Normal.Enable();
+                break;
+            case ActionMaps.UI:
+                mainInputSystem.UI.Enable();
+                break;
+        }
+    }
+
+    public void PopActionMap()
+    {
+        if (mainInputSystem == null || actionMapsStack.Count == 0) return;
+        mainInputSystem.Disable();
+        actionMapsStack.Pop();
+        if (actionMapsStack.Count > 0) EnableActionMap(actionMapsStack.Peek());
+    }
+
+    public void PopActionMap(ActionMaps actionMap)
+    {
+        if (mainInputSystem == null || actionMapsStack.Count == 0) return;
+        mainInputSystem.Disable();
+        if (actionMapsStack.Peek() == actionMap) actionMapsStack.Pop();
+        if (actionMapsStack.Count > 0) EnableActionMap(actionMapsStack.Peek());
+    }
+
+    // Helper functions
     public static Vector2Int ConvertMovementInputToGridDirection(MovementInputs input)
     {
         switch (input)
