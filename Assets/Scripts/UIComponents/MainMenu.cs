@@ -12,7 +12,7 @@ public class MainMenu : MonoBehaviour
         if (changeSceneCoroutine != null) return;
         changeSceneCoroutine = StartCoroutine(StartGameCoroutine());
     }
-    private void StartGame()
+    public void StartGame()
     {
         SceneManager.LoadSceneAsync(mapSelectionScene);
     }
@@ -21,7 +21,7 @@ public class MainMenu : MonoBehaviour
         if (changeSceneCoroutine != null) return;
         changeSceneCoroutine = StartCoroutine(QuitGameCoroutine());
     }
-    private void QuitGame()
+    public void QuitGame()
     {
         Application.Quit();
     }

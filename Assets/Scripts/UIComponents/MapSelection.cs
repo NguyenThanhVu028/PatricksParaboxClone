@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MapSelection : MonoBehaviour
 {
+    [SerializeField] string mainMenuSceneName = "MainMenu";
     [SerializeField] List<WorldCube> allWorldCubes = new();
     [SerializeField] Cube playerCube;
 
@@ -57,5 +59,13 @@ public class MapSelection : MonoBehaviour
                 gameData.LastOpenedWorldName = (playerCube.Parent as WorldCube).WorldName;
             }
         }
+    }
+    public void OnReturnToMainMenu()
+    {
+        SceneManager.LoadSceneAsync(mainMenuSceneName);
+    }
+    public void OnQuitGame()
+    {
+        Application.Quit();
     }
 }

@@ -154,7 +154,7 @@ PrefabInstance:
     - target: {fileID: 3839724426737372632, guid: b9482e3b2b0c4164c94463150519c410, type: 3}
       propertyPath: onButtonDeactivated.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1351846733}
+      objectReference: {fileID: 0}
     - target: {fileID: 3839724426737372632, guid: b9482e3b2b0c4164c94463150519c410, type: 3}
       propertyPath: onButtonActivated.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
@@ -1161,7 +1161,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3839724426737372632, guid: b9482e3b2b0c4164c94463150519c410, type: 3}
       propertyPath: onButtonActivated.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: MenuItem, Assembly-CSharp
+      value: TriggerMenuItem, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 3839724426737372632, guid: b9482e3b2b0c4164c94463150519c410, type: 3}
       propertyPath: onButtonActivated.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_BoolArgument
@@ -1169,7 +1169,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3839724426737372632, guid: b9482e3b2b0c4164c94463150519c410, type: 3}
       propertyPath: onButtonDeactivated.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: MenuItem, Assembly-CSharp
+      value: TriggerMenuItem, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 3839724426737372632, guid: b9482e3b2b0c4164c94463150519c410, type: 3}
       propertyPath: onButtonActivated.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
@@ -1332,7 +1332,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 444496875}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae0089f7b17e2334c8d6098c6afd73b2, type: 3}
+  m_Script: {fileID: 11500000, guid: ec930dce31b98c344b0a21ff7573aa59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cursor: {fileID: 290424012}
@@ -1340,7 +1340,19 @@ MonoBehaviour:
   cursorColor: 8
   onTriggerEvent:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 330361563}
+        m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
+        m_MethodName: StartGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &540139295 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3839724426737372632, guid: b9482e3b2b0c4164c94463150519c410, type: 3}
@@ -2330,7 +2342,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3839724426737372632, guid: b9482e3b2b0c4164c94463150519c410, type: 3}
       propertyPath: onButtonActivated.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: MenuItem, Assembly-CSharp
+      value: TriggerMenuItem, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 3839724426737372632, guid: b9482e3b2b0c4164c94463150519c410, type: 3}
       propertyPath: onButtonActivated.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_BoolArgument
@@ -2338,7 +2350,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3839724426737372632, guid: b9482e3b2b0c4164c94463150519c410, type: 3}
       propertyPath: onButtonDeactivated.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: MenuItem, Assembly-CSharp
+      value: TriggerMenuItem, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 3839724426737372632, guid: b9482e3b2b0c4164c94463150519c410, type: 3}
       propertyPath: onButtonActivated.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
@@ -2556,7 +2568,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1351846731}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae0089f7b17e2334c8d6098c6afd73b2, type: 3}
+  m_Script: {fileID: 11500000, guid: ec930dce31b98c344b0a21ff7573aa59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cursor: {fileID: 590715685}
@@ -2564,7 +2576,19 @@ MonoBehaviour:
   cursorColor: 8
   onTriggerEvent:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 330361563}
+        m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
+        m_MethodName: QuitGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1365485257 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3330600575587197656, guid: a9d5fe7847b3a894fa714f95f94030dc, type: 3}
@@ -2965,7 +2989,7 @@ PrefabInstance:
     - target: {fileID: 3839724426737372632, guid: b9482e3b2b0c4164c94463150519c410, type: 3}
       propertyPath: onButtonDeactivated.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 444496877}
+      objectReference: {fileID: 0}
     - target: {fileID: 3839724426737372632, guid: b9482e3b2b0c4164c94463150519c410, type: 3}
       propertyPath: onButtonActivated.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
@@ -3055,6 +3079,7 @@ PrefabInstance:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 330361562}
   - {fileID: 556593666}
   - {fileID: 783534062}
   - {fileID: 72629535}
@@ -3066,7 +3091,6 @@ SceneRoots:
   - {fileID: 228418837}
   - {fileID: 837974545}
   - {fileID: 176987705}
-  - {fileID: 330361562}
   - {fileID: 1338428197}
   - {fileID: 1483869701}
   - {fileID: 583676130}

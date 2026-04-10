@@ -13,6 +13,11 @@ public class MenuItem : MonoBehaviour
         Init();
     }
 
+    private void OnDisable()
+    {
+        OnSelected(false);
+    }
+
     protected virtual void Init()
     {
         if (cursor != null && cursorColorPalette != null)
