@@ -127,11 +127,11 @@ public class Cube : MonoBehaviour
     private IEnumerator PossessingCoroutine(Cube targetCube)
     {
         IsPlayer = false;
-        if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.StopUsingMovementInputs();
+        if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.GameplayInputs.StopUsingMovementInputs();
         // Play animation or effect for possessing here
         yield return new WaitForSeconds(possessingTime);
         // Stop the animation or effect here
         targetCube.IsPlayer = true;
-        if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.ContinueUsingMovementInputs();
+        if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.GameplayInputs.ContinueUsingMovementInputs();
     }
 }

@@ -28,9 +28,9 @@ public class CubesManager : MonoBehaviour
         PlayerInputsManager playerInputsManager = PlayerInputsManager.Instance;
         if (playerInputsManager != null)
         {
-            playerInputsManager.OnResetEvent.AddListener(OnReset);
-            playerInputsManager.OnUndoEvent.AddListener(OnUndo);
-            playerInputsManager.OnRedoEvent.AddListener(OnRedo);
+            playerInputsManager.GameplayInputs.OnResetEvent.AddListener(OnReset);
+            playerInputsManager.GameplayInputs.OnUndoEvent.AddListener(OnUndo);
+            playerInputsManager.GameplayInputs.OnRedoEvent.AddListener(OnRedo);
         }
 
         // Save the initial empty history record

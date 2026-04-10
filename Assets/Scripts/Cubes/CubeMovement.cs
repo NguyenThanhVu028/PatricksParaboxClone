@@ -39,7 +39,7 @@ public class CubeMovement : MonoBehaviour
             PlayerInputsManager.Instance != null &&
             !IsMoving && !IsCoolingDown)
         {
-            PlayerInputsManager.MovementInputs movementInput = PlayerInputsManager.Instance.GetLatestMovementInput();
+            PlayerInputsManager.MovementInputs movementInput = PlayerInputsManager.Instance.GameplayInputs.GetLatestMovementInput();
             if (movementInput != PlayerInputsManager.MovementInputs.None)
             {
                 Debug.Log($"{name} tries to move {movementInput}");
@@ -109,7 +109,7 @@ public class CubeMovement : MonoBehaviour
         if (movingCoroutine != null) StopCoroutine(movingCoroutine);
         movingCoroutine = null;
 
-        if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.ContinueUsingMovementInputs();
+        if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.GameplayInputs.ContinueUsingMovementInputs();
         onMoveEnd.Invoke();
     }
 
@@ -140,7 +140,7 @@ public class CubeMovement : MonoBehaviour
         float elapsedTime = -1;
         selfCube.RelativePosition = startRPos;
         selfCube.RelativeScale = startRScl;
-        if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.StopUsingMovementInputs();
+        if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.GameplayInputs.StopUsingMovementInputs();
         onMoveStart.Invoke();
         while (elapsedTime < time)
         {
@@ -155,7 +155,7 @@ public class CubeMovement : MonoBehaviour
         movingCoroutine = null;
         coolDownTimer = coolDownTime;
         selfCube.PreviousParent = selfCube.Parent; // Update current parent after moving
-        if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.ContinueUsingMovementInputs();
+        if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.GameplayInputs.ContinueUsingMovementInputs();
         onMoveEnd.Invoke();
     }
 }

@@ -18,6 +18,14 @@ public class CubesManagerEditor : Editor
     [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected | GizmoType.Pickable)]
     static void OnDrawGizmos(CubesManager cubesManager, GizmoType gizmoType)
     {
+        Camera sceneCam = SceneView.lastActiveSceneView.camera;
+        if (sceneCam == null) return;
+
+        float dist = Vector3.Distance(sceneCam.transform.position, cubesManager.transform.position);
+
+        // Only draw if within range
+        if (dist > 10) return;
+
         var allCubes = cubesManager.AllCubes;
 
         Handles.Label(cubesManager.transform.position, "Cubes manager details:");
