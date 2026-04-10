@@ -1,11 +1,10 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class MapSelection : MonoBehaviour
 {
     [SerializeField] string mainMenuSceneName = "MainMenu";
-    [SerializeField] List<WorldCube> allWorldCubes = new();
+    [SerializeField] WorldCube defaultWorldCube;
     [SerializeField] Cube playerCube;
 
     SaveAndLoadManager.GameData gameData;
@@ -18,6 +17,7 @@ public class MapSelection : MonoBehaviour
         }
 
         WorldCube lastOpenedWorld = null;
+        var allWorldCubes = FindObjectsByType<WorldCube>(FindObjectsSortMode.None);
         foreach(var worldCube in allWorldCubes)
         {
             if (worldCube.WorldName == gameData.LastOpenedWorldName)
@@ -27,7 +27,7 @@ public class MapSelection : MonoBehaviour
             }
         }
 
-        if(lastOpenedWorld == null && allWorldCubes.Count > 0) lastOpenedWorld = allWorldCubes[0];
+        if(lastOpenedWorld == null) lastOpenedWorld = defaultWorldCube;
 
         if (playerCube != null && lastOpenedWorld != null && playerCube.IsPlayer)
         {

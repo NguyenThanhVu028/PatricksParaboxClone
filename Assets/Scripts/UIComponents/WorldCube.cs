@@ -5,7 +5,6 @@ using UnityEngine;
 public class WorldCube : ContainerCube
 {
     [SerializeField] string worldName = "";
-    [SerializeField] List<MapSelectionCube> mapSelectionCubesList = new();
     [SerializeField] List<WorldCube> dependentWorldCubes = new();
     [SerializeField] int requiredMapCount = 2;
     [SerializeField] TextMeshPro requiredMapCountText;
@@ -18,10 +17,10 @@ public class WorldCube : ContainerCube
         base.Init();
 
         int finishedCount = 0;
-        foreach(var mapSelectionCube in mapSelectionCubesList)
+        foreach(var childCube in childGrid.Children)
         {
-            if (mapSelectionCube == null) continue;
-            if (mapSelectionCube.HasFinished) finishedCount++;
+            if (childCube == null || !(childCube is MapSelectionCube)) continue;
+            if ((childCube as MapSelectionCube).HasFinished) finishedCount++;
             if (finishedCount >= requiredMapCount)
             {
                 foreach(var depedentWorld in dependentWorldCubes)

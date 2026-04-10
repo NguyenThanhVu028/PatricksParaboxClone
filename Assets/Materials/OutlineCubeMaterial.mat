@@ -82,7 +82,7 @@ Material:
     m_Ints: []
     m_Floats:
     - PixelSnap: 0
-    - _BorderDarkness: 0.95
+    - _BorderDarkness: 0.925
     - _BorderMaxPercentThickness: 0.05
     - _BorderThickness: 10
     - _BumpScale: 1
