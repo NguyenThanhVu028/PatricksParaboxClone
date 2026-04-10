@@ -1,12 +1,12 @@
 using UnityEditor;
 
-[CustomEditor(typeof(CustomTextureAnimation))]
+[CustomEditor(typeof(CustomAnimatedTexture))]
 public class CustomTextureAnimationEditor : Editor
 {
-    CustomTextureAnimation customTextureAnimation;
+    CustomAnimatedTexture customTextureAnimation;
     private void OnEnable()
     {
-        customTextureAnimation = (CustomTextureAnimation)target;
+        customTextureAnimation = (CustomAnimatedTexture)target;
     }
     public override void OnInspectorGUI()
     {

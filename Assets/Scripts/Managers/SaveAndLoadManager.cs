@@ -106,7 +106,7 @@ public class SaveAndLoadManager : MonoBehaviour
         [SerializeField] List<string> finishedMapIDs = new();
         [SerializeField] string lastOpenedMapName = "";
         [SerializeField] string lastOpenedWorldName = "";
-        [SerializeField] string lastUsedFaceAniID = "Default";
+        [SerializeField] string lastUsedFaceAniID = "DefaultFaceIdle";
 
         //public List<string> UnLockedWorldIDs { get => unlockedWorldIDs; }
         public List<string> FinishedMapIDs { get => finishedMapIDs; }

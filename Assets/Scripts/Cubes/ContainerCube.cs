@@ -10,7 +10,7 @@ public class ContainerCube : Cube
     [Min(1)]
     [SerializeField] protected int wallSubdivision = 2; // Wall texture might be smaller than a tile
     [SerializeField] protected CustomRuleTile wallRuleTile;
-    [SerializeField] protected Texture2D floorTexture;
+    [SerializeField] protected CustomTexture floorTexture;
     [SerializeField] protected int tileTextureSize = 16;
     [SerializeField] protected int staticTilesRTDepth = 16;
     [SerializeField] Color unenterableColor = new(0, 0, 0, 0.9f);
@@ -205,9 +205,10 @@ public class ContainerCube : Cube
     }   
     protected void DrawFloor(Rect position, float depth)
     {
+        if (floorTexture == null || floorTexture.GetTexture() == null) return;
         Color cubeColor = Color.white;
         if (colorPalette != null) cubeColor = colorPalette.GetColor(base.cubeColor);
-        CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, floorTexture, cubeColor, position.position, position.size, depth);
+        CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, floorTexture.GetTexture(), cubeColor, position.position, position.size, depth);
     }
     public void DrawWalls(Rect position, float depth)
     {

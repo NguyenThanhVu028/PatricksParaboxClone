@@ -156,6 +156,7 @@ MonoBehaviour:
   colorPalette: {fileID: 11400000, guid: 37ff109e4e0da694b8a3a4b1caa63d91, type: 2}
   cubeColor: 7
   needInstantiating: 0
+  defaultTexture: {fileID: 0}
   minPixelToRender: 2
   normalMat: {fileID: 2100000, guid: 78b9e2b83bf5d0643b88372fc8f8b336, type: 2}
   outlineMat: {fileID: 2100000, guid: 5f0c8b0400fd3074d84c1d22d0c58c68, type: 2}
@@ -175,7 +176,7 @@ MonoBehaviour:
     tiling: {x: 7, y: 7}
   wallSubdivision: 2
   wallRuleTile: {fileID: 11400000, guid: 2d82bc5300df33a458823857725fba15, type: 2}
-  floorTexture: {fileID: 2800000, guid: 02ace0b2ae698254b9ec0db27a6deea9, type: 3}
+  floorTexture: {fileID: 11400000, guid: 13b529999ac7e5d4dbf97f043ba35021, type: 2}
   tileTextureSize: 16
   staticTilesRTDepth: 16
   unenterableColor: {r: 0, g: 0, b: 0, a: 0.9}
@@ -329,6 +330,7 @@ MonoBehaviour:
     isPlayer: 0
     canBePlayer: 0
   staticTexturesRT: {fileID: 0}
+  worldName: 
   mapSelectionCubesList: []
   dependentWorldCubes: []
   requiredMapCount: 2

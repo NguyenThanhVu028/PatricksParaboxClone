@@ -139,12 +139,12 @@ MonoBehaviour:
   colorPalette: {fileID: 11400000, guid: 37ff109e4e0da694b8a3a4b1caa63d91, type: 2}
   cubeColor: 0
   needInstantiating: 0
+  defaultTexture: {fileID: 0}
   minPixelToRender: 2
   normalMat: {fileID: 2100000, guid: 78b9e2b83bf5d0643b88372fc8f8b336, type: 2}
   outlineMat: {fileID: 2100000, guid: 5f0c8b0400fd3074d84c1d22d0c58c68, type: 2}
   cubeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
-  faceAnimationID: Default
-  possessableFaceTexture: {fileID: 2800000, guid: 5d9d0117f7fa8704595bb3bdef390e93, type: 3}
+  possessableFaceTexture: {fileID: 11400000, guid: 478f5cbe753240a418d149fbab64e0cd, type: 2}
   parent: {fileID: 0}
   previousParent: {fileID: 0}
   relativeScale: {x: 1, y: 1}
@@ -159,7 +159,7 @@ MonoBehaviour:
     tiling: {x: 9, y: 9}
   wallSubdivision: 2
   wallRuleTile: {fileID: 11400000, guid: 2d82bc5300df33a458823857725fba15, type: 2}
-  floorTexture: {fileID: 2800000, guid: 02ace0b2ae698254b9ec0db27a6deea9, type: 3}
+  floorTexture: {fileID: 11400000, guid: 13b529999ac7e5d4dbf97f043ba35021, type: 2}
   tileTextureSize: 16
   staticTilesRTDepth: 16
   unenterableColor: {r: 0, g: 0, b: 0, a: 0.9}

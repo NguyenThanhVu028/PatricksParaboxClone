@@ -1811,6 +1811,14 @@ PrefabInstance:
       propertyPath: triggerButtonPrefab
       value: 
       objectReference: {fileID: 303523746}
+    - target: {fileID: 2700035842635975631, guid: 8f6e8a384cc676f4692ec423d2a14a86, type: 3}
+      propertyPath: dependentMapSelectionCubes.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2700035842635975631, guid: 8f6e8a384cc676f4692ec423d2a14a86, type: 3}
+      propertyPath: 'dependentMapSelectionCubes.Array.data[0]'
+      value: 
+      objectReference: {fileID: 502627951}
     - target: {fileID: 4190842738188582563, guid: 8f6e8a384cc676f4692ec423d2a14a86, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.0154891

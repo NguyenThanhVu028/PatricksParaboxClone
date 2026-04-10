@@ -7,8 +7,8 @@ public class AnimationsManager : MonoBehaviour
     private static AnimationsManager instance;
     public static AnimationsManager Instance { get => instance; }
 
-    [SerializeField] List<CustomTextureAnimation> normalTextureAnimations = new();
-    [SerializeField] List<CustomTextureAnimation> playerFacesTextureAnimation = new();
+    [SerializeField] List<CustomAnimatedTexture> normalTextureAnimations = new();
+    [SerializeField] List<CustomAnimatedTexture> playerFacesTextureAnimation = new();
 
     private void Awake()
     {
@@ -30,7 +30,7 @@ public class AnimationsManager : MonoBehaviour
         }
     }
 
-    public CustomTextureAnimation GetNormalTextureAnimation(string id)
+    public CustomAnimatedTexture GetNormalTextureAnimation(string id)
     {
         foreach(var animation in normalTextureAnimations)
         {
@@ -40,7 +40,7 @@ public class AnimationsManager : MonoBehaviour
         return null;
     }
 
-    public CustomTextureAnimation GetPlayerFaceTextureAnimation(string id)
+    public CustomAnimatedTexture GetPlayerFaceTextureAnimation(string id)
     {
         // Get the real id by calling API to the server -> Develop later
         foreach (var animation in playerFacesTextureAnimation)

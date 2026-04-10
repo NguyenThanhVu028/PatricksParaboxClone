@@ -136,13 +136,13 @@ MonoBehaviour:
   canBePlayer: 0
   cubeType: 2
   colorPalette: {fileID: 11400000, guid: 37ff109e4e0da694b8a3a4b1caa63d91, type: 2}
-  cubeColor: 0
+  cubeColor: 7
   needInstantiating: 1
+  defaultTexture: {fileID: 11400000, guid: 65066895c1b6a564faa5982ec1b14fb9, type: 2}
   minPixelToRender: 2
   normalMat: {fileID: 2100000, guid: 78b9e2b83bf5d0643b88372fc8f8b336, type: 2}
   outlineMat: {fileID: 2100000, guid: 5f0c8b0400fd3074d84c1d22d0c58c68, type: 2}
   cubeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
-  faceAnimationID: 
   possessableFaceTexture: {fileID: 0}
   parent: {fileID: 0}
   previousParent: {fileID: 0}
@@ -152,7 +152,6 @@ MonoBehaviour:
   onInit:
     m_PersistentCalls:
       m_Calls: []
-  buttonTexture: {fileID: 2800000, guid: 175e12687aa54ee438e47c5b6034dc6e, type: 3}
   onButtonActivated:
     m_PersistentCalls:
       m_Calls: []

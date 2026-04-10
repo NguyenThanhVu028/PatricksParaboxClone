@@ -3,7 +3,6 @@ using UnityEngine.Events;
 
 public class TriggerButton : Cube
 {
-    [SerializeField] protected Texture2D buttonTexture;
     [SerializeField] protected UnityEvent onButtonActivated = new();
     [SerializeField] protected UnityEvent onButtonDeactivated = new();
 
@@ -62,8 +61,11 @@ public class TriggerButton : Cube
 
     protected override void DrawCube(Rect position, float depth)
     {
-        if (buttonTexture == null) return;
-        Color color = new Color(1, 1, 1, 0.5f);
-        CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, buttonTexture, color, position.position, position.size, depth);
+        if (defaultTexture != null && defaultTexture.GetTexture() != null)
+        {
+            Color cubeColor = Color.white;
+            if (colorPalette != null) cubeColor = colorPalette.GetColor(this.cubeColor);
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, defaultTexture.GetTexture(), cubeColor, position.position, position.size, depth);
+        }
     }
 }

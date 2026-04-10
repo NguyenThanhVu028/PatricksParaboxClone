@@ -2,10 +2,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "CustomTextureAnimation", menuName = "Scriptable Objects/CustomTextureAnimation")]
-public class CustomTextureAnimation : ScriptableObject
+[CreateAssetMenu(fileName = "CustomAnimatedTexture", menuName = "Scriptable Objects/CustomAnimatedTexture")]
+public class CustomAnimatedTexture : CustomTexture
 {
-    [SerializeField] string iD = "";
     [SerializeField] List<FrameDetails> frames = new();
 
     private bool isRunning = false;
@@ -13,7 +12,7 @@ public class CustomTextureAnimation : ScriptableObject
     private int currentFrameIndex = 0;
     [SerializeField] float totalDuration = 0;
 
-    public string ID { get => iD; }
+    public string ID { get => name; }
     public List<FrameDetails> Frames { get => frames; }
     public float TotalDuration { get => totalDuration; set => totalDuration = value; }
 
@@ -39,7 +38,7 @@ public class CustomTextureAnimation : ScriptableObject
 
     }
 
-    public Texture GetCurrentTexture()
+    public override Texture GetTexture()
     {
         if (frames.Count == 0 || totalDuration == 0) return null;
         if (currentFrameIndex < 0) currentFrameIndex = 0;
