@@ -16,12 +16,14 @@ public class CubeMovement : MonoBehaviour
     protected float coolDownTimer = 0f;
     protected UnityEvent onMoveStart = new();
     protected UnityEvent onMoveEnd = new();
+    [SerializeField] protected bool isExternal = false;
 
     private bool debugMovement = true;
 
     public bool Movable { get { return selfCube != null && selfCube.CubeType != Cube.CubeTypes.Static && selfCube.CubeType != Cube.CubeTypes.Empty; } }
     public bool IsMoving { get => movingCoroutine != null; }
     public bool IsCoolingDown { get => (coolDownTimer > 0); }
+    public bool IsExternal { get => isExternal; }
     public float NormalMoveTime { get => normalMoveTime; }
     public float SpecialMoveTime { get => specialMoveTime; }
     public Cube SelfCube { get => selfCube; }
@@ -57,7 +59,7 @@ public class CubeMovement : MonoBehaviour
 
 
     // Called by parent cube
-    public float StartMoving(Vector2 startRPos, Vector2 startRScl, Vector2 endRPos, Vector2 endRScl, float targetTime)
+    public float StartMoving(Vector2 startRPos, Vector2 startRScl, Vector2 endRPos, Vector2 endRScl, float targetTime, bool isExternal = false)
     {
         if (IsMoving || (selfCube.IsPlayer && IsCoolingDown)) return 0;
 
@@ -65,7 +67,6 @@ public class CubeMovement : MonoBehaviour
         HistoryManager historyManager = HistoryManager.Instance;
         if (historyManager != null)
         {
-
             // Modify current record to save its previous details
             var currentRecord = historyManager.GetCurrentRecord();
             if (currentRecord != null)
@@ -94,12 +95,14 @@ public class CubeMovement : MonoBehaviour
         Vector2 cubeOldRPos = selfCube.RelativePosition;
         Vector2 cubeOldRScl = selfCube.RelativeScale;
 
-        movingCoroutine = StartCoroutine(MovingCoroutine(startRPos, startRScl, endRPos, endRScl, targetTime));
-
-        if (debugMovement) Debug.Log($"Cube {selfCube.name} moves {IsMoving}");
+        this.isExternal = isExternal;
 
         // If this cube is a player -> update camera
         UpdateCamera(selfCube, cubeOldRPos, cubeOldRScl, startRPos, startRScl, targetTime);
+
+        movingCoroutine = StartCoroutine(MovingCoroutine(startRPos, startRScl, endRPos, endRScl, targetTime));
+
+        if (debugMovement) Debug.Log($"Cube {selfCube.name} moves {IsMoving}");
 
         return targetTime;
     }
@@ -153,6 +156,7 @@ public class CubeMovement : MonoBehaviour
             yield return null;
         }
         movingCoroutine = null;
+        isExternal = false;
         coolDownTimer = coolDownTime;
         selfCube.PreviousParent = selfCube.Parent; // Update current parent after moving
         if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.GameplayInputs.ContinueUsingMovementInputs();

@@ -40,7 +40,16 @@ public class Cube : MonoBehaviour
     public bool IsPlayer { get => isPlayer; set => isPlayer = value; }
     public bool CanBePlayer { get => canBePlayer; set => canBePlayer = value; }
     public CubeTypes CubeType { get => cubeType; }
+    public ColorPalette ColorPalette { get => colorPalette; }
     public ColorPalette.ColorEnum CubeColor { get => cubeColor; set => cubeColor = value; }
+    public Color RealCubeColor
+    {
+        get
+        {
+            if (colorPalette == null) return Color.white;
+            return colorPalette.GetColor(cubeColor);
+        }
+    }
     public bool NeedInstantiating { get => needInstantiating; }
     public Material NormalMat { get => normalMat; }
     public ContainerCube Parent { get => parent; set { parent = value; onParentChanged.Invoke(); } }
@@ -81,23 +90,19 @@ public class Cube : MonoBehaviour
     {
         if (defaultTexture != null && defaultTexture.GetTexture() != null)
         {
-            Color cubeColor = Color.white;
-            if (colorPalette != null) cubeColor = colorPalette.GetColor(this.cubeColor);
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, defaultTexture.GetTexture(), cubeColor, position.position, position.size, depth);
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, defaultTexture.GetTexture(), RealCubeColor, position.position, position.size, depth);
         }
     }
     protected virtual void DrawPlayerFace(Rect position, float depth)
     {
         // Get player face texture
-        var cubeColor = Color.white;
-        if (colorPalette != null) cubeColor = colorPalette.GetColor(this.cubeColor);
         if (IsPlayer && faceTexture != null)
         {
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, faceTexture.GetTexture(), cubeColor, position.position, position.size, depth);
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, faceTexture.GetTexture(), RealCubeColor, position.position, position.size, depth);
         }
         else if (!IsPlayer && canBePlayer && possessableFaceTexture != null)
         {
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, possessableFaceTexture.GetTexture(), cubeColor, position.position, position.size, depth);
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, possessableFaceTexture.GetTexture(), RealCubeColor, position.position, position.size, depth);
         }
     }
     protected virtual void DrawSurfaceEffects(Rect position, float depth)

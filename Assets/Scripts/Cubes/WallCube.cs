@@ -39,8 +39,6 @@ public class WallCube : Cube
 
     protected override void DrawCube(Rect position, float depth = 0)
     {
-        Color cubeColor = Color.white;
-        if (colorPalette != null) cubeColor = colorPalette.GetColor(base.cubeColor);
         Vector2 texSize = new((float)position.width / wallSubdivision, (float)position.height / wallSubdivision);
         Vector2 startingPos = new(position.x - position.width * 0.5f + texSize.x * 0.5f, position.y + position.height * 0.5f - texSize.y * 0.5f);
 
@@ -49,7 +47,7 @@ public class WallCube : Cube
             for (int col = 0; col < wallSubdivision; col++)
             {
                 Vector2 texPos = new Vector2(startingPos.x + col * texSize.x, startingPos.y - row * texSize.y);
-                CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, cubeTex[row, col], cubeColor, texPos, texSize, depth);
+                CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, cubeTex[row, col], RealCubeColor, texPos, texSize, depth);
             }
         }
     }
