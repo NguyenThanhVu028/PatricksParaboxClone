@@ -286,6 +286,139 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b5ce4a868a74f94abcff84ab204c873, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1001 &617630720
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: tiling
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: cubeColor
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childGrid.tiling.x
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childGrid.tiling.y
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childCubesInitDetails.Array.size
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childCubesInitDetails.Array.data[0].cubeID
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childCubesInitDetails.Array.data[1].cubeID
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childCubesInitDetails.Array.data[2].cubeID
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childCubesInitDetails.Array.data[3].cubeID
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childCubesInitDetails.Array.data[4].cubeID
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childCubesInitDetails.Array.data[5].cubeID
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childCubesInitDetails.Array.data[6].cubeID
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childCubesInitDetails.Array.data[9].cubeID
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childCubesInitDetails.Array.data[12].cubeID
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childCubesInitDetails.Array.data[14].cubeID
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childCubesInitDetails.Array.data[19].cubeID
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childCubesInitDetails.Array.data[20].cubeID
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childCubesInitDetails.Array.data[23].cubeID
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childCubesInitDetails.Array.data[24].cubeID
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1545740933770737201, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -3.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1545740933770737201, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.03
+      objectReference: {fileID: 0}
+    - target: {fileID: 1545740933770737201, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -9.934435
+      objectReference: {fileID: 0}
+    - target: {fileID: 1545740933770737201, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1545740933770737201, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1545740933770737201, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1545740933770737201, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1545740933770737201, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1545740933770737201, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1545740933770737201, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7043020996905551748, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: m_Name
+      value: Cyan2
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
 --- !u!1 &697996018
 GameObject:
   m_ObjectHideFlags: 0
@@ -379,7 +512,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: cubeColor
-      value: 7
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.size
@@ -447,7 +580,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[15].cubeID
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[16].cubeID
@@ -467,7 +600,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[20].cubeID
-      value: 0
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[21].cubeID
@@ -475,7 +608,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[22].cubeID
-      value: 0
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[23].cubeID
@@ -483,7 +616,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[24].cubeID
-      value: 1
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[25].cubeID
@@ -503,7 +636,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[29].cubeID
-      value: 4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[30].cubeID
@@ -511,7 +644,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[31].cubeID
-      value: 6
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[32].cubeID
@@ -519,11 +652,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[33].cubeID
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[34].cubeID
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[35].cubeID
@@ -539,11 +672,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[39].cubeID
-      value: 0
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[40].cubeID
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[41].cubeID
@@ -551,11 +684,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[42].cubeID
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[43].cubeID
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[44].cubeID
@@ -567,19 +700,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[46].cubeID
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[47].cubeID
-      value: 5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[48].cubeID
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[49].cubeID
-      value: 6
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[50].cubeID
@@ -587,11 +720,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[51].cubeID
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[52].cubeID
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[53].cubeID
@@ -603,7 +736,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[55].cubeID
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childCubesInitDetails.Array.data[56].cubeID
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[57].cubeID
@@ -614,8 +751,12 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childCubesInitDetails.Array.data[59].cubeID
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[60].cubeID
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[61].cubeID
@@ -631,11 +772,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[64].cubeID
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childCubesInitDetails.Array.data[65].cubeID
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[66].cubeID
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[67].cubeID
@@ -647,11 +792,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[69].cubeID
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[70].cubeID
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[71].cubeID
@@ -695,7 +840,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[29].isPlayer
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[30].isPlayer
@@ -704,6 +849,10 @@ PrefabInstance:
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[32].isPlayer
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childCubesInitDetails.Array.data[59].isPlayer
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[64].isPlayer
@@ -776,7 +925,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3330600575587197656, guid: a9d5fe7847b3a894fa714f95f94030dc, type: 3}
       propertyPath: cubeColor
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4745218084157380791, guid: a9d5fe7847b3a894fa714f95f94030dc, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1197,7 +1346,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: cubeColor
-      value: 2
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childGrid.tiling.x
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childGrid.tiling.y
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.size
@@ -1301,13 +1458,24 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7043020996905551748, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: m_Name
-      value: EnterableCube2
+      value: Cyan1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+--- !u!114 &1846691229 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+  m_PrefabInstance: {fileID: 617630720}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b2175bc2550af648b7bdd6f1103246f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1996829044
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1358,11 +1526,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2189149525163440033, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
       propertyPath: nextLevelSceneName
-      value: Eat1
+      value: MapSelection
       objectReference: {fileID: 0}
     - target: {fileID: 6333287652591081063, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
       propertyPath: allCubes.Array.size
-      value: 6
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 6333287652591081063, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
       propertyPath: allCubes.Array.data[1].id
@@ -1385,6 +1553,10 @@ PrefabInstance:
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 6333287652591081063, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
+      propertyPath: allCubes.Array.data[6].id
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 6333287652591081063, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
       propertyPath: allCubes.Array.data[1].cube
       value: 
       objectReference: {fileID: 405197146}
@@ -1404,6 +1576,10 @@ PrefabInstance:
       propertyPath: allCubes.Array.data[5].cube
       value: 
       objectReference: {fileID: 1351029125}
+    - target: {fileID: 6333287652591081063, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
+      propertyPath: allCubes.Array.data[6].cube
+      value: 
+      objectReference: {fileID: 1846691229}
     - target: {fileID: 8169652284322544178, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
       propertyPath: m_Name
       value: ---Managers---
@@ -1426,6 +1602,7 @@ SceneRoots:
   - {fileID: 1596037500}
   - {fileID: 767322441}
   - {fileID: 1781195695}
+  - {fileID: 617630720}
   - {fileID: 331930789}
   - {fileID: 697996021}
   - {fileID: 1702194837}

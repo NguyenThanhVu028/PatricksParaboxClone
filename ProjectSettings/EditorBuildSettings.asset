@@ -36,7 +36,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Empty/Empty2.unity
     guid: 95f18cb4effede0499e41e642b776e08
   - enabled: 1
-    path: Assets/Scenes/RealGameLevels/Empty3.unity
+    path: Assets/Scenes/Empty/Empty3.unity
     guid: 6433727c0435ff744824ac3000da27cf
   - enabled: 1
     path: Assets/Scenes/RealGameLevels/Eat1.unity

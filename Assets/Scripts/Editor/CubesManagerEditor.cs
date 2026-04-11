@@ -21,7 +21,7 @@ public class CubesManagerEditor : Editor
         Camera sceneCam = SceneView.lastActiveSceneView.camera;
         if (sceneCam == null) return;
 
-        float dist = Vector3.Distance(sceneCam.transform.position, cubesManager.transform.position);
+        float dist = Mathf.Abs(sceneCam.transform.position.z - cubesManager.transform.position.z);
 
         // Only draw if within range
         if (dist > 10) return;

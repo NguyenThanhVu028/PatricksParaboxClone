@@ -23,18 +23,18 @@ MonoBehaviour:
   - colorEnum: 3
     color: {r: 1, g: 0.89893615, b: 0, a: 1}
   - colorEnum: 4
-    color: {r: 0, g: 0.9245283, b: 0.9245283, a: 1}
+    color: {r: 0.2999999, g: 1, b: 1, a: 1}
   - colorEnum: 5
-    color: {r: 0.72361225, g: 0.41320753, b: 1, a: 1}
+    color: {r: 0.7015094, g: 0.36037737, b: 1, a: 1}
   - colorEnum: 6
-    color: {r: 1, g: 0.26226407, b: 0.95764184, a: 1}
+    color: {r: 1, g: 0.3754716, b: 0.96345836, a: 1}
   - colorEnum: 7
     color: {r: 1, g: 1, b: 1, a: 1}
   - colorEnum: 8
     color: {r: 0.7490196, g: 0, b: 0.47867563, a: 1}
   - colorEnum: 9
-    color: {r: 0.48113203, g: 0.6876718, b: 1, a: 1}
+    color: {r: 0.6320754, g: 0.77701545, b: 1, a: 1}
   - colorEnum: 10
-    color: {r: 1, g: 0.58840394, b: 0.19433957, a: 1}
+    color: {r: 1, g: 0.6646571, b: 0.34528297, a: 1}
   - colorEnum: 11
     color: {r: 0, g: 0, b: 0, a: 1}
