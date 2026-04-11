@@ -5,10 +5,22 @@ public class CloneCube : ContainerCube
 {
     [SerializeField] ContainerCube mainContainerCube;
 
+    [SerializeField] Cube requestedCube;
+
     //public override void Draw(Rect position, float depth = 0)
     //{
     //    if (mainContainerCube != null) mainContainerCube.Draw(position, depth);
     //}
+
+    private void Update()
+    {
+        if(requestedCube != null)
+        {
+            var requestedCubeMovement = requestedCube.GetComponent<CubeMovement>();
+            if (requestedCubeMovement == null) requestedCube = null;
+            if (!requestedCubeMovement.IsMoving || !requestedCubeMovement.IsExternal || requestedCube.Parent != mainContainerCube) requestedCube = null;
+        }
+    }
 
     protected override void DrawFloor(Rect position, float depth)
     {
@@ -53,11 +65,20 @@ public class CloneCube : ContainerCube
         foreach (var movingCube in movingCubes)
         {
             Vector2 idealRScl = movingCube.RelativeScale;
-            if (movingCube.GetComponent<CubeMovement>() != null && movingCube.GetComponent<CubeMovement>().IsExternal)
+            Vector2 idealRPos = movingCube.RelativePosition;
+            var movingCubeMovement = movingCube.GetComponent<CubeMovement>();
+            if (movingCubeMovement != null && movingCubeMovement.IsExternal)
             {
-                idealRScl = new(1.0f / mainContainerCube.Tiling.y, 1.0f / mainContainerCube.Tiling.x);
+                if (movingCube != requestedCube)
+                {
+                    idealRScl = new(1.0f / mainContainerCube.Tiling.y, 1.0f / mainContainerCube.Tiling.x);
+                    Vector2 normalizedRPos = (movingCube.RelativePosition).normalized;
+                    idealRPos = new(movingCube.RelativePosition.x - normalizedRPos.x * movingCube.RelativeScale.x + normalizedRPos.x * idealRScl.x,
+                                    movingCube.RelativePosition.y - normalizedRPos.y * movingCube.RelativeScale.y + normalizedRPos.y * idealRScl.y);
+                }
+
             }
-            movingCube.Draw(Relativity.CRectFromPRect(position, idealRScl, movingCube.RelativePosition), depth - 0.1f);
+            movingCube.Draw(Relativity.CRectFromPRect(position, idealRScl, idealRPos), depth - 0.1f);
         }
     }
 
@@ -66,24 +87,25 @@ public class CloneCube : ContainerCube
         if (mainContainerCube == null || mainContainerCube.Parent == null) return 0;
 
         // Change the requested cube's relative position and scale to properly update the camera
-        Vector2 oldRPos = requestedCube.RelativePosition;
-        Vector2 oldRScl = requestedCube.RelativeScale;
+        //Vector2 oldRPos = requestedCube.RelativePosition;
+        //Vector2 oldRScl = requestedCube.RelativeScale;
 
-        Vector2 rPosMainParentToMain = Relativity.PRPosToAChild(mainContainerCube.RelativePosition, mainContainerCube.RelativeScale);
-        Vector2 rSclMainParentToMain = new(1.0f / mainContainerCube.RelativeScale.x, 1.0f / mainContainerCube.RelativeScale.y);
-        Vector2 rPosReqCubeToMainParent = Relativity.SRPosFromSameParent(rPosMainParentToMain, rSclMainParentToMain, cRPos);
-        Vector2 rSclReqCubeToMainParent = new(cRScl.x * mainContainerCube.RelativeScale.x, cRScl.y * mainContainerCube.RelativeScale.y);
+        //Vector2 rPosMainParentToMain = Relativity.PRPosToAChild(mainContainerCube.RelativePosition, mainContainerCube.RelativeScale);
+        //Vector2 rSclMainParentToMain = new(1.0f / mainContainerCube.RelativeScale.x, 1.0f / mainContainerCube.RelativeScale.y);
+        //Vector2 rPosReqCubeToMainParent = Relativity.SRPosFromSameParent(rPosMainParentToMain, rSclMainParentToMain, cRPos);
+        //Vector2 rSclReqCubeToMainParent = new(cRScl.x * mainContainerCube.RelativeScale.x, cRScl.y * mainContainerCube.RelativeScale.y);
 
-        requestedCube.RelativePosition = rPosReqCubeToMainParent;
-        requestedCube.RelativeScale = rSclReqCubeToMainParent;
+        //requestedCube.RelativePosition = rPosReqCubeToMainParent;
+        //requestedCube.RelativeScale = rSclReqCubeToMainParent;
 
         float res = mainContainerCube.RequestToMove(cRPos, cRScl, requestedCube, direction, external, specialMove);
         if (res <= 0)
         {
-            requestedCube.RelativePosition = oldRPos;
-            requestedCube.RelativeScale = oldRScl;
+            //requestedCube.RelativePosition = oldRPos;
+            //requestedCube.RelativeScale = oldRScl;
             return 0;
         }
+        this.requestedCube = requestedCube;
         return res;
     }
 }
