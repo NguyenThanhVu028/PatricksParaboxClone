@@ -377,12 +377,7 @@ public class ContainerCube : Cube
         // If target position is empty (either originally or after moving the blockage cube) -> Move to that position
         if (childGrid.Children[requestedPosition.x, requestedPosition.y] == null)
         {
-            if (useDebug) Debug.Log($"{requestedCube.name} successfully move to an empty position {requestedPosition.x}, {requestedPosition.y} of {gameObject.name}!");
-            Vector2 childCubeTargetRPos = Relativity.RPosFromGridTile(childGrid.Tiling.y, childGrid.Tiling.x, requestedPosition.x, requestedPosition.y);
-            Vector2 childCubeTargetRScl = new Vector2(1.0f / childGrid.Tiling.y, 1.0f / childGrid.Tiling.x);
-            if (useDebug) Debug.Log($"{requestedCube.name} new relative vallues: {childCubeTargetRPos}, {childCubeTargetRScl}, targetTime: {targetTime}");
-            childGrid.Children[requestedPosition.x, requestedPosition.y] = requestedCube;
-            return requestedCubeMovement.StartMoving(cRPos, cRScl, childCubeTargetRPos, childCubeTargetRScl, targetTime, external);
+            return LetRequestedCubeEnter(requestedCube, cRPos, cRScl, requestedPosition.x, requestedPosition.y, targetTime, external);
         }
 
         // If all above fail, try to possess the cube
@@ -497,6 +492,44 @@ public class ContainerCube : Cube
         return 0;
     }
 
+    private float LetRequestedCubeEnter(Cube requestedCube, Vector2 cRPos, Vector2 cRScl, int row, int column, float targetTime, bool external)
+    {
+        if (useDebug) Debug.Log($"{requestedCube.name} successfully move to an empty position {row}, {column} of {gameObject.name}!");
+        Vector2 childCubeTargetRPos = Relativity.RPosFromGridTile(childGrid.Tiling.y, childGrid.Tiling.x, row, column);
+        Vector2 childCubeTargetRScl = new Vector2(1.0f / childGrid.Tiling.y, 1.0f / childGrid.Tiling.x);
+        if (useDebug) Debug.Log($"{requestedCube.name} new relative vallues: {childCubeTargetRPos}, {childCubeTargetRScl}, targetTime: {targetTime}");
+        childGrid.Children[row, column] = requestedCube;
+        var requestedCubeMovement = requestedCube.GetComponent<CubeMovement>();
+        if (requestedCubeMovement == null) return 0;
+
+        // Update camera transition if the requested cube is a player
+        if (requestedCube.IsPlayer && MainCamera.Instance != null)
+        {
+            Vector2 oldParentRPos = Relativity.PRPosToAChild(requestedCube.RelativePosition, requestedCube.RelativeScale);
+            Vector2 oldParentRScl = Relativity.PRSclToAChild(requestedCube.RelativeScale);
+
+            Vector2 newParentRPos = Relativity.PRPosToAChild(cRPos, cRScl);
+            Vector2 newParentRScl = Relativity.PRSclToAChild(cRScl);
+
+            Vector2 oldParentRPosToNewParent = Relativity.SRPosFromSameParent(newParentRPos, newParentRScl, oldParentRPos);
+            Vector2 oldParentRSclToNewParent = Relativity.SRSclFromSameParent(newParentRScl, oldParentRScl);
+
+            requestedCube.RelativePosition = cRPos;
+            requestedCube.RelativeScale = cRScl;
+
+            ZoomingTransition zoomingTransition = new(
+                oldParentRPosToNewParent,
+                oldParentRSclToNewParent,
+                this,
+                targetTime
+                );
+
+            MainCamera.Instance.PlayTransition(zoomingTransition);
+        }
+
+        return requestedCubeMovement.StartMoving(cRPos, cRScl, childCubeTargetRPos, childCubeTargetRScl, targetTime, this, external); ;
+    }
+    
     [Serializable]
     public class ChildCubeInitDetail
     {

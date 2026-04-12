@@ -137,7 +137,7 @@ public class CubesManager : MonoBehaviour
     private void ResetCamera(Cube targetCube)
     {
         if (!targetCube.IsPlayer || MainCamera.Instance == null) return;
-        MainCamera.Instance.StopZooming();
+        MainCamera.Instance.StopTransition();
         MainCamera.Instance.SetNewTargetCube(targetCube.Parent);
         MainCamera.Instance.FocusOnTargetCube();
     }

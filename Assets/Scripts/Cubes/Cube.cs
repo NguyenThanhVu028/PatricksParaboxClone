@@ -63,6 +63,7 @@ public class Cube : MonoBehaviour
         if (isPlayer && MainCamera.Instance != null)
         {
             MainCamera.Instance.SetNewTargetCube(parent);
+            MainCamera.Instance.FocusOnTargetCube();
         }
 
         previousParent = parent;

@@ -45,7 +45,7 @@ public class MapSelection : MonoBehaviour
             var playerCubeMovement = playerCube.GetComponent<CubeMovement>();
             if (playerCubeMovement != null)
             {
-                playerCubeMovement.StartMoving(playerCube.RelativePosition, playerCube.RelativeScale, targetRPos, targetRScl, 0.5f);
+                playerCubeMovement.StartMoving(playerCube.RelativePosition, playerCube.RelativeScale, targetRPos, targetRScl, 0.5f, lastOpenedWorld);
             }
         }
     }

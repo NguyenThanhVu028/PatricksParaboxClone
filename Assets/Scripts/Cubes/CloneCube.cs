@@ -98,14 +98,22 @@ public class CloneCube : ContainerCube
         //requestedCube.RelativePosition = rPosReqCubeToMainParent;
         //requestedCube.RelativeScale = rSclReqCubeToMainParent;
 
-        float res = mainContainerCube.RequestToMove(cRPos, cRScl, requestedCube, direction, external, specialMove);
-        if (res <= 0)
+        float finalTargetTime = mainContainerCube.RequestToMove(cRPos, cRScl, requestedCube, direction, external, specialMove);
+        if (finalTargetTime <= 0)
         {
             //requestedCube.RelativePosition = oldRPos;
             //requestedCube.RelativeScale = oldRScl;
             return 0;
         }
+
+        // Override zooming coroutine of the main camera
+        if (MainCamera.Instance != null && MainCamera.Instance.IsPlayingTrasition)
+        {
+            MainCamera.Instance.StopTransition();
+        }
+        FadeTransition fadeTransition = new(mainContainerCube, finalTargetTime);
+        MainCamera.Instance.PlayTransition(fadeTransition);
         this.requestedCube = requestedCube;
-        return res;
+        return finalTargetTime;
     }
 }

@@ -59,7 +59,7 @@ public class CubeMovement : MonoBehaviour
 
 
     // Called by parent cube
-    public float StartMoving(Vector2 startRPos, Vector2 startRScl, Vector2 endRPos, Vector2 endRScl, float targetTime, bool isExternal = false)
+    public float StartMoving(Vector2 startRPos, Vector2 startRScl, Vector2 endRPos, Vector2 endRScl, float targetTime, ContainerCube targetParent, bool isExternal = false)
     {
         if (IsMoving || (selfCube.IsPlayer && IsCoolingDown)) return 0;
 
@@ -98,7 +98,7 @@ public class CubeMovement : MonoBehaviour
         this.isExternal = isExternal;
 
         // If this cube is a player -> update camera
-        UpdateCamera(selfCube, cubeOldRPos, cubeOldRScl, startRPos, startRScl, targetTime);
+        //UpdateCamera(selfCube, cubeOldRPos, cubeOldRScl, startRPos, startRScl, targetTime);
 
         movingCoroutine = StartCoroutine(MovingCoroutine(startRPos, startRScl, endRPos, endRScl, targetTime));
 
@@ -116,27 +116,26 @@ public class CubeMovement : MonoBehaviour
         onMoveEnd.Invoke();
     }
 
-    private void UpdateCamera(Cube player, Vector2 playerOldRPos, Vector2 playerOldRScl, Vector2 playerStartRPos, Vector2 playerStartRScl, float targetTime)
-    {
-        if (debugMovement) Debug.Log("Update cam");
-        if (!player.IsPlayer) return;
-        if (MainCamera.Instance != null)
-        {
-            Vector2 oldParentRPos = Relativity.PRPosToAChild(playerOldRPos, playerOldRScl);
-            Vector2 oldParentRScl = Relativity.PRSclToAChild(playerOldRScl);
+    //private void UpdateCamera(Cube player, Vector2 playerOldRPos, Vector2 playerOldRScl, Vector2 playerStartRPos, Vector2 playerStartRScl, float targetTime)
+    //{
+    //    if (!player.IsPlayer) return;
+    //    if (MainCamera.Instance != null)
+    //    {
+    //        Vector2 oldParentRPos = Relativity.PRPosToAChild(playerOldRPos, playerOldRScl);
+    //        Vector2 oldParentRScl = Relativity.PRSclToAChild(playerOldRScl);
 
-            Vector2 newParentRPos = Relativity.PRPosToAChild(playerStartRPos, playerStartRScl);
-            Vector2 newParentRScl = Relativity.PRSclToAChild(playerStartRScl);
+    //        Vector2 newParentRPos = Relativity.PRPosToAChild(playerStartRPos, playerStartRScl);
+    //        Vector2 newParentRScl = Relativity.PRSclToAChild(playerStartRScl);
 
-            Vector2 oldParentRPosToNewParent = Relativity.SRPosFromSameParent(newParentRPos, newParentRScl, oldParentRPos);
-            Vector2 oldParentRSclToNewParent = Relativity.SRSclFromSameParent(newParentRScl, oldParentRScl);
+    //        Vector2 oldParentRPosToNewParent = Relativity.SRPosFromSameParent(newParentRPos, newParentRScl, oldParentRPos);
+    //        Vector2 oldParentRSclToNewParent = Relativity.SRSclFromSameParent(newParentRScl, oldParentRScl);
 
-            player.RelativePosition = playerStartRPos;
-            player.RelativeScale = playerStartRScl;
+    //        player.RelativePosition = playerStartRPos;
+    //        player.RelativeScale = playerStartRScl;
 
-            MainCamera.Instance.ChangeTarget(oldParentRPosToNewParent, oldParentRSclToNewParent, player.Parent, targetTime);
-        }
-    }
+    //        MainCamera.Instance.ChangeTarget(oldParentRPosToNewParent, oldParentRSclToNewParent, player.Parent, targetTime);
+    //    }
+    //}
 
     protected IEnumerator MovingCoroutine(Vector2 startRPos, Vector2 startRScl, Vector2 endRPos, Vector2 endRScl, float time)
     {
@@ -144,6 +143,7 @@ public class CubeMovement : MonoBehaviour
         selfCube.RelativePosition = startRPos;
         selfCube.RelativeScale = startRScl;
         if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.GameplayInputs.StopUsingMovementInputs();
+
         onMoveStart.Invoke();
         while (elapsedTime < time)
         {
@@ -155,10 +155,17 @@ public class CubeMovement : MonoBehaviour
 
             yield return null;
         }
+
         movingCoroutine = null;
         isExternal = false;
         coolDownTimer = coolDownTime;
         selfCube.PreviousParent = selfCube.Parent; // Update current parent after moving
+        if (selfCube.IsPlayer && MainCamera.Instance != null)
+        {
+            MainCamera.Instance.SetNewTargetCube(selfCube.Parent);
+            MainCamera.Instance.StopTransition();
+            MainCamera.Instance.FocusOnTargetCube();
+        }
         if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.GameplayInputs.ContinueUsingMovementInputs();
         onMoveEnd.Invoke();
     }
