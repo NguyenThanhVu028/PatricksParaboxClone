@@ -44,9 +44,9 @@ public class WorldCube : ContainerCube
         if (requiredMapCountText != null) requiredMapCountText.text = finishedCount.ToString() + "/" + requiredMapCount.ToString();
     }
 
-    protected override void DrawSurfaceEffects(Rect position, float depth, float exposure)
+    protected override void DrawSurfaceEffects(Rect position, float depth, float exposure, Rect? scissorRect)
     {
-        base.DrawSurfaceEffects(position, depth, exposure);
+        base.DrawSurfaceEffects(position, depth, exposure, scissorRect);
 
         if (requiredMapCountText != null)
         {

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 [RequireComponent(typeof(Camera))]
 public class MainCamera : MonoBehaviour
@@ -47,8 +48,18 @@ public class MainCamera : MonoBehaviour
         if (instance != null && instance != this) Destroy(instance);
         instance = this;
     }
+    private void OnEnable()
+    {
+        // Subscribe to the URP rendering loop
+        RenderPipelineManager.endCameraRendering += OnRender;
+    }
 
-    private void Update()
+    private void OnDisable()
+    {
+        // Always unsubscribe to prevent memory leaks!
+        RenderPipelineManager.endCameraRendering -= OnRender;
+    }
+    private void OnRender(ScriptableRenderContext context, Camera cam)
     {
         Render();
     }

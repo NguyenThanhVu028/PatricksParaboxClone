@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UIElements;
 
 public class Cube : MonoBehaviour
 {
@@ -31,6 +32,7 @@ public class Cube : MonoBehaviour
     [Header("Other cube settings")]
     [SerializeField] protected float possessingTime = 0.5f;
     [SerializeField] protected UnityEvent onInit = new();
+    [SerializeField] protected UnityEvent<Rect, float, float, Rect?> onFinishedDrawing = new();
 
     protected UnityEvent onParentChanged = new();
     protected CustomTexture faceTexture;
@@ -57,6 +59,7 @@ public class Cube : MonoBehaviour
     public Vector2 RelativeScale { get => relativeScale; set => relativeScale = value; }
     public Vector2 RelativePosition { get => relativePosition; set => relativePosition = value; }
     public UnityEvent OnInit { get => onInit; }
+    public UnityEvent<Rect, float, float, Rect?> OnFinishedDrawing { get => onFinishedDrawing; }
 
     public virtual void Init()
     {
@@ -78,42 +81,44 @@ public class Cube : MonoBehaviour
         onInit.Invoke();
     }
 
-    public virtual void Draw(Rect position, float depth = 0, float exposure = 0)
+    public void Draw(Rect position, float depth = 0, float exposure = 0, Rect? scissorRect = null)
     {
         Vector2 rectSizeInPixel = CustomTextureRenderer2D.ConvertScaleToPixel(position.size);
         if (rectSizeInPixel.x < minPixelToRender || rectSizeInPixel.y < minPixelToRender) return; // Don't draw if the requested rectangle is too small (To avoid infinite rendering)
 
-        DrawCube(position, depth, exposure);
-        DrawPlayerFace(position, depth - 0.05f, exposure);
-        DrawSurfaceEffects(position, depth - 0.075f, exposure);
+        DrawCube(position, depth, exposure, scissorRect);
+        DrawPlayerFace(position, depth - 0.05f, exposure, scissorRect);
+        DrawSurfaceEffects(position, depth - 0.075f, exposure, scissorRect);
+
+        onFinishedDrawing.Invoke(position, depth, exposure, scissorRect);
     }
-    protected virtual void DrawCube(Rect position, float depth, float exposure)
+    protected virtual void DrawCube(Rect position, float depth, float exposure, Rect? scissorRect)
     {
         if (defaultTexture != null && defaultTexture.GetTexture() != null)
         {
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, defaultTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth);
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, defaultTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect);
         }
     }
-    protected virtual void DrawPlayerFace(Rect position, float depth, float exposure)
+    protected virtual void DrawPlayerFace(Rect position, float depth, float exposure, Rect? scissorRect)
     {
         // Get player face texture
         if (IsPlayer && faceTexture != null)
         {
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, faceTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth);
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, faceTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect);
         }
         else if (!IsPlayer && canBePlayer && possessableFaceTexture != null)
         {
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, possessableFaceTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth);
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, possessableFaceTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect);
         }
     }
-    protected virtual void DrawSurfaceEffects(Rect position, float depth, float exposure)
+    protected virtual void DrawSurfaceEffects(Rect position, float depth, float exposure, Rect? scissorRect)
     {
         var cubeColor = Color.white;
         //if (colorPalette != null) cubeColor = colorPalette.GetColor(this.cubeColor);
 
         if (surfaceEffectsAnimation != null)
         {
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, surfaceEffectsAnimation.GetTexture(), cubeColor, exposure, position.position, position.size, depth);
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, surfaceEffectsAnimation.GetTexture(), cubeColor, exposure, position.position, position.size, depth, scissorRect);
         }
     }
 

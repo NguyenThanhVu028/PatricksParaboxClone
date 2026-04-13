@@ -22,7 +22,6 @@ public class ContainerCube : Cube
     ChildCubeInitDetail[] childCubesInitDetails = {new()};
 
     protected List<Cube> emptyCubes = new(); // Seperate empty cubes from other cubes, empty cubes are only be rendered but ignore checking for interactions by other cubes
-    protected List<Cube> freeCubes = new(); // These cubes don't present in the cube grid, but need this container cube as a parent to render
     protected bool useDebug = false;
 
     public bool IsEnterable { get => isEnterable; set => isEnterable = value; }
@@ -39,7 +38,6 @@ public class ContainerCube : Cube
     public Cube[,] ChildCubes { get => childGrid.Children; }
     public RenderTexture StaticTexturesRT { get => staticTexturesRT; }
     public List<Cube> EmptyCubes { get => emptyCubes; }
-    public List<Cube> FreeCube { get => freeCubes; }
 
     // Used by the Editor
     public void SetChildCubeInitDetails(int row, int col, ChildCubeInitDetail details)
@@ -202,27 +200,27 @@ public class ContainerCube : Cube
     }
     
     // Draw functions
-    protected override void DrawCube(Rect position, float depth, float exposure)
+    protected override void DrawCube(Rect position, float depth, float exposure, Rect? scissorRect)
     {
-        DrawFloor(position, depth, exposure);
-        DrawWalls(position, depth, exposure);
-        DrawChildCubes(position, depth, exposure);
+        DrawFloor(position, depth, exposure, scissorRect);
+        DrawWalls(position, depth, exposure, scissorRect);
+        DrawChildCubes(position, depth, exposure, scissorRect);
     }   
-    protected virtual void DrawFloor(Rect position, float depth, float exposure)
+    protected virtual void DrawFloor(Rect position, float depth, float exposure, Rect? scissorRect)
     {
         if (floorTexture == null || floorTexture.GetTexture() == null) return;
-        CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, floorTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth);
+        CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, floorTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect);
     }
-    protected virtual void DrawWalls(Rect position, float depth, float exposure)
+    protected virtual void DrawWalls(Rect position, float depth, float exposure, Rect? scissorRect)
     {
-        if (staticTexturesRT != null) CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, staticTexturesRT, RealCubeColor, exposure, position.position, position.size, depth);
+        if (staticTexturesRT != null) CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, staticTexturesRT, RealCubeColor, exposure, position.position, position.size, depth, scissorRect);
     }
-    protected virtual void DrawChildCubes(Rect position, float depth, float exposure)
+    protected virtual void DrawChildCubes(Rect position, float depth, float exposure, Rect? scissorRect)
     {
         // Draw empty cubes first
         foreach (var emptyCube in emptyCubes)
         {
-            emptyCube.Draw(Relativity.CRectFromPRect(position, emptyCube.RelativeScale, emptyCube.RelativePosition), depth, exposure);
+            emptyCube.Draw(Relativity.CRectFromPRect(position, emptyCube.RelativeScale, emptyCube.RelativePosition), depth, exposure, scissorRect);
         }
 
         List<Cube> movingCubes = new();
@@ -240,34 +238,18 @@ public class ContainerCube : Cube
                 movingCubes.Add(childCube);
                 continue;
             }
-            childCube.Draw(Relativity.CRectFromPRect(position, childCube.RelativeScale, childCube.RelativePosition), depth, exposure);
-        }
-
-        // Draw free cubes
-        foreach (var childCube in freeCubes)
-        {
-            if (childCube == null) continue;
-            if (childCube is WallCube) // Ignore walls that aren't or can't potentially be a player
-            {
-                if (!(childCube.CanBePlayer || childCube.IsPlayer)) continue;
-            }
-            if (childCube.GetComponent<CubeMovement>() != null && childCube.GetComponent<CubeMovement>().IsMoving)
-            {
-                movingCubes.Add(childCube);
-                continue;
-            }
-            childCube.Draw(Relativity.CRectFromPRect(position, childCube.RelativeScale, childCube.RelativePosition), depth, exposure);
+            childCube.Draw(Relativity.CRectFromPRect(position, childCube.RelativeScale, childCube.RelativePosition), depth, exposure, scissorRect);
         }
 
         // Drawing moving cubes on top of other cubes to avoid being covered
         foreach (var movingCube in movingCubes)
         {
-            movingCube.Draw(Relativity.CRectFromPRect(position, movingCube.RelativeScale, movingCube.RelativePosition), depth - 0.1f, exposure);
+            movingCube.Draw(Relativity.CRectFromPRect(position, movingCube.RelativeScale, movingCube.RelativePosition), depth - 0.1f, exposure, scissorRect);
         }
     }
-    protected override void DrawSurfaceEffects(Rect position, float depth, float exposure)
+    protected override void DrawSurfaceEffects(Rect position, float depth, float exposure, Rect? scissorRect)
     {
-        base.DrawSurfaceEffects(position, depth, exposure);
+        base.DrawSurfaceEffects(position, depth, exposure, scissorRect);
         if (!isEnterable) CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, Texture2D.whiteTexture, unenterableColor, exposure, position.position, position.size, depth - 0.2f);
         if (!isLeavable)
         {
@@ -277,7 +259,7 @@ public class ContainerCube : Cube
             materialPropertyBlock.SetTexture(CustomTextureRenderer2D.mainTexID, Texture2D.whiteTexture);
             materialPropertyBlock.SetFloat(CustomTextureRenderer2D.isHighlightedID, 1);
 
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, materialPropertyBlock, position.position, position.size, depth - 0.2f);
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, materialPropertyBlock, position.position, position.size, depth - 0.2f, scissorRect);
         }
     }
 

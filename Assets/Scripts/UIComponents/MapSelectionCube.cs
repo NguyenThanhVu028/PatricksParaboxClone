@@ -83,9 +83,9 @@ public class MapSelectionCube : ContainerCube
         onInit.Invoke();
     }
 
-    protected override void DrawSurfaceEffects(Rect position, float depth, float exposure)
+    protected override void DrawSurfaceEffects(Rect position, float depth, float exposure, Rect? scissorRect)
     {
-        base.DrawSurfaceEffects(position, depth, exposure);
+        base.DrawSurfaceEffects(position, depth, exposure, scissorRect);
         if (mapIndexText != null)
         {
             mapIndexText.gameObject.SetActive(true);
