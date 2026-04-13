@@ -24,6 +24,9 @@ public class Cube : MonoBehaviour
     [SerializeField] protected Material outlineMat;
     [SerializeField] protected Mesh cubeMesh;
     [SerializeField] protected CustomTexture possessableFaceTexture;
+    [SerializeField] protected bool enableOcclusionCulling = true;
+    [SerializeField] protected float playerFaceDepthOffset = -0.05f;
+    [SerializeField] protected float surfaceEffectsDepthOffset = -0.075f;
     [Header("Cube stats")]
     [SerializeField] protected ContainerCube parent;
     [SerializeField] protected ContainerCube previousParent; // Record self cube's previous parent to record history
@@ -81,16 +84,16 @@ public class Cube : MonoBehaviour
         onInit.Invoke();
     }
 
-    public void Draw(Rect position, float depth = 0, float exposure = 0, Rect? scissorRect = null)
+    public virtual void Draw(Rect position, float depth = 0, float exposure = 0, Rect? scissorRect = null)
     {
-        if (!CustomTextureRenderer2D.CheckVisibility(position.position, position.size)) return;
+        if (!CustomTextureRenderer2D.CheckVisibility(position.position, position.size) && enableOcclusionCulling) return;
 
         Vector2 rectSizeInPixel = CustomTextureRenderer2D.ConvertScaleToPixel(position.size);
         if (rectSizeInPixel.x < minPixelToRender || rectSizeInPixel.y < minPixelToRender) return; // Don't draw if the requested rectangle is too small (To avoid infinite rendering)
 
         DrawCube(position, depth, exposure, scissorRect);
-        DrawPlayerFace(position, depth - 0.05f, exposure, scissorRect);
-        DrawSurfaceEffects(position, depth - 0.075f, exposure, scissorRect);
+        DrawPlayerFace(position, depth + playerFaceDepthOffset, exposure, scissorRect);
+        DrawSurfaceEffects(position, depth + surfaceEffectsDepthOffset, exposure, scissorRect);
 
         onFinishedDrawing.Invoke(position, depth, exposure, scissorRect);
     }

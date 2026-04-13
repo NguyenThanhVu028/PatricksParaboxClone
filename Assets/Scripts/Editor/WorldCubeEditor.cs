@@ -33,6 +33,7 @@ public class WorldCubeEditor : Editor
     SerializedProperty staticTilesRTDepth;
     SerializedProperty unenterableColor;
     SerializedProperty unleavableColor;
+    SerializedProperty enableOcclusionCulling;
 
     // Cube status
     SerializedProperty parent;
@@ -79,6 +80,7 @@ public class WorldCubeEditor : Editor
         staticTilesRTDepth = serializedObject.FindProperty("staticTilesRTDepth");
         unenterableColor = serializedObject.FindProperty("unenterableColor");
         unleavableColor = serializedObject.FindProperty("unleavableColor");
+        enableOcclusionCulling = serializedObject.FindProperty("enableOcclusionCulling");
 
         // Cube status
         parent = serializedObject.FindProperty("parent");
@@ -113,7 +115,7 @@ public class WorldCubeEditor : Editor
         EditorGUILayout.PropertyField(requiredMapCountText);
 
         EditorGUILayout.Space();
-
+        EditorGUILayout.LabelField("Rendering", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(minPixelToRender);
         EditorGUILayout.PropertyField(normalMat);
         EditorGUILayout.PropertyField(outlineMat);
@@ -125,6 +127,7 @@ public class WorldCubeEditor : Editor
         EditorGUILayout.PropertyField(staticTilesRTDepth);
         EditorGUILayout.PropertyField(unenterableColor);
         EditorGUILayout.PropertyField(unleavableColor);
+        EditorGUILayout.PropertyField(enableOcclusionCulling);
 
         EditorGUILayout.Space();
 

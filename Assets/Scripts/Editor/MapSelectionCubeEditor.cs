@@ -32,6 +32,7 @@ public class MapSelectionCubeEditor : Editor
     SerializedProperty staticTilesRTDepth;
     SerializedProperty unenterableColor;
     SerializedProperty unleavableColor;
+    SerializedProperty enableOcclusionCulling;
 
     // Other settings
     SerializedProperty onInit;
@@ -70,6 +71,7 @@ public class MapSelectionCubeEditor : Editor
         staticTilesRTDepth = serializedObject.FindProperty("staticTilesRTDepth");
         unenterableColor = serializedObject.FindProperty("unenterableColor");
         unleavableColor = serializedObject.FindProperty("unleavableColor");
+        enableOcclusionCulling = serializedObject.FindProperty("enableOcclusionCulling");
 
         // Other settings
         onInit = serializedObject.FindProperty("onInit");
@@ -98,7 +100,7 @@ public class MapSelectionCubeEditor : Editor
         EditorGUILayout.PropertyField(dependentMapSelectionCubes);
 
         EditorGUILayout.Space();
-
+        EditorGUILayout.LabelField("Rendering", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(minPixelToRender);
         EditorGUILayout.PropertyField(normalMat);
         EditorGUILayout.PropertyField(outlineMat);
@@ -107,6 +109,7 @@ public class MapSelectionCubeEditor : Editor
         EditorGUILayout.PropertyField(staticTilesRTDepth);
         EditorGUILayout.PropertyField(unenterableColor);
         EditorGUILayout.PropertyField(unleavableColor);
+        EditorGUILayout.PropertyField(enableOcclusionCulling);
 
         EditorGUILayout.Space();
 

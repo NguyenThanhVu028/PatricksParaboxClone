@@ -91,7 +91,7 @@ public class MapSelectionCube : ContainerCube
             mapIndexText.gameObject.SetActive(true);
             mapIndexText.rectTransform.sizeDelta = position.size * mapIndexTextPadding;
             mapIndexText.text = mapIndex.ToString();
-            mapIndexText.transform.position = new(position.x, position.y, -1f);
+            mapIndexText.transform.position = new(position.x, position.y, depth);
         }
     }
 

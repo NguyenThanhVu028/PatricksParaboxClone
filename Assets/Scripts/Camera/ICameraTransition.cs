@@ -85,6 +85,7 @@ public class ZoomingTransition : ICameraTransition
                 // Last frame
                 mainCamera.SetNewTargetCube(newTarget);
                 mainCamera.FocusOnTargetCube();
+                mainCamera.Render(-0.1f);
             }
             yield return null;
         }

@@ -50,7 +50,8 @@ public class CustomTextureRenderer2D
         RenderParams rp = new RenderParams(material); // Calculate render parameters
         rp.matProps = matProps;
 
-        CommandBuffer cmd = new();
+        //CommandBuffer cmd = new();
+        CommandBuffer cmd = CustomRendererFeature.CustomRenderPass.CommandBuffer;
         if (worldSpaceScissorRect != null)
         {
             cmd.EnableScissorRect(ScreenspaceRectFromWorldspace(worldSpaceScissorRect.Value));
@@ -63,8 +64,8 @@ public class CustomTextureRenderer2D
             shaderPass: -1,
             properties: matProps
             );
-        Graphics.ExecuteCommandBuffer(cmd);
-        cmd.Release();
+        //Graphics.ExecuteCommandBuffer(cmd);
+        //cmd.Release();
         //Graphics.RenderMesh(rp, mesh, 0, matrix);
     }
 

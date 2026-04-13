@@ -11,7 +11,8 @@ Shader "Custom/CustomShader"
     {
         Tags { "Queue"="Transparent" "RenderType"="Transparent" }
         Cull Off 
-        ZWrite Off
+        ZWrite On
+        ZTest LEqual
         Blend SrcAlpha OneMinusSrcAlpha
 
         Pass

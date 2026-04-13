@@ -138,6 +138,7 @@ MonoBehaviour:
   specialMoveTime: 0.5
   coolDownTime: 0.075
   selfCube: {fileID: 0}
+  isExternal: 0
 --- !u!114 &5057256903072216264
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -162,12 +163,16 @@ MonoBehaviour:
   outlineMat: {fileID: 2100000, guid: 5f0c8b0400fd3074d84c1d22d0c58c68, type: 2}
   cubeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   possessableFaceTexture: {fileID: 0}
+  enableOcclusionCulling: 0
   parent: {fileID: 0}
   previousParent: {fileID: 0}
   relativeScale: {x: 1, y: 1}
   relativePosition: {x: 0, y: 0}
   possessingTime: 0.5
   onInit:
+    m_PersistentCalls:
+      m_Calls: []
+  onFinishedDrawing:
     m_PersistentCalls:
       m_Calls: []
   isEnterable: 1
@@ -331,7 +336,6 @@ MonoBehaviour:
     canBePlayer: 0
   staticTexturesRT: {fileID: 0}
   worldName: 
-  mapSelectionCubesList: []
   dependentWorldCubes: []
   requiredMapCount: 2
   requiredMapCountText: {fileID: 3363172558895694338}

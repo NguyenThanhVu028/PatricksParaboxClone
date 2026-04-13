@@ -50,16 +50,16 @@ public class MainCamera : MonoBehaviour
     }
     private void OnEnable()
     {
-        // Subscribe to the URP rendering loop
-        RenderPipelineManager.endCameraRendering += OnRender;
+        //RenderPipelineManager.endCameraRendering += OnRender;
+        CustomRendererFeature.CustomRenderPass.OnExecuteCmd.AddListener(OnRender);
     }
 
     private void OnDisable()
     {
-        // Always unsubscribe to prevent memory leaks!
-        RenderPipelineManager.endCameraRendering -= OnRender;
+        //RenderPipelineManager.endCameraRendering -= OnRender;
+        CustomRendererFeature.CustomRenderPass.OnExecuteCmd.RemoveListener(OnRender);
     }
-    private void OnRender(ScriptableRenderContext context, Camera cam)
+    private void OnRender()
     {
         Render();
     }
