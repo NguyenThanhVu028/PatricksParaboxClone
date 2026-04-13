@@ -34,7 +34,17 @@ public class HistoryManager : MonoBehaviour
     }
 
     // Player cube will archive the record after other cubes have finished recording its event
-    public void ArchiveHistoryRecord()
+    public void ForceArchiveRecord()
+    {
+        ArchiveHistoryRecord();
+    }
+    public void NormalArchiveHistoryRecord()
+    {
+        if (currentHistoryRecord.Events.Count == 0) return;
+        ArchiveHistoryRecord();
+    }
+
+    private void ArchiveHistoryRecord()
     {
         if (maxHistoryRecordCount == 0)
         {

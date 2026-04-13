@@ -69,7 +69,7 @@ public class CloneCube : ContainerCube
         // Draw static cubes
         foreach (var childCube in mainContainerCube.ChildCubes)
         {
-            if (childCube == null) continue;
+            if (childCube == null || childCube == requestedCube) continue;
             if (childCube is WallCube) // Ignore walls that aren't or can't potentially be a player
             {
                 if (!(childCube.CanBePlayer || childCube.IsPlayer)) continue;

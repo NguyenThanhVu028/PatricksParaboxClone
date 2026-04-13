@@ -25,8 +25,8 @@ public class Cube : MonoBehaviour
     [SerializeField] protected Mesh cubeMesh;
     [SerializeField] protected CustomTexture possessableFaceTexture;
     [SerializeField] protected bool enableOcclusionCulling = true;
-    [SerializeField] protected float playerFaceDepthOffset = -0.05f;
-    [SerializeField] protected float surfaceEffectsDepthOffset = -0.075f;
+    protected float playerFaceDepthOffset = 0f;
+    protected float surfaceEffectsDepthOffset = -0.075f;
     [Header("Cube stats")]
     [SerializeField] protected ContainerCube parent;
     [SerializeField] protected ContainerCube previousParent; // Record self cube's previous parent to record history

@@ -64,6 +64,7 @@ public class CustomTextureRenderer2D
             shaderPass: -1,
             properties: matProps
             );
+        cmd.DisableScissorRect();
         //Graphics.ExecuteCommandBuffer(cmd);
         //cmd.Release();
         //Graphics.RenderMesh(rp, mesh, 0, matrix);

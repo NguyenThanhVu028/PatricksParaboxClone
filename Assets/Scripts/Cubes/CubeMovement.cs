@@ -50,6 +50,11 @@ public class CubeMovement : MonoBehaviour
                     // If fail to move
                     coolDownTimer = coolDownTime;
                 }
+                if (selfCube.IsPlayer)
+                {
+                    HistoryManager historyManager = HistoryManager.Instance;
+                    if (historyManager != null) historyManager.NormalArchiveHistoryRecord(); // Player will archive the record
+                }
             }
         }
         
@@ -89,7 +94,6 @@ public class CubeMovement : MonoBehaviour
 
             // Add new record for its new details
             historyManager.RecordNewEvent(selfCube, selfCube.Parent, endRPos, endRScl);
-            if (selfCube.IsPlayer) historyManager.ArchiveHistoryRecord(); // Player will archive the record
         }
 
         Vector2 cubeOldRPos = selfCube.RelativePosition;
