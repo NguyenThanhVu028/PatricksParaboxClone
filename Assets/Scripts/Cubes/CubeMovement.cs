@@ -116,27 +116,6 @@ public class CubeMovement : MonoBehaviour
         onMoveEnd.Invoke();
     }
 
-    //private void UpdateCamera(Cube player, Vector2 playerOldRPos, Vector2 playerOldRScl, Vector2 playerStartRPos, Vector2 playerStartRScl, float targetTime)
-    //{
-    //    if (!player.IsPlayer) return;
-    //    if (MainCamera.Instance != null)
-    //    {
-    //        Vector2 oldParentRPos = Relativity.PRPosToAChild(playerOldRPos, playerOldRScl);
-    //        Vector2 oldParentRScl = Relativity.PRSclToAChild(playerOldRScl);
-
-    //        Vector2 newParentRPos = Relativity.PRPosToAChild(playerStartRPos, playerStartRScl);
-    //        Vector2 newParentRScl = Relativity.PRSclToAChild(playerStartRScl);
-
-    //        Vector2 oldParentRPosToNewParent = Relativity.SRPosFromSameParent(newParentRPos, newParentRScl, oldParentRPos);
-    //        Vector2 oldParentRSclToNewParent = Relativity.SRSclFromSameParent(newParentRScl, oldParentRScl);
-
-    //        player.RelativePosition = playerStartRPos;
-    //        player.RelativeScale = playerStartRScl;
-
-    //        MainCamera.Instance.ChangeTarget(oldParentRPosToNewParent, oldParentRSclToNewParent, player.Parent, targetTime);
-    //    }
-    //}
-
     protected IEnumerator MovingCoroutine(Vector2 startRPos, Vector2 startRScl, Vector2 endRPos, Vector2 endRScl, float time)
     {
         float elapsedTime = -1;
