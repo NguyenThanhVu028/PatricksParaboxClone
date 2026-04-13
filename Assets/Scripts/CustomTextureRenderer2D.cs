@@ -54,7 +54,6 @@ public class CustomTextureRenderer2D
         if (worldSpaceScissorRect != null)
         {
             cmd.EnableScissorRect(ScreenspaceRectFromWorldspace(worldSpaceScissorRect.Value));
-            Debug.Log(ScreenspaceRectFromWorldspace(worldSpaceScissorRect.Value));
         }
         cmd.DrawMesh(
             mesh: mesh,

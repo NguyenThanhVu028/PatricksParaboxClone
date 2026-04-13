@@ -22,7 +22,8 @@ public class ContainerCube : Cube
     ChildCubeInitDetail[] childCubesInitDetails = {new()};
 
     protected List<Cube> emptyCubes = new(); // Seperate empty cubes from other cubes, empty cubes are only be rendered but ignore checking for interactions by other cubes
-    protected bool useDebug = false;
+    protected List<Cube> cullingCubes = new(); // These cubes wont be rendered if they are children of this cube
+    protected bool useDebug = true;
 
     public bool IsEnterable { get => isEnterable; set => isEnterable = value; }
     public Vector2Int Tiling { get => childGrid.Tiling; }
@@ -38,6 +39,7 @@ public class ContainerCube : Cube
     public Cube[,] ChildCubes { get => childGrid.Children; }
     public RenderTexture StaticTexturesRT { get => staticTexturesRT; }
     public List<Cube> EmptyCubes { get => emptyCubes; }
+    public List<Cube> CullingCubes { get => cullingCubes; }
 
     // Used by the Editor
     public void SetChildCubeInitDetails(int row, int col, ChildCubeInitDetail details)
@@ -228,7 +230,7 @@ public class ContainerCube : Cube
         // Draw static cubes
         foreach (var childCube in childGrid.Children)
         {
-            if (childCube == null) continue;
+            if (childCube == null || cullingCubes.Contains(childCube)) continue;
             if (childCube is WallCube) // Ignore walls that aren't or can't potentially be a player
             {
                 if (!(childCube.CanBePlayer || childCube.IsPlayer)) continue;

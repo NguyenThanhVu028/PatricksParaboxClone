@@ -28,13 +28,14 @@ public class CloneCube : ContainerCube
             if (requestedCubeMovement == null) requestedCube = null;
             if (!requestedCubeMovement.IsMoving || !requestedCubeMovement.IsExternal || requestedCube.Parent != mainContainerCube)
             {
-                if (mainContainerCube != null)
-                {
-                    if (mainContainerCube.ChildGrid.Children[requestedCubeTargetPos.x, requestedCubeTargetPos.y] == null)
-                    {
-                        mainContainerCube.ChildGrid.Children[requestedCubeTargetPos.x, requestedCubeTargetPos.y] = requestedCube;
-                    }
-                }
+                //if (mainContainerCube != null)
+                //{
+                //    if (mainContainerCube.ChildGrid.Children[requestedCubeTargetPos.x, requestedCubeTargetPos.y] == null)
+                //    {
+                //        mainContainerCube.ChildGrid.Children[requestedCubeTargetPos.x, requestedCubeTargetPos.y] = requestedCube;
+                //    }
+                //}
+                mainContainerCube.CullingCubes.Remove(requestedCube);
                 requestedCube = null;
             }
         }
@@ -136,8 +137,10 @@ public class CloneCube : ContainerCube
         }
 
         // Take the requested cube from the main container cube -> Return later
-        requestedCubeTargetPos = mainContainerCube.ChildGrid.FindChild(requestedCube);
-        mainContainerCube.ChildGrid.RemoveChild(requestedCube);
+        //requestedCubeTargetPos = mainContainerCube.ChildGrid.FindChild(requestedCube);
+        //mainContainerCube.ChildGrid.RemoveChild(requestedCube);
+        if (!mainContainerCube.CullingCubes.Contains(requestedCube))
+            mainContainerCube.CullingCubes.Add(requestedCube);
         this.requestedCube = requestedCube;
 
         return finalTargetTime;
