@@ -149,14 +149,16 @@ public class FadeTransition : ICameraTransition
         if (targetCube == null || targetCube == mainCamera.TargetCube) yield break;
 
         float elapsedTime = -1;
+        float defaultExposure = mainCamera.Exposure;
         while (elapsedTime < targetTime)
         {
             if (elapsedTime < 0) elapsedTime = 0;
             else elapsedTime += Time.deltaTime;
 
-            if (elapsedTime < targetTime * 0.5f)
+            if (elapsedTime <= targetTime * 0.5f)
             {
                 // Fade out
+                mainCamera.Exposure = Mathf.Lerp(defaultExposure, -1f, elapsedTime / (targetTime * 0.5f));
             }
             else
             {
@@ -166,9 +168,10 @@ public class FadeTransition : ICameraTransition
                     mainCamera.FocusOnTargetCube();
                 }
                 // Fade in
+                mainCamera.Exposure = Mathf.Lerp(-1.0f, defaultExposure, (elapsedTime - (targetTime * 0.5f))/ (targetTime * 0.5f));
             }
-
-                yield return null;
+            yield return null;
         }
+        mainCamera.Exposure = defaultExposure;
     }
 }

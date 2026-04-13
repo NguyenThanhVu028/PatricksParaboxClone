@@ -59,13 +59,13 @@ public class TriggerButton : Cube
         onButtonDeactivated.Invoke();
     }
 
-    protected override void DrawCube(Rect position, float depth)
+    protected override void DrawCube(Rect position, float depth, float exposure)
     {
         if (defaultTexture != null && defaultTexture.GetTexture() != null)
         {
             Color cubeColor = Color.white;
             if (colorPalette != null) cubeColor = colorPalette.GetColor(this.cubeColor);
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, defaultTexture.GetTexture(), cubeColor, position.position, position.size, depth);
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, defaultTexture.GetTexture(), cubeColor, exposure, position.position, position.size, depth);
         }
     }
 }

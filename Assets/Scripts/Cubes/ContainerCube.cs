@@ -202,27 +202,27 @@ public class ContainerCube : Cube
     }
     
     // Draw functions
-    protected override void DrawCube(Rect position, float depth = 0)
+    protected override void DrawCube(Rect position, float depth, float exposure)
     {
-        DrawFloor(position, depth);
-        DrawWalls(position, depth);
-        DrawChildCubes(position, depth);
+        DrawFloor(position, depth, exposure);
+        DrawWalls(position, depth, exposure);
+        DrawChildCubes(position, depth, exposure);
     }   
-    protected virtual void DrawFloor(Rect position, float depth)
+    protected virtual void DrawFloor(Rect position, float depth, float exposure)
     {
         if (floorTexture == null || floorTexture.GetTexture() == null) return;
-        CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, floorTexture.GetTexture(), RealCubeColor, position.position, position.size, depth);
+        CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, floorTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth);
     }
-    protected virtual void DrawWalls(Rect position, float depth)
+    protected virtual void DrawWalls(Rect position, float depth, float exposure)
     {
-        if (staticTexturesRT != null) CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, staticTexturesRT, RealCubeColor, position.position, position.size, depth);
+        if (staticTexturesRT != null) CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, staticTexturesRT, RealCubeColor, exposure, position.position, position.size, depth);
     }
-    protected virtual void DrawChildCubes(Rect position, float depth)
+    protected virtual void DrawChildCubes(Rect position, float depth, float exposure)
     {
         // Draw empty cubes first
         foreach (var emptyCube in emptyCubes)
         {
-            emptyCube.Draw(Relativity.CRectFromPRect(position, emptyCube.RelativeScale, emptyCube.RelativePosition), depth);
+            emptyCube.Draw(Relativity.CRectFromPRect(position, emptyCube.RelativeScale, emptyCube.RelativePosition), depth, exposure);
         }
 
         List<Cube> movingCubes = new();
@@ -240,7 +240,7 @@ public class ContainerCube : Cube
                 movingCubes.Add(childCube);
                 continue;
             }
-            childCube.Draw(Relativity.CRectFromPRect(position, childCube.RelativeScale, childCube.RelativePosition), depth);
+            childCube.Draw(Relativity.CRectFromPRect(position, childCube.RelativeScale, childCube.RelativePosition), depth, exposure);
         }
 
         // Draw free cubes
@@ -256,19 +256,19 @@ public class ContainerCube : Cube
                 movingCubes.Add(childCube);
                 continue;
             }
-            childCube.Draw(Relativity.CRectFromPRect(position, childCube.RelativeScale, childCube.RelativePosition), depth);
+            childCube.Draw(Relativity.CRectFromPRect(position, childCube.RelativeScale, childCube.RelativePosition), depth, exposure);
         }
 
         // Drawing moving cubes on top of other cubes to avoid being covered
         foreach (var movingCube in movingCubes)
         {
-            movingCube.Draw(Relativity.CRectFromPRect(position, movingCube.RelativeScale, movingCube.RelativePosition), depth - 0.1f);
+            movingCube.Draw(Relativity.CRectFromPRect(position, movingCube.RelativeScale, movingCube.RelativePosition), depth - 0.1f, exposure);
         }
     }
-    protected override void DrawSurfaceEffects(Rect position, float depth)
+    protected override void DrawSurfaceEffects(Rect position, float depth, float exposure)
     {
-        base.DrawSurfaceEffects(position, depth);
-        if (!isEnterable) CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, Texture2D.whiteTexture, unenterableColor, position.position, position.size, depth - 0.2f);
+        base.DrawSurfaceEffects(position, depth, exposure);
+        if (!isEnterable) CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, Texture2D.whiteTexture, unenterableColor, exposure, position.position, position.size, depth - 0.2f);
         if (!isLeavable)
         {
             if (materialPropertyBlock == null) materialPropertyBlock = new();

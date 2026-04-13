@@ -78,42 +78,42 @@ public class Cube : MonoBehaviour
         onInit.Invoke();
     }
 
-    public virtual void Draw(Rect position, float depth = 0)
+    public virtual void Draw(Rect position, float depth = 0, float exposure = 0)
     {
         Vector2 rectSizeInPixel = CustomTextureRenderer2D.ConvertScaleToPixel(position.size);
         if (rectSizeInPixel.x < minPixelToRender || rectSizeInPixel.y < minPixelToRender) return; // Don't draw if the requested rectangle is too small (To avoid infinite rendering)
 
-        DrawCube(position, depth);
-        DrawPlayerFace(position, depth - 0.05f);
-        DrawSurfaceEffects(position, depth - 0.075f);
+        DrawCube(position, depth, exposure);
+        DrawPlayerFace(position, depth - 0.05f, exposure);
+        DrawSurfaceEffects(position, depth - 0.075f, exposure);
     }
-    protected virtual void DrawCube(Rect position, float depth)
+    protected virtual void DrawCube(Rect position, float depth, float exposure)
     {
         if (defaultTexture != null && defaultTexture.GetTexture() != null)
         {
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, defaultTexture.GetTexture(), RealCubeColor, position.position, position.size, depth);
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, defaultTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth);
         }
     }
-    protected virtual void DrawPlayerFace(Rect position, float depth)
+    protected virtual void DrawPlayerFace(Rect position, float depth, float exposure)
     {
         // Get player face texture
         if (IsPlayer && faceTexture != null)
         {
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, faceTexture.GetTexture(), RealCubeColor, position.position, position.size, depth);
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, faceTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth);
         }
         else if (!IsPlayer && canBePlayer && possessableFaceTexture != null)
         {
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, possessableFaceTexture.GetTexture(), RealCubeColor, position.position, position.size, depth);
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, possessableFaceTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth);
         }
     }
-    protected virtual void DrawSurfaceEffects(Rect position, float depth)
+    protected virtual void DrawSurfaceEffects(Rect position, float depth, float exposure)
     {
         var cubeColor = Color.white;
         //if (colorPalette != null) cubeColor = colorPalette.GetColor(this.cubeColor);
 
         if (surfaceEffectsAnimation != null)
         {
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, surfaceEffectsAnimation.GetTexture(), cubeColor, position.position, position.size, depth);
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, surfaceEffectsAnimation.GetTexture(), cubeColor, exposure, position.position, position.size, depth);
         }
     }
 

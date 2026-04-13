@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class CloneCube : ContainerCube
 {
@@ -22,26 +23,41 @@ public class CloneCube : ContainerCube
         }
     }
 
-    protected override void DrawFloor(Rect position, float depth)
+    public override void Draw(Rect position, float depth = 0, float exposure = 0)
+    {
+        CommandBuffer buffer = new CommandBuffer();
+        buffer.EnableScissorRect(position);
+        Graphics.ExecuteCommandBuffer(buffer);
+        Vector2 rectSizeInPixel = CustomTextureRenderer2D.ConvertScaleToPixel(position.size);
+        if (rectSizeInPixel.x < minPixelToRender || rectSizeInPixel.y < minPixelToRender) return; // Don't draw if the requested rectangle is too small (To avoid infinite rendering)
+
+        DrawCube(position, depth, exposure);
+        DrawPlayerFace(position, depth - 0.05f, exposure);
+        DrawSurfaceEffects(position, depth - 0.075f, exposure);
+
+        buffer.Release();
+    }
+
+    protected override void DrawFloor(Rect position, float depth, float exposure)
     {
         if (mainContainerCube == null || mainContainerCube.FloorTexture == null || mainContainerCube.FloorTexture.GetTexture() == null) return;
-        CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, mainContainerCube.FloorTexture.GetTexture(), mainContainerCube.RealCubeColor, position.position, position.size, depth);
+        CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, mainContainerCube.FloorTexture.GetTexture(), mainContainerCube.RealCubeColor, exposure, position.position, position.size, depth);
     }
 
-    protected override void DrawWalls(Rect position, float depth)
+    protected override void DrawWalls(Rect position, float depth, float exposure)
     {
         if (mainContainerCube == null || mainContainerCube.StaticTexturesRT == null) return;
-        CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, mainContainerCube.StaticTexturesRT, mainContainerCube.RealCubeColor, position.position, position.size, depth);
+        CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, mainContainerCube.StaticTexturesRT, mainContainerCube.RealCubeColor, exposure, position.position, position.size, depth);
     }
 
-    protected override void DrawChildCubes(Rect position, float depth)
+    protected override void DrawChildCubes(Rect position, float depth, float exposure)
     {
         if (mainContainerCube == null) return;
 
         // Draw empty cubes first
         foreach (var emptyCube in mainContainerCube.EmptyCubes)
         {
-            emptyCube.Draw(Relativity.CRectFromPRect(position, emptyCube.RelativeScale, emptyCube.RelativePosition), depth);
+            emptyCube.Draw(Relativity.CRectFromPRect(position, emptyCube.RelativeScale, emptyCube.RelativePosition), depth, exposure);
         }
 
         List<Cube> movingCubes = new();
@@ -58,7 +74,7 @@ public class CloneCube : ContainerCube
                 movingCubes.Add(childCube);
                 continue;
             }
-            childCube.Draw(Relativity.CRectFromPRect(position, childCube.RelativeScale, childCube.RelativePosition), depth);
+            childCube.Draw(Relativity.CRectFromPRect(position, childCube.RelativeScale, childCube.RelativePosition), depth, exposure);
         }
 
         // Drawing moving cubes on top of other cubes to avoid being covered
@@ -78,7 +94,7 @@ public class CloneCube : ContainerCube
                 }
 
             }
-            movingCube.Draw(Relativity.CRectFromPRect(position, idealRScl, idealRPos), depth - 0.1f);
+            movingCube.Draw(Relativity.CRectFromPRect(position, idealRScl, idealRPos), depth - 0.1f, exposure);
         }
     }
 
@@ -107,12 +123,13 @@ public class CloneCube : ContainerCube
         }
 
         // Override zooming coroutine of the main camera
-        if (MainCamera.Instance != null && MainCamera.Instance.IsPlayingTrasition)
+        if (requestedCube.IsPlayer && MainCamera.Instance != null)
         {
-            MainCamera.Instance.StopTransition();
+            if (MainCamera.Instance.IsPlayingTrasition)
+                MainCamera.Instance.StopTransition();
+            FadeTransition fadeTransition = new(mainContainerCube, finalTargetTime);
+            MainCamera.Instance.PlayTransition(fadeTransition);
         }
-        FadeTransition fadeTransition = new(mainContainerCube, finalTargetTime);
-        MainCamera.Instance.PlayTransition(fadeTransition);
         this.requestedCube = requestedCube;
         return finalTargetTime;
     }

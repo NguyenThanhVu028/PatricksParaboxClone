@@ -14,6 +14,7 @@ public class MainCamera : MonoBehaviour
     [Header("Render settings")]
     [SerializeField] bool isRendering = true;
     [SerializeField] MainCameraRenderMode renderMode = MainCameraRenderMode.SingleCube;
+    [SerializeField] float exposure = 0.0f;
 
     [Header("Single Cube mode")]
     [SerializeField] ContainerCube targetCube;
@@ -35,6 +36,7 @@ public class MainCamera : MonoBehaviour
 
     public bool IsPlayingTrasition { get => transitionCoroutine != null; }
     public MainCameraRenderMode RenderMode { get => renderMode; }
+    public float Exposure { get => exposure; set => exposure = value; }
     public ContainerCube TargetCube { get => targetCube; }
     public Rect RenderPosition { get => renderPosition; }
     public float OrthographicSize { get => mainCamera.orthographicSize; set => mainCamera.orthographicSize = value; }
@@ -71,7 +73,7 @@ public class MainCamera : MonoBehaviour
         foreach (var cubeRenderDetail in cubesToRender)
         {
             if (cubeRenderDetail == null || cubeRenderDetail.TargetCube == null) return;
-            cubeRenderDetail.TargetCube.Draw(cubeRenderDetail.RenderPosition, depth);
+            cubeRenderDetail.TargetCube.Draw(cubeRenderDetail.RenderPosition, depth, exposure);
         }
     }
 
@@ -94,10 +96,10 @@ public class MainCamera : MonoBehaviour
 
             if (newTargetCube != null)
             {
-                newTargetCube.Draw(newRenderPosition, depth);
+                newTargetCube.Draw(newRenderPosition, depth, exposure);
             }
         }
-        else targetCube.Draw(renderPosition, depth);
+        else targetCube.Draw(renderPosition, depth, exposure);
     }
 
     public void SetNewTargetCube(ContainerCube newTarget)

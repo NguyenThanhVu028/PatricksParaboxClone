@@ -4,6 +4,7 @@ Shader "Custom/CustomOutlineShader"
     {
         _MainTex ("Sprite Texture", 2D) = "white" {}
         _Color ("Tint", Color) = (1,1,1,1)
+        _Exposure ("Exposure", float) = 0
         [Toggle] _IsHighlighted ("Is Highlighted", float) = 0
         _BorderThickness ("Border Thickness", float) = 5
         _BorderMaxPercentThickness ("Border Max Percent Thickness", float) = 0.02
@@ -43,6 +44,7 @@ Shader "Custom/CustomOutlineShader"
             UNITY_INSTANCING_BUFFER_START(Props)
                 UNITY_DEFINE_INSTANCED_PROP(fixed4, _Color)
                 UNITY_DEFINE_INSTANCED_PROP(float, _IsHighlighted)
+                UNITY_DEFINE_INSTANCED_PROP(float, _Exposure)
             UNITY_INSTANCING_BUFFER_END(Props)
 
             v2f vert (appdata v) {
@@ -95,6 +97,19 @@ Shader "Custom/CustomOutlineShader"
                 }
 
                 fixed4 finalColor = lerp(col, borderColor, mask);
+
+                float exposure = UNITY_ACCESS_INSTANCED_PROP(Props, _Exposure);
+                if (exposure > 0)
+                {
+                    if (exposure > 1) exposure = 1;
+                    finalColor = lerp(finalColor, fixed4(1, 1, 1, finalColor.a), exposure);
+                }
+                else
+                {
+                    exposure = -exposure;
+                    if (exposure > 1) exposure = 1;
+                    finalColor = lerp(finalColor, fixed4(0, 0, 0, finalColor.a), exposure);
+                }
 
                 return finalColor;
             }

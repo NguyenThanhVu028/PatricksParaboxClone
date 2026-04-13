@@ -8,11 +8,13 @@ public class CustomTextureRenderer2D
     public static readonly int mainTexID = Shader.PropertyToID("_MainTex");
     public static readonly int colorID = Shader.PropertyToID("_Color");
     public static readonly int isHighlightedID = Shader.PropertyToID("_IsHighlighted");
+    public static readonly int exposureID = Shader.PropertyToID("_Exposure");
 
     public static void RenderMesh(Mesh mesh,
                                     Material material,
                                     Texture texture,
                                     Color color,
+                                    float exposure,
                                     Vector2 position,
                                     Vector2 size,
                                     float z = 0,
@@ -24,6 +26,7 @@ public class CustomTextureRenderer2D
         MaterialPropertyBlock matProps = new();
         matProps.SetTexture(mainTexID, texture);
         matProps.SetColor(colorID, color);
+        matProps.SetFloat(exposureID, exposure);
 
         RenderMesh(mesh, material, matProps, position, size, z, occlusionCulling);
     }

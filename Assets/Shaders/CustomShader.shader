@@ -4,6 +4,7 @@ Shader "Custom/CustomShader"
     {
         _MainTex ("Sprite Texture", 2D) = "white" {}
         _Color ("Tint", Color) = (1,1,1,1)
+        _Exposure ("Exposure", float) = 0
     }
 
     SubShader
@@ -38,6 +39,7 @@ Shader "Custom/CustomShader"
             // Define the property buffer
             UNITY_INSTANCING_BUFFER_START(Props)
                 UNITY_DEFINE_INSTANCED_PROP(fixed4, _Color)
+                UNITY_DEFINE_INSTANCED_PROP(float, _Exposure)
             UNITY_INSTANCING_BUFFER_END(Props)
 
             v2f vert (appdata v) {
@@ -54,6 +56,20 @@ Shader "Custom/CustomShader"
             fixed4 frag (v2f i) : SV_Target {
                 UNITY_SETUP_INSTANCE_ID(i);
                 fixed4 col = tex2D(_MainTex, i.uv) * UNITY_ACCESS_INSTANCED_PROP(Props, _Color);
+                float exposure = UNITY_ACCESS_INSTANCED_PROP(Props, _Exposure);
+
+                if (exposure > 0)
+                {
+                    if (exposure > 1) exposure = 1;
+                    col = lerp(col, fixed4(1, 1, 1, col.a), exposure);
+                }
+                else
+                {
+                    exposure = -exposure;
+                    if (exposure > 1) exposure = 1;
+                    col = lerp(col, fixed4(0, 0, 0, col.a), exposure);
+                }
+
                 return col;
             }
             ENDCG
