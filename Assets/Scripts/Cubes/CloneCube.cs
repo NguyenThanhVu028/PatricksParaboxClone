@@ -17,7 +17,8 @@ public class CloneCube : ContainerCube
     public override void Init()
     {
         base.Init();
-        if (mainContainerCube != null) mainContainerCube.OnFinishedDrawing.AddListener(OnMainCubeDraw); 
+        if (mainContainerCube != null) mainContainerCube.OnFinishedDrawing.AddListener(OnMainCubeDraw);
+        if (AnimationsManager.Instance != null) surfaceEffectsAnimation = AnimationsManager.Instance.GetNormalTextureAnimation("Noise");
     }
 
     private void Update()

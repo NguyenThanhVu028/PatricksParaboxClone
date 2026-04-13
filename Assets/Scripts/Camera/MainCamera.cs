@@ -84,7 +84,7 @@ public class MainCamera : MonoBehaviour
         foreach (var cubeRenderDetail in cubesToRender)
         {
             if (cubeRenderDetail == null || cubeRenderDetail.TargetCube == null) return;
-            cubeRenderDetail.TargetCube.Draw(cubeRenderDetail.RenderPosition, depth, exposure);
+            cubeRenderDetail.TargetCube.Draw(cubeRenderDetail.RenderPosition, depth, exposure, GetScreenRect());
         }
     }
 
@@ -107,10 +107,10 @@ public class MainCamera : MonoBehaviour
 
             if (newTargetCube != null)
             {
-                newTargetCube.Draw(newRenderPosition, depth, exposure);
+                newTargetCube.Draw(newRenderPosition, depth, exposure, GetScreenRect());
             }
         }
-        else targetCube.Draw(renderPosition, depth, exposure);
+        else targetCube.Draw(renderPosition, depth, exposure, GetScreenRect());
     }
 
     public void SetNewTargetCube(ContainerCube newTarget)
@@ -164,6 +164,15 @@ public class MainCamera : MonoBehaviour
         if (transition != null)
             yield return transition;
         transitionCoroutine = null;
+    }
+
+    public Rect GetScreenRect()
+    {
+        Rect screenRect = new();
+        screenRect.position = mainCamera.transform.position;
+        screenRect.height = mainCamera.orthographicSize * 2.0f;
+        screenRect.width = screenRect.height * ((float)mainCamera.pixelWidth / mainCamera.pixelHeight);
+        return screenRect;
     }
     
     private void OnDrawGizmos()

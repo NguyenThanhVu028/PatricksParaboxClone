@@ -185,17 +185,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d62f33cd924f00409ca39f3d681398f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allowTakingMovementInput: 1
-  allowUsingMovementInput: 1
-  onResetEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  onUndoEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  onRedoEvent:
-    m_PersistentCalls:
-      m_Calls: []
+  defaultActionMap: 0
+  gameplayInputsReceiver:
+    allowTakingMovementInput: 1
+    allowUsingMovementInput: 1
+    onResetEvent:
+      m_PersistentCalls:
+        m_Calls: []
+    onUndoEvent:
+      m_PersistentCalls:
+        m_Calls: []
+    onRedoEvent:
+      m_PersistentCalls:
+        m_Calls: []
+    onPauseEvent:
+      m_PersistentCalls:
+        m_Calls: []
+  uiInputsReceiver:
+    onAcceptEvent:
+      m_PersistentCalls:
+        m_Calls: []
+    onReturnEvent:
+      m_PersistentCalls:
+        m_Calls: []
+    onNavigateUpEvent:
+      m_PersistentCalls:
+        m_Calls: []
+    onNavigateDownEvent:
+      m_PersistentCalls:
+        m_Calls: []
+    onNavigateLeftEvent:
+      m_PersistentCalls:
+        m_Calls: []
+    onNavigateRightEvent:
+      m_PersistentCalls:
+        m_Calls: []
 --- !u!1 &4291025293103202411
 GameObject:
   m_ObjectHideFlags: 0
@@ -242,6 +266,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   normalTextureAnimations:
   - {fileID: 11400000, guid: 85889fba1a8fd05419051f9256512ad6, type: 2}
+  - {fileID: 11400000, guid: ad39bd32887342a4e9407db0a578bbd7, type: 2}
   playerFacesTextureAnimation:
   - {fileID: 11400000, guid: a2eb29ecdd7846d4c9b6e1123bb5c001, type: 2}
 --- !u!1 &5478760104357305090
