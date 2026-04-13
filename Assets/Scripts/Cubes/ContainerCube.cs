@@ -486,11 +486,16 @@ public class ContainerCube : Cube
         var requestedCubeMovement = requestedCube.GetComponent<CubeMovement>();
         if (requestedCubeMovement == null) return 0;
 
+        Vector2 requestedCubeOldRPos = requestedCube.RelativePosition;
+        Vector2 requestedCubeOldRScl = requestedCube.RelativeScale;
+
+        float finalTargetTime = requestedCubeMovement.StartMoving(cRPos, cRScl, childCubeTargetRPos, childCubeTargetRScl, targetTime, this, external);
+
         // Update camera transition if the requested cube is a player
         if (requestedCube.IsPlayer && MainCamera.Instance != null)
         {
-            Vector2 oldParentRPos = Relativity.PRPosToAChild(requestedCube.RelativePosition, requestedCube.RelativeScale);
-            Vector2 oldParentRScl = Relativity.PRSclToAChild(requestedCube.RelativeScale);
+            Vector2 oldParentRPos = Relativity.PRPosToAChild(requestedCubeOldRPos, requestedCubeOldRScl);
+            Vector2 oldParentRScl = Relativity.PRSclToAChild(requestedCubeOldRScl);
 
             Vector2 newParentRPos = Relativity.PRPosToAChild(cRPos, cRScl);
             Vector2 newParentRScl = Relativity.PRSclToAChild(cRScl);
@@ -498,8 +503,8 @@ public class ContainerCube : Cube
             Vector2 oldParentRPosToNewParent = Relativity.SRPosFromSameParent(newParentRPos, newParentRScl, oldParentRPos);
             Vector2 oldParentRSclToNewParent = Relativity.SRSclFromSameParent(newParentRScl, oldParentRScl);
 
-            requestedCube.RelativePosition = cRPos;
-            requestedCube.RelativeScale = cRScl;
+            //requestedCube.RelativePosition = cRPos;
+            //requestedCube.RelativeScale = cRScl;
 
             ZoomingTransition zoomingTransition = new(
                 oldParentRPosToNewParent,
@@ -511,7 +516,7 @@ public class ContainerCube : Cube
             MainCamera.Instance.PlayTransition(zoomingTransition);
         }
 
-        return requestedCubeMovement.StartMoving(cRPos, cRScl, childCubeTargetRPos, childCubeTargetRScl, targetTime, this, external); ;
+        return finalTargetTime;
     }
     
     [Serializable]

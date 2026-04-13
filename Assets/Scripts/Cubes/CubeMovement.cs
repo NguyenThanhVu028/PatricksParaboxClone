@@ -112,6 +112,7 @@ public class CubeMovement : MonoBehaviour
         if (movingCoroutine != null) StopCoroutine(movingCoroutine);
         movingCoroutine = null;
 
+        isExternal = false;
         if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.GameplayInputs.ContinueUsingMovementInputs();
         onMoveEnd.Invoke();
     }
