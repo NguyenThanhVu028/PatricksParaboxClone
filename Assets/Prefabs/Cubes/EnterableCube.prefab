@@ -114,7 +114,7 @@ Transform:
   m_GameObject: {fileID: 7043020996905551748}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.1, y: 2.03, z: -9.934435}
+  m_LocalPosition: {x: -3.1, y: 2.03, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -145,12 +145,16 @@ MonoBehaviour:
   outlineMat: {fileID: 2100000, guid: 5f0c8b0400fd3074d84c1d22d0c58c68, type: 2}
   cubeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   possessableFaceTexture: {fileID: 11400000, guid: 478f5cbe753240a418d149fbab64e0cd, type: 2}
+  enableOcclusionCulling: 1
   parent: {fileID: 0}
   previousParent: {fileID: 0}
   relativeScale: {x: 1, y: 1}
   relativePosition: {x: 0, y: 0}
   possessingTime: 0.5
   onInit:
+    m_PersistentCalls:
+      m_Calls: []
+  onFinishedDrawing:
     m_PersistentCalls:
       m_Calls: []
   isEnterable: 1
@@ -257,3 +261,4 @@ MonoBehaviour:
   specialMoveTime: 0.5
   coolDownTime: 0.075
   selfCube: {fileID: 0}
+  isExternal: 0

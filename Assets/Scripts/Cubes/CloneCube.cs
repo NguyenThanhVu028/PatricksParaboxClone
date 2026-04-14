@@ -6,7 +6,7 @@ public class CloneCube : ContainerCube
 {
     [SerializeField] ContainerCube mainContainerCube;
 
-    [SerializeField] Cube requestedCube;
+    private Cube requestedCube;
     private Vector2Int requestedCubeTargetPos = new();
 
     //public override void Draw(Rect position, float depth = 0)
