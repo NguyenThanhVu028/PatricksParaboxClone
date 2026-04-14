@@ -92,7 +92,7 @@ public class CloneCube : ContainerCube
             // If the moving cube is entering / exiting container cube -> clamp it
             if (movingCubeMovement.IsExternal)
             {
-                idealRScl = new(1.0f / mainContainerCube.Tiling.y, 1.0f / mainContainerCube.Tiling.x);
+                idealRScl = new(Mathf.Min(1.0f / mainContainerCube.Tiling.y, idealRScl.x), Mathf.Min(1.0f / mainContainerCube.Tiling.x, idealRScl.y));
                 Vector2 normalizedRPos = (movingCube.RelativePosition).normalized;
                 idealRPos = new(movingCube.RelativePosition.x - normalizedRPos.x * movingCube.RelativeScale.x + normalizedRPos.x * idealRScl.x,
                                 movingCube.RelativePosition.y - normalizedRPos.y * movingCube.RelativeScale.y + normalizedRPos.y * idealRScl.y);
