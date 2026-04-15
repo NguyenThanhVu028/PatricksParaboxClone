@@ -282,23 +282,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childGrid.tiling.x
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childGrid.tiling.y
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.size
-      value: 9
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[0].cubeID
-      value: 0
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[1].cubeID
-      value: 0
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[2].cubeID
@@ -306,11 +306,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[3].cubeID
-      value: 8
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[4].cubeID
-      value: 4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[5].cubeID
@@ -322,7 +322,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[7].cubeID
-      value: 10
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[8].cubeID
@@ -342,7 +342,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[12].cubeID
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[13].cubeID
@@ -354,11 +354,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[15].cubeID
-      value: 0
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[16].cubeID
-      value: 6
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[17].cubeID
@@ -366,7 +366,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[18].cubeID
-      value: 4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[19].cubeID
@@ -378,7 +378,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[21].cubeID
-      value: 0
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[22].cubeID
@@ -601,16 +601,24 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
-      propertyPath: childCubesInitDetails.Array.data[4].isPlayer
+      propertyPath: childCubesInitDetails.Array.data[1].isPlayer
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childCubesInitDetails.Array.data[4].isPlayer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[5].isPlayer
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
-      propertyPath: childCubesInitDetails.Array.data[18].isPlayer
+      propertyPath: childCubesInitDetails.Array.data[16].isPlayer
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childCubesInitDetails.Array.data[18].isPlayer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[30].isPlayer
