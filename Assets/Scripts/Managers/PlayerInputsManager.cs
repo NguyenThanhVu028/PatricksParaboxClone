@@ -42,7 +42,12 @@ public class PlayerInputsManager : MonoBehaviour
     }
     private void OnDisable()
     {
-        if (mainInputSystem != null) mainInputSystem.Disable();
+        if (mainInputSystem != null)
+        {
+            mainInputSystem.Normal.RemoveCallbacks(gameplayInputsReceiver);
+            mainInputSystem.UI.RemoveCallbacks(uiInputsReceiver);
+            mainInputSystem.Disable();
+        }
     }
 
     // Action map functions

@@ -9,6 +9,7 @@ Shader "Custom/CustomOutlineShader"
         _BorderThickness ("Border Thickness", float) = 5
         _BorderMaxPercentThickness ("Border Max Percent Thickness", float) = 0.02
         _BorderDarkness ("Border Darkness", float) = 0.8
+        _BorderShininessOffset ("Border Shininess Offset", float) = -1.125
     }
 
     SubShader
@@ -64,6 +65,7 @@ Shader "Custom/CustomOutlineShader"
             float _BorderMaxPercentThickness;
             fixed4 _BorderColor;
             float _BorderDarkness;
+            float _BorderShininessOffset;
 
             fixed4 frag (v2f i) : SV_Target {
                 UNITY_SETUP_INSTANCE_ID(i);
@@ -80,11 +82,12 @@ Shader "Custom/CustomOutlineShader"
 
                 border =    step(1.0 - borderThickness, i.uv.x) + 
                             step(i.uv.y, borderThickness);
+                
                 if (!(border > 0))
                 {
                     border =    step(1.0 - borderThickness, i.uv.y) + 
                                 step(i.uv.x, borderThickness);
-                    borderDarkness = borderDarkness * 0.75;
+                    borderDarkness = borderDarkness + _BorderShininessOffset;
                 }
 
                 float mask = saturate(border); // Clamp the border value between 0 and 1
@@ -93,8 +96,19 @@ Shader "Custom/CustomOutlineShader"
                 // If highlighted -> dont calculate darkness and opacity
                 if (UNITY_ACCESS_INSTANCED_PROP(Props, _IsHighlighted) < 1) 
                 {
-                    borderColor.rgb = lerp(borderColor.rgb, float3(0, 0, 0), borderDarkness); // Calculate border's darkness
-                    if (col.a == 0) borderColor.a = 0.5; // Calculate border's opacity
+                    if (col.a == 0) 
+                    {
+                        //borderColor.a = 0.5; // Calculate border's opacity
+                        borderDarkness *= 0.75;
+                    }
+                    if (borderDarkness < 0)
+                    {
+                        borderDarkness = -borderDarkness;
+                        borderColor.rgb = lerp(borderColor.rgb, float3(1, 1, 1), borderDarkness);
+                    }
+                    else
+                        borderColor.rgb = lerp(borderColor.rgb, float3(0, 0, 0), borderDarkness); // Calculate border's darkness
+
                 }
 
                 fixed4 finalColor = lerp(col, borderColor, mask);

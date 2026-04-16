@@ -82,15 +82,17 @@ Material:
     m_Ints: []
     m_Floats:
     - PixelSnap: 0
-    - _BorderDarkness: 0.925
-    - _BorderMaxPercentThickness: 0.05
-    - _BorderThickness: 10
+    - _BorderDarkness: 0.9
+    - _BorderMaxPercentThickness: 0.075
+    - _BorderShininessOffset: -1.125
+    - _BorderThickness: 6
     - _BumpScale: 1
     - _ColorMask: 15
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _EnableExternalAlpha: 0
+    - _Exposure: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
