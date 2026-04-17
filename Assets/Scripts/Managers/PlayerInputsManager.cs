@@ -46,6 +46,7 @@ public class PlayerInputsManager : MonoBehaviour
         {
             mainInputSystem.Normal.RemoveCallbacks(gameplayInputsReceiver);
             mainInputSystem.UI.RemoveCallbacks(uiInputsReceiver);
+            actionMapsStack.Clear();
             mainInputSystem.Disable();
         }
     }

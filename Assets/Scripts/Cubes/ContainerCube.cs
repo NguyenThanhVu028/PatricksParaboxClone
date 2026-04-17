@@ -304,7 +304,7 @@ public class ContainerCube : Cube
             else Debug.Log($"{requestedCube.name} requests to move within {gameObject.name} with {direction}");
         }
 
-        float targetTime = (specialMove) ? requestedCubeMovement.SpecialMoveTime : requestedCubeMovement.NormalMoveTime;
+        float targetTime = (specialMove) ? requestedCubeMovement.EnterTime : requestedCubeMovement.MoveTime;
 
         // if the requested position is out of range -> try to move the requested cube outside
         if (!childGrid.CheckValidGridPosition(requestedPosition.x, requestedPosition.y))

@@ -12,12 +12,21 @@ public class MapSelectionCube : ContainerCube
     [Min(1)]
     [SerializeField] int mapIndex = 1;
     [SerializeField] string mapName;
-    [SerializeField] float openMapDelayTime = 0.5f;
+    [SerializeField] float defaultDelayTime = 0.5f;
     [SerializeField] TextMeshPro mapIndexText;
     [SerializeField] float mapIndexTextPadding = 0.75f;
 
+    private SaveAndLoadManager.GameData gameData;
     private bool hasFinished = false;
     private Coroutine openMapCoroutine;
+    private float OpenMapDelayTime
+    {
+        get
+        {
+            if (gameData != null) return gameData.EnterTime / 1000f;
+            return defaultDelayTime;
+        }
+    }
 
     public bool HasFinished { get => hasFinished; set => hasFinished = value; }
 
@@ -45,7 +54,7 @@ public class MapSelectionCube : ContainerCube
         // Check hasFinished status
         if (SaveAndLoadManager.Instance != null)
         {
-            SaveAndLoadManager.GameData gameData = SaveAndLoadManager.Instance.GeneralGameData;
+            gameData = SaveAndLoadManager.Instance.GeneralGameData;
             if (gameData != null)
             {
                 foreach(var mapID in gameData.FinishedMapIDs)
@@ -114,7 +123,7 @@ public class MapSelectionCube : ContainerCube
 
     private IEnumerator OpenMapCoroutine()
     {
-        yield return new WaitForSeconds(openMapDelayTime);
+        yield return new WaitForSeconds(OpenMapDelayTime);
         SceneManager.LoadSceneAsync(mapName);
         openMapCoroutine = null;
     }

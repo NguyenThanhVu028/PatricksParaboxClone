@@ -13,6 +13,7 @@ public class ChangeActionMap : MonoBehaviour
 
     private void OnDisable()
     {
+        Debug.Log("Try pop");
         if (onDisable && PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.PopActionMap(actionMap);
     }
 }

@@ -108,17 +108,25 @@ public class SaveAndLoadManager : MonoBehaviour
         [SerializeField] string lastOpenedWorldName = "";
         [SerializeField] string lastUsedFaceAniID = "DefaultFaceIdle";
 
+        // Movement Settings values
+        [SerializeField] float moveTime = 100f;
+        [SerializeField] float enterTime = 500f;
+
+        // Sound Settings values
+        [SerializeField] float musicVolume = 50f;
+        [SerializeField] float sfxVolume = 50f;
+
         //public List<string> UnLockedWorldIDs { get => unlockedWorldIDs; }
         public List<string> FinishedMapIDs { get => finishedMapIDs; }
         public string LastOpenedMapName { get => lastOpenedMapName; set => lastOpenedMapName = value; }
         public string LastOpenedWorldName { get => lastOpenedWorldName; set => lastOpenedWorldName = value; }
         public string LastUsedFaceAniID { get => lastUsedFaceAniID; set => lastUsedFaceAniID = value; }
 
-        //public void AddUnlockedWorld(string id)
-        //{
-        //    if (unlockedWorldIDs.Contains(id)) return;
-        //    unlockedWorldIDs.Add(id);
-        //}
+        public float MoveTime { get => moveTime; set => moveTime = value; }
+        public float EnterTime { get => enterTime; set => enterTime = value; }
+
+        public float MusicVolume { get => musicVolume; set => musicVolume = value; }
+        public float SFXVolume { get => sfxVolume; set => sfxVolume = value; }
 
         public void AddFinishedMap(string id)
         {

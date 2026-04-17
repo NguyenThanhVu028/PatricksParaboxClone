@@ -16,6 +16,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] float onLevelCompletedDelay = 1f;
     [SerializeField] string nextLevelSceneName = "";
 
+    [SerializeField] string mapSelectionSceneName = "MapSelection";
+
     private int activatedPlayerButtons = 0;
     private int activatedNormalButtons = 0;
 
@@ -54,6 +56,15 @@ public class GameManager : MonoBehaviour
                 levelCompletedCoroutine = null;
             }
         }
+    }
+
+    public void ReturnToMapSelection()
+    {
+        SceneManager.LoadSceneAsync(mapSelectionSceneName);
+    }
+    public void OnQuitGame()
+    {
+        Application.Quit();
     }
 
     public void AssignPlayerButton() { playerButtonCount++; }

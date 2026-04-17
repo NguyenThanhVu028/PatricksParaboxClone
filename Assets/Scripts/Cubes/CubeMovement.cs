@@ -6,8 +6,8 @@ using UnityEngine.Events;
 public class CubeMovement : MonoBehaviour
 {
     //[SerializeField] bool movable = true;
-    [SerializeField] float normalMoveTime = 0.1f; // Used when player simply moving form one point to another
-    [SerializeField] float specialMoveTime = 0.5f; // Used when player enters a cube, transforms, . . .
+    [SerializeField] float defaultMoveTime = 0.1f; // Used when player simply moving form one point to another
+    [SerializeField] float defaultEnterTime = 0.5f; // Used when player enters a cube, transforms, . . .
     [SerializeField] float coolDownTime = 0.075f;
 
     [SerializeField] protected Cube selfCube;
@@ -19,13 +19,28 @@ public class CubeMovement : MonoBehaviour
     [SerializeField] protected bool isExternal = false;
 
     private bool debugMovement = true;
+    private SaveAndLoadManager.GameData gameData;
 
     public bool Movable { get { return selfCube != null && selfCube.CubeType != Cube.CubeTypes.Static && selfCube.CubeType != Cube.CubeTypes.Empty; } }
     public bool IsMoving { get => movingCoroutine != null; }
     public bool IsCoolingDown { get => (coolDownTimer > 0); }
     public bool IsExternal { get => isExternal; }
-    public float NormalMoveTime { get => normalMoveTime; }
-    public float SpecialMoveTime { get => specialMoveTime; }
+    public float MoveTime
+    {
+        get
+        {
+            if (gameData != null) return gameData.MoveTime / 1000f;
+            return defaultMoveTime;
+        }
+    }
+    public float EnterTime
+    {
+        get
+        {
+            if (gameData != null) return gameData.EnterTime / 1000f;
+            return defaultEnterTime;
+        }
+    }
     public Cube SelfCube { get => selfCube; }
     public UnityEvent OnMoveStart { get => onMoveStart; }
     public UnityEvent OnMoveEnd { get => onMoveEnd; }
@@ -33,6 +48,10 @@ public class CubeMovement : MonoBehaviour
     private void OnEnable()
     {
         selfCube = GetComponent<Cube>();
+    }
+    private void Start()
+    {
+        if (SaveAndLoadManager.Instance != null) gameData = SaveAndLoadManager.Instance.GeneralGameData;
     }
     private void Update()
     {
@@ -123,27 +142,32 @@ public class CubeMovement : MonoBehaviour
 
     protected IEnumerator MovingCoroutine(Vector2 startRPos, Vector2 startRScl, Vector2 endRPos, Vector2 endRScl, float time)
     {
-        float elapsedTime = -1;
-        selfCube.RelativePosition = startRPos;
-        selfCube.RelativeScale = startRScl;
-        if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.GameplayInputs.StopUsingMovementInputs();
-
-        onMoveStart.Invoke();
-        while (elapsedTime < time)
+        if (time > 0)
         {
-            if (elapsedTime < 0) elapsedTime = 0;
-            else elapsedTime += Time.deltaTime;
+            float elapsedTime = -1;
+            selfCube.RelativePosition = startRPos;
+            selfCube.RelativeScale = startRScl;
+            if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.GameplayInputs.StopUsingMovementInputs();
 
-            selfCube.RelativePosition = Vector2.Lerp(startRPos, endRPos, elapsedTime / time);
-            selfCube.RelativeScale = Vector2.Lerp(startRScl, endRScl, elapsedTime / time);
+            onMoveStart.Invoke();
+            while (elapsedTime < time)
+            {
+                if (elapsedTime < 0) elapsedTime = 0;
+                else elapsedTime += Time.deltaTime;
 
-            yield return null;
+                selfCube.RelativePosition = Vector2.Lerp(startRPos, endRPos, elapsedTime / time);
+                selfCube.RelativeScale = Vector2.Lerp(startRScl, endRScl, elapsedTime / time);
+
+                yield return null;
+            }
         }
 
         movingCoroutine = null;
         isExternal = false;
         coolDownTimer = coolDownTime;
         selfCube.PreviousParent = selfCube.Parent; // Update current parent after moving
+        selfCube.RelativePosition = endRPos;
+        selfCube.RelativeScale = endRScl;
         if (selfCube.IsPlayer && MainCamera.Instance != null)
         {
             MainCamera.Instance.SetNewTargetCube(selfCube.Parent);

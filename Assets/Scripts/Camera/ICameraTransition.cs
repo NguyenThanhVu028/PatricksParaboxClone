@@ -23,12 +23,10 @@ public class ZoomingTransition : ICameraTransition
 
     public IEnumerator ExecuteCoroutine(MainCamera mainCamera)
     {
-        if (targetTime <= 0) return null;
-
         if (mainCamera == null || mainCamera.RenderMode != MainCamera.MainCameraRenderMode.SingleCube) return null;
 
         if (targetCube == null || targetCube == mainCamera.TargetCube) return null;
-        if (mainCamera.TargetCube == null)
+        if (mainCamera.TargetCube == null || targetTime <= 0)
         {
             mainCamera.SetNewTargetCube(targetCube);
             mainCamera.FocusOnTargetCube();

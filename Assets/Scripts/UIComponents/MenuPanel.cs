@@ -20,7 +20,7 @@ public class MenuPanel : MonoBehaviour
             if (menuItem == null) return;
             menuItem.OnSelected(false);
         }
-        if (menuItems.Count > currentIndex && menuItems[currentIndex] != null) menuItems[currentIndex].OnSelected(true);
+        if (currentIndex < menuItems.Count && menuItems[currentIndex] != null) menuItems[currentIndex].OnSelected(true);
     }
 
     private void OnDisable()
