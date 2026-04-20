@@ -216,6 +216,9 @@ public class CustomTextureRenderer2D
     {
         if (Camera.main == null) return false;
 
+        size.x = Mathf.Abs(size.x);
+        size.y = Mathf.Abs(size.y);
+
         Vector2 topLeftPos = new Vector2(position.x - size.x * 0.5f, position.y + size.y * 0.5f);
         Vector2 bottomRightPos = new Vector2(topLeftPos.x + size.x, topLeftPos.y - size.y);
 

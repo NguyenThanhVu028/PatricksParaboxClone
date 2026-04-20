@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -16,6 +17,7 @@ public class MainCamera : MonoBehaviour
     [SerializeField] bool isRendering = true;
     [SerializeField] MainCameraRenderMode renderMode = MainCameraRenderMode.SingleCube;
     [SerializeField] float exposure = 0.0f;
+    [SerializeField] bool isVerFlipped = false;
 
     [Header("Single Cube mode")]
     [SerializeField] ContainerCube targetCube;
@@ -36,6 +38,7 @@ public class MainCamera : MonoBehaviour
     public static MainCamera Instance { get => instance; }
 
     public bool IsPlayingTrasition { get => transitionCoroutine != null; }
+    public bool IsVerFlipped { get => isVerFlipped; set => isVerFlipped = value; }
     public MainCameraRenderMode RenderMode { get => renderMode; }
     public float Exposure { get => exposure; set => exposure = value; }
     public ContainerCube TargetCube { get => targetCube; }
@@ -84,18 +87,24 @@ public class MainCamera : MonoBehaviour
         foreach (var cubeRenderDetail in cubesToRender)
         {
             if (cubeRenderDetail == null || cubeRenderDetail.TargetCube == null) return;
-            cubeRenderDetail.TargetCube.Draw(cubeRenderDetail.RenderPosition, depth, exposure, GetScreenRect());
+            Rect renderPos = cubeRenderDetail.RenderPosition;
+            renderPos.position = new(((isVerFlipped) ? -1 : 1) * renderPos.position.x, renderPos.position.y);
+            renderPos.size = new(((isVerFlipped) ? -1 : 1 ) * renderPos.size.x, renderPos.size.y);
+            cubeRenderDetail.TargetCube.Draw(renderPos, depth, exposure, GetScreenRect());
         }
     }
 
     private void RenderSingleCube(float depth)
     {
         if (targetCube == null) return;
+        Rect renderPos = renderPosition;
+        renderPos.position = new(((isVerFlipped) ? -1 : 1) * renderPos.position.x, renderPos.position.y);
+        renderPos.size = new(((isVerFlipped) ? -1 : 1) * renderPos.size.x, renderPos.size.y);
         if (renderParents)
         {
             // Traverse through the target cube's parents
             ContainerCube newTargetCube = targetCube;
-            Rect newRenderPosition = renderPosition;
+            Rect newRenderPosition = renderPos;
             int parentCount = 0;
             while(parentCount < numberOfParentsToTraverse)
             {
@@ -110,7 +119,7 @@ public class MainCamera : MonoBehaviour
                 newTargetCube.Draw(newRenderPosition, depth, exposure, GetScreenRect());
             }
         }
-        else targetCube.Draw(renderPosition, depth, exposure, GetScreenRect());
+        else targetCube.Draw(renderPos, depth, exposure, GetScreenRect());
     }
 
     public void SetNewTargetCube(ContainerCube newTarget)
