@@ -5,18 +5,23 @@ using UnityEngine.Events;
 [RequireComponent(typeof(Cube))]
 public class CubeMovement : MonoBehaviour
 {
-    //[SerializeField] bool movable = true;
-    [SerializeField] float defaultMoveTime = 0.1f; // Used when player simply moving form one point to another
+    [Header("Movement Settings")]
+    [SerializeField] float defaultMoveTime = 0.1f; // Used when player simply moving from one point to another
     [SerializeField] float defaultEnterTime = 0.5f; // Used when player enters a cube, transforms, . . .
     [SerializeField] float coolDownTime = 0.075f;
-
     [SerializeField] protected Cube selfCube;
-    //protected PlayerInputsManager playerMovementInputsManager;
+
+    [Header("SoundsSettings")]
+    [SerializeField] string movementAudioID = "Movement";
+    [SerializeField] string zoomInAudioID = "ZoomIn";
+    [SerializeField] string zoomOutAudioID = "ZoomOut";
+    [SerializeField] string noZoomAudioID = "NoZoom";
+
     protected Coroutine movingCoroutine = null;
     protected float coolDownTimer = 0f;
     protected UnityEvent onMoveStart = new();
     protected UnityEvent onMoveEnd = new();
-    [SerializeField] protected bool isExternal = false;
+    protected bool isExternal = false;
 
     private bool debugMovement = true;
     private SaveAndLoadManager.GameData gameData;
@@ -51,7 +56,7 @@ public class CubeMovement : MonoBehaviour
     }
     private void Start()
     {
-        if (SaveAndLoadManager.Instance != null) gameData = SaveAndLoadManager.Instance.GeneralGameData;
+        if (SaveAndLoadManager.GeneralGameData != null) gameData = SaveAndLoadManager.GeneralGameData;
     }
     private void Update()
     {
@@ -120,8 +125,31 @@ public class CubeMovement : MonoBehaviour
 
         this.isExternal = isExternal;
 
-        // If this cube is a player -> update camera
-        //UpdateCamera(selfCube, cubeOldRPos, cubeOldRScl, startRPos, startRScl, targetTime);
+        // Play sounds
+        if (!isExternal)
+        {
+            if (selfCube.IsPlayer) SoundsManager.Instance.PlayUniqueSFX(movementAudioID, -1, Random.Range(0.75f, 1.0f));
+        }
+        else
+        {
+            Vector2 oldParentRPos = Relativity.PRPosToAChild(cubeOldRPos, cubeOldRScl);
+            Vector2 oldParentRScl = Relativity.PRSclToAChild(cubeOldRScl);
+
+            Vector2 newParentRPos = Relativity.PRPosToAChild(startRPos, startRScl);
+            Vector2 newParentRScl = Relativity.PRSclToAChild(startRScl);
+
+            Vector2 oldParentRSclToNewParent = Relativity.SRSclFromSameParent(newParentRScl, oldParentRScl);
+
+            if (oldParentRSclToNewParent.x < 1 && oldParentRSclToNewParent.y < 1)
+            {
+                SoundsManager.Instance.PlayUniqueSFX(zoomOutAudioID);
+            }
+            else if (oldParentRSclToNewParent.x > 1 && oldParentRSclToNewParent.y > 1)
+            {
+                SoundsManager.Instance.PlayUniqueSFX(zoomInAudioID, -1);
+            }
+            else SoundsManager.Instance.PlayUniqueSFX(noZoomAudioID, -1);
+        }
 
         movingCoroutine = StartCoroutine(MovingCoroutine(startRPos, startRScl, endRPos, endRScl, targetTime));
 

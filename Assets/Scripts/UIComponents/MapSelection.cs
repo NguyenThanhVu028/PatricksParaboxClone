@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,13 +8,17 @@ public class MapSelection : MonoBehaviour
     [SerializeField] WorldCube defaultWorldCube;
     [SerializeField] Cube playerCube;
 
+    [SerializeField] List<string> backgroundMusicIDs = new();
+    private AudioPlayer backgroundMusicAudioPlayer;
+
     SaveAndLoadManager.GameData gameData;
 
     private void Start()
     {
-        if (SaveAndLoadManager.Instance != null)
+        // Spawn player cube
+        if (SaveAndLoadManager.GeneralGameData != null)
         {
-            gameData = SaveAndLoadManager.Instance.GeneralGameData;
+            gameData = SaveAndLoadManager.GeneralGameData;
         }
 
         WorldCube lastOpenedWorld = null;
@@ -45,7 +50,19 @@ public class MapSelection : MonoBehaviour
             var playerCubeMovement = playerCube.GetComponent<CubeMovement>();
             if (playerCubeMovement != null)
             {
-                playerCubeMovement.StartMoving(playerCube.RelativePosition, playerCube.RelativeScale, targetRPos, targetRScl, 0.5f, lastOpenedWorld);
+                playerCubeMovement.StartMoving(playerCube.RelativePosition, playerCube.RelativeScale, targetRPos, targetRScl, 0.5f, lastOpenedWorld, true);
+            }
+        }
+
+        // Play background music
+        if (SoundsManager.Instance != null)
+        {
+            backgroundMusicAudioPlayer = SoundsManager.Instance.GetBackgroundMusicPlayer();
+            if (backgroundMusicAudioPlayer != null && !backgroundMusicAudioPlayer.IsPlaying)
+            {
+                foreach(var audioClipID in backgroundMusicIDs) backgroundMusicAudioPlayer.AddToPlayList(SoundsManager.Instance.GetAudio(audioClipID));
+                backgroundMusicAudioPlayer.SetPlayMode(AudioPlayer.PlayModes.Random);
+                backgroundMusicAudioPlayer.Play();
             }
         }
     }

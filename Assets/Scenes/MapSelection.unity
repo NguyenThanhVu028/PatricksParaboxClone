@@ -1049,6 +1049,9 @@ MonoBehaviour:
   mainMenuSceneName: MainMenu
   defaultWorldCube: {fileID: 7043020996977654428}
   playerCube: {fileID: 1365485257}
+  backgroundMusicIDs:
+  - Action
+  - Farewell
 --- !u!1001 &432299470
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2959,7 +2962,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 219021201500727747, guid: 094b25d22c1bcfa4ba2602f80df8b2fd, type: 3}
       propertyPath: incremental
-      value: 10
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 219021201500727747, guid: 094b25d22c1bcfa4ba2602f80df8b2fd, type: 3}
       propertyPath: decreaseButton
@@ -5677,6 +5680,10 @@ PrefabInstance:
     - target: {fileID: 219021201500727747, guid: 094b25d22c1bcfa4ba2602f80df8b2fd, type: 3}
       propertyPath: minValue
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 219021201500727747, guid: 094b25d22c1bcfa4ba2602f80df8b2fd, type: 3}
+      propertyPath: incremental
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 219021201500727747, guid: 094b25d22c1bcfa4ba2602f80df8b2fd, type: 3}
       propertyPath: decreaseButton

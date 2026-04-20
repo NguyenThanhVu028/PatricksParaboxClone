@@ -3,6 +3,8 @@ using UnityEngine.Events;
 
 public class NormalButton : TriggerButton
 {
+    [SerializeField] string buttonActivatedAudioID = "Button Activated";
+    [SerializeField] string buttonDeactivatedAudioID = "Button Deactivated";
     private bool hasAssignedToGameManager = false;
 
     private void Update()
@@ -35,6 +37,7 @@ public class NormalButton : TriggerButton
     {
         if (GameManager.Instance != null)
             GameManager.Instance.AnnounceNormalButtonActivated();
+        if (SoundsManager.Instance != null) SoundsManager.Instance.PlaySFX(buttonActivatedAudioID);
         base.OnActivated();
     }
 
@@ -42,6 +45,7 @@ public class NormalButton : TriggerButton
     {
         if (GameManager.Instance != null)
             GameManager.Instance.AnnounceNormalButtonDeactivated();
+        if (SoundsManager.Instance != null) SoundsManager.Instance.PlaySFX(buttonDeactivatedAudioID);
         base.OnDeactivated();
     }
 

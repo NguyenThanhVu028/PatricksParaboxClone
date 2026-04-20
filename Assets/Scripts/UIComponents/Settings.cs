@@ -12,9 +12,9 @@ public class Settings : MonoBehaviour
     [SerializeField] SaveAndLoadManager.GameData gameData;
     private void Start()
     {
-        if (SaveAndLoadManager.Instance != null)
+        if (SaveAndLoadManager.GeneralGameData != null)
         {
-            gameData = SaveAndLoadManager.Instance.GeneralGameData;
+            gameData = SaveAndLoadManager.GeneralGameData;
         }
 
         UpdateSettingValues();

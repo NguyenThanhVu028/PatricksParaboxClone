@@ -12,8 +12,8 @@ public class SaveAndLoadManager : MonoBehaviour
 
     [SerializeField] string gameDataFileName = "GameData";
 
-    private GameData gameData;
-    public GameData GeneralGameData { get => gameData; }
+    private static GameData gameData;
+    public static GameData GeneralGameData { get => gameData; }
 
     private UnityEvent onLoadDataEvent = new();
     private UnityEvent onSaveDataEvent = new();
@@ -29,7 +29,7 @@ public class SaveAndLoadManager : MonoBehaviour
 
     private void OnEnable()
     {
-        LoadData();
+        if (gameData == null) LoadData();
     }
 
     private void OnDisable()
@@ -116,6 +116,9 @@ public class SaveAndLoadManager : MonoBehaviour
         [SerializeField] float musicVolume = 50f;
         [SerializeField] float sfxVolume = 50f;
 
+        private UnityEvent<float> onMusicVolumeChanged = new();
+        private UnityEvent<float> onSFXVolumeChanged = new();
+
         //public List<string> UnLockedWorldIDs { get => unlockedWorldIDs; }
         public List<string> FinishedMapIDs { get => finishedMapIDs; }
         public string LastOpenedMapName { get => lastOpenedMapName; set => lastOpenedMapName = value; }
@@ -125,8 +128,27 @@ public class SaveAndLoadManager : MonoBehaviour
         public float MoveTime { get => moveTime; set => moveTime = value; }
         public float EnterTime { get => enterTime; set => enterTime = value; }
 
-        public float MusicVolume { get => musicVolume; set => musicVolume = value; }
-        public float SFXVolume { get => sfxVolume; set => sfxVolume = value; }
+        public float MusicVolume 
+        { 
+            get => musicVolume;
+            set
+            {
+                musicVolume = value;
+                onMusicVolumeChanged.Invoke(musicVolume);
+            } 
+        }
+        public float SFXVolume 
+        { 
+            get => sfxVolume; 
+            set
+            {
+                sfxVolume = value;
+                onSFXVolumeChanged.Invoke(sfxVolume);
+            } 
+        }
+
+        public UnityEvent<float> OnMusicVolumeChanged { get => onMusicVolumeChanged; }
+        public UnityEvent<float> OnSFXVolumeChanged { get => onSFXVolumeChanged; }
 
         public void AddFinishedMap(string id)
         {

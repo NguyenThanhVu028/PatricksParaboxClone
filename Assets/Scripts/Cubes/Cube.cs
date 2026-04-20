@@ -75,9 +75,9 @@ public class Cube : MonoBehaviour
         previousParent = parent;
 
         AnimationsManager animationsManager = AnimationsManager.Instance;
-        if (animationsManager != null && SaveAndLoadManager.Instance != null)
+        if (animationsManager != null && SaveAndLoadManager.GeneralGameData != null)
         {
-            var gameData = SaveAndLoadManager.Instance.GeneralGameData;
+            var gameData = SaveAndLoadManager.GeneralGameData;
             faceTexture = animationsManager.GetPlayerFaceTextureAnimation(gameData.LastUsedFaceAniID);
         }
 

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -6,6 +7,9 @@ public class MainMenu : MonoBehaviour
 {
     [SerializeField] float defaultTransitionTime = 0.25f;
     [SerializeField] string mapSelectionScene = "";
+    [SerializeField] string backgroundMusicID;
+
+    private AudioPlayer backgroundMusicAudioPlayer;
     private Coroutine changeSceneCoroutine = null;
 
     private float TransitionTime
@@ -20,11 +24,34 @@ public class MainMenu : MonoBehaviour
 
     private void Start()
     {
-        if (SaveAndLoadManager.Instance != null)
+        if (SaveAndLoadManager.GeneralGameData != null)
         {
-            gameData = SaveAndLoadManager.Instance.GeneralGameData;
+            gameData = SaveAndLoadManager.GeneralGameData;
+        }
+
+        if (SoundsManager.Instance != null)
+        {
+            backgroundMusicAudioPlayer = SoundsManager.Instance.GetBackgroundMusicPlayer();
+            if (backgroundMusicAudioPlayer != null)
+            {
+                backgroundMusicAudioPlayer.ClearPlayList();
+                backgroundMusicAudioPlayer.AddToPlayList(SoundsManager.Instance.GetAudio(backgroundMusicID));
+
+                backgroundMusicAudioPlayer.SetPlayMode(AudioPlayer.PlayModes.Loop);
+                backgroundMusicAudioPlayer.Play();
+            }
         }
     }
+
+    private void OnDisable()
+    {
+        if (backgroundMusicAudioPlayer != null)
+        {
+            backgroundMusicAudioPlayer.ClearPlayList();
+            backgroundMusicAudioPlayer.Stop();
+        }
+    }
+
     public void RequestStartGame()
     {
         if (changeSceneCoroutine != null) return;

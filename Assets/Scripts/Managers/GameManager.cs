@@ -18,6 +18,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] string mapSelectionSceneName = "MapSelection";
 
+    [SerializeField] string winnerAudioID = "Winner";
+
     private int activatedPlayerButtons = 0;
     private int activatedNormalButtons = 0;
 
@@ -32,9 +34,9 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        if (SaveAndLoadManager.Instance != null)
+        if (SaveAndLoadManager.GeneralGameData != null)
         {
-            SaveAndLoadManager.GameData gameData = SaveAndLoadManager.Instance.GeneralGameData;
+            SaveAndLoadManager.GameData gameData = SaveAndLoadManager.GeneralGameData;
             if (gameData != null)
             {
                 gameData.LastOpenedMapName = SceneManager.GetActiveScene().name;
@@ -96,10 +98,11 @@ public class GameManager : MonoBehaviour
 
     IEnumerator LevelCompletedCoroutine()
     {
+        if (SoundsManager.Instance != null) SoundsManager.Instance.PlaySFX(winnerAudioID);
         yield return new WaitForSeconds(onLevelCompletedDelay);
-        if (SaveAndLoadManager.Instance != null)
+        if (SaveAndLoadManager.GeneralGameData != null)
         {
-            SaveAndLoadManager.GameData gameData = SaveAndLoadManager.Instance.GeneralGameData;
+            SaveAndLoadManager.GameData gameData = SaveAndLoadManager.GeneralGameData;
             if (gameData != null)
             {
                 gameData.AddFinishedMap(SceneManager.GetActiveScene().name);

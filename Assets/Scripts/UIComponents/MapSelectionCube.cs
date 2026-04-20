@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -52,9 +51,9 @@ public class MapSelectionCube : ContainerCube
         }
 
         // Check hasFinished status
-        if (SaveAndLoadManager.Instance != null)
+        if (SaveAndLoadManager.GeneralGameData != null)
         {
-            gameData = SaveAndLoadManager.Instance.GeneralGameData;
+            gameData = SaveAndLoadManager.GeneralGameData;
             if (gameData != null)
             {
                 foreach(var mapID in gameData.FinishedMapIDs)
