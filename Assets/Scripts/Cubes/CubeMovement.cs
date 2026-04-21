@@ -92,6 +92,8 @@ public class CubeMovement : MonoBehaviour
     {
         if (IsMoving || (selfCube.IsPlayer && IsCoolingDown)) return 0;
 
+        if (selfCube.PreviousParent.Count > 0) selfCube.Parent = selfCube.PreviousParent[selfCube.PreviousParent.Count - 1];
+
         // Modify the current record and store new record
         HistoryManager historyManager = HistoryManager.Instance;
         if (historyManager != null)
@@ -106,14 +108,14 @@ public class CubeMovement : MonoBehaviour
                     if (historyEvent == null) continue;
                     if (historyEvent.TargetCube == selfCube)
                     {
-                        historyEvent.PreviousParent = selfCube.PreviousParent;
+                        historyEvent.PreviousParent = (selfCube.PreviousParent.Count > 0) ? selfCube.PreviousParent[0] : null;
                         historyEvent.PreviousRPos = selfCube.RelativePosition;
                         historyEvent.PreviousRScl = selfCube.RelativeScale;
                         foundPreviousEvent = true;
                         break;
                     }
                 }
-                if (!foundPreviousEvent) currentRecord.Events.Add(new HistoryEvent(selfCube, selfCube.PreviousParent, selfCube.RelativePosition, selfCube.RelativeScale));
+                if (!foundPreviousEvent) currentRecord.Events.Add(new HistoryEvent(selfCube, (selfCube.PreviousParent.Count > 0) ? selfCube.PreviousParent[0] : null, selfCube.RelativePosition, selfCube.RelativeScale));
             }
 
             // Add new record for its new details
@@ -193,7 +195,8 @@ public class CubeMovement : MonoBehaviour
         movingCoroutine = null;
         isExternal = false;
         coolDownTimer = coolDownTime;
-        selfCube.PreviousParent = selfCube.Parent; // Update current parent after moving
+        selfCube.PreviousParent.Clear();
+        selfCube.PreviousParent.Add(selfCube.Parent); // Update current parent after moving
         selfCube.RelativePosition = endRPos;
         selfCube.RelativeScale = endRScl;
         if (selfCube.IsPlayer && MainCamera.Instance != null)

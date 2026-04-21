@@ -15,6 +15,7 @@ public class ContainerCubeEditor : Editor
     SerializedProperty isLeavable;
 
     // Rendering
+    SerializedProperty isHorizFlipped;
     SerializedProperty minPixelToRender;
     SerializedProperty normalMat;
     SerializedProperty outlineMat;
@@ -57,6 +58,7 @@ public class ContainerCubeEditor : Editor
         isLeavable = serializedObject.FindProperty("isLeavable");
 
         // Rendering
+        isHorizFlipped = serializedObject.FindProperty("isHorizFlipped");
         minPixelToRender = serializedObject.FindProperty("minPixelToRender");
         normalMat = serializedObject.FindProperty("normalMat");
         outlineMat = serializedObject.FindProperty("outlineMat");
@@ -100,6 +102,7 @@ public class ContainerCubeEditor : Editor
         EditorGUILayout.Space();
 
         EditorGUILayout.LabelField("Rendering", EditorStyles.boldLabel);
+        EditorGUILayout.PropertyField(isHorizFlipped);
         EditorGUILayout.PropertyField(minPixelToRender);
         EditorGUILayout.PropertyField(normalMat);
         EditorGUILayout.PropertyField(outlineMat);

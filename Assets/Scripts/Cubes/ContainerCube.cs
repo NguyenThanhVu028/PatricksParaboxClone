@@ -290,7 +290,7 @@ public class ContainerCube : Cube
         if (external)
         {
             ModifyChildCube(requestedCube);
-            requestedCube.Parent = this;
+            requestedCube.PreviousParent.Add(this);
         }
         // If the requested cube is a child of this cube -> Pick it up from its position
         else
@@ -381,7 +381,7 @@ public class ContainerCube : Cube
             if (useDebug) Debug.Log($"{requestedCube.name} cant move out of {gameObject.name} because there is no parent cube!");
             return 0;
         }
-        if (external && Parent == requestedCube.PreviousParent)
+        if (external && requestedCube.PreviousParent.Count > 0 && Parent == requestedCube.PreviousParent[requestedCube.PreviousParent.Count - 1])
         {
             // Inifite loop -> teleport to the void
             // This is just a placeholder code for testing

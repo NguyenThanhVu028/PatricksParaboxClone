@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UIElements;
@@ -19,6 +20,7 @@ public class Cube : MonoBehaviour
     [SerializeField] protected bool needInstantiating = true;
     [Header("Rendering")]
     [SerializeField] protected CustomTexture defaultTexture;
+    [SerializeField] protected bool isHorizFlipped = false;
     [SerializeField] protected int minPixelToRender = 2; // Don't render if the render rectangle size in pixel is smaller than this value
     [SerializeField] protected Material normalMat;
     [SerializeField] protected Material outlineMat;
@@ -29,7 +31,7 @@ public class Cube : MonoBehaviour
     protected float surfaceEffectsDepthOffset = -0.11f;
     [Header("Cube stats")]
     [SerializeField] protected ContainerCube parent;
-    [SerializeField] protected ContainerCube previousParent; // Record self cube's previous parent to record history
+    [SerializeField] protected List<ContainerCube> previousParent = new(); // Record self cube's previous parent to record history
     [SerializeField] protected Vector2 relativeScale = new(1, 1);
     [SerializeField] protected Vector2 relativePosition = new(0, 0);
     [Header("Other cube settings")]
@@ -56,9 +58,10 @@ public class Cube : MonoBehaviour
         }
     }
     public bool NeedInstantiating { get => needInstantiating; }
+    public bool IsHorizFlipped { get => isHorizFlipped; set => isHorizFlipped = value; }
     public Material NormalMat { get => normalMat; }
     public ContainerCube Parent { get => parent; set { parent = value; onParentChanged.Invoke(); } }
-    public ContainerCube PreviousParent { get => previousParent; set => previousParent = value; }
+    public List<ContainerCube> PreviousParent { get => previousParent; set => previousParent = value; }
     public Vector2 RelativeScale { get => relativeScale; set => relativeScale = value; }
     public Vector2 RelativePosition { get => relativePosition; set => relativePosition = value; }
     public UnityEvent OnInit { get => onInit; }
@@ -72,7 +75,8 @@ public class Cube : MonoBehaviour
             MainCamera.Instance.FocusOnTargetCube();
         }
 
-        previousParent = parent;
+        previousParent.Clear();
+        previousParent.Add(parent);
 
         AnimationsManager animationsManager = AnimationsManager.Instance;
         if (animationsManager != null && SaveAndLoadManager.GeneralGameData != null)

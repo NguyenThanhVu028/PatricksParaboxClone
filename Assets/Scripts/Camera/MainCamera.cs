@@ -17,7 +17,7 @@ public class MainCamera : MonoBehaviour
     [SerializeField] bool isRendering = true;
     [SerializeField] MainCameraRenderMode renderMode = MainCameraRenderMode.SingleCube;
     [SerializeField] float exposure = 0.0f;
-    [SerializeField] bool isVerFlipped = false;
+    [SerializeField] bool isHorizFlipped = false;
 
     [Header("Single Cube mode")]
     [SerializeField] ContainerCube targetCube;
@@ -38,7 +38,7 @@ public class MainCamera : MonoBehaviour
     public static MainCamera Instance { get => instance; }
 
     public bool IsPlayingTrasition { get => transitionCoroutine != null; }
-    public bool IsVerFlipped { get => isVerFlipped; set => isVerFlipped = value; }
+    public bool IsHorizFlipped { get => isHorizFlipped; set => isHorizFlipped = value; }
     public MainCameraRenderMode RenderMode { get => renderMode; }
     public float Exposure { get => exposure; set => exposure = value; }
     public ContainerCube TargetCube { get => targetCube; }
@@ -88,8 +88,6 @@ public class MainCamera : MonoBehaviour
         {
             if (cubeRenderDetail == null || cubeRenderDetail.TargetCube == null) return;
             Rect renderPos = cubeRenderDetail.RenderPosition;
-            renderPos.position = new(((isVerFlipped) ? -1 : 1) * renderPos.position.x, renderPos.position.y);
-            renderPos.size = new(((isVerFlipped) ? -1 : 1 ) * renderPos.size.x, renderPos.size.y);
             cubeRenderDetail.TargetCube.Draw(renderPos, depth, exposure, GetScreenRect());
         }
     }
@@ -98,8 +96,6 @@ public class MainCamera : MonoBehaviour
     {
         if (targetCube == null) return;
         Rect renderPos = renderPosition;
-        renderPos.position = new(((isVerFlipped) ? -1 : 1) * renderPos.position.x, renderPos.position.y);
-        renderPos.size = new(((isVerFlipped) ? -1 : 1) * renderPos.size.x, renderPos.size.y);
         if (renderParents)
         {
             // Traverse through the target cube's parents

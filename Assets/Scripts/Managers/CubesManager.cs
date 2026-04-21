@@ -127,7 +127,8 @@ public class CubesManager : MonoBehaviour
             Debug.Log($"Reset {historyEvent.TargetCube} parent to {historyEvent.PreviousParent}");
             historyEvent.PreviousParent.ChildCubes[targetCubePrevPosInParent.x, targetCubePrevPosInParent.y] = historyEvent.TargetCube;
             historyEvent.TargetCube.Parent = historyEvent.PreviousParent;
-            historyEvent.TargetCube.PreviousParent = historyEvent.PreviousParent;
+            historyEvent.TargetCube.PreviousParent.Clear();
+            historyEvent.TargetCube.PreviousParent.Add(historyEvent.PreviousParent);
             historyEvent.TargetCube.RelativePosition = historyEvent.PreviousRPos;
             historyEvent.TargetCube.RelativeScale = historyEvent.PreviousRScl;
             ResetCamera(historyEvent.TargetCube);
