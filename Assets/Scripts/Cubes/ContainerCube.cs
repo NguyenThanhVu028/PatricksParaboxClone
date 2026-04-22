@@ -187,19 +187,19 @@ public class ContainerCube : Cube
                 spawnedCube.CanBePlayer = cubeToSpawnDetails.CanBePlayer;
                 if (spawnedCube.CubeType == CubeTypes.Empty) emptyCubes.Add(spawnedCube);
                 else childGrid.Children[row, column] = spawnedCube;
-                ModifyChildCube(spawnedCube);
+                //ModifyChildCube(spawnedCube);
                 spawnedCube.Init();
             }
         }
     }
-    protected void ModifyChildCube(Cube childCube)
-    {
-        if (childCube == null) return;
-    }
-    protected void UnModifyChildCube(Cube childCube)
-    {
-        if (childCube == null) return;
-    }
+    //protected void ModifyChildCube(Cube childCube)
+    //{
+    //    if (childCube == null) return;
+    //}
+    //protected void UnModifyChildCube(Cube childCube)
+    //{
+    //    if (childCube == null) return;
+    //}
     
     // Draw functions
     protected override void DrawCube(Rect position, float depth, float exposure, Rect? scissorRect)
@@ -273,7 +273,15 @@ public class ContainerCube : Cube
         var requestedCubeMovement = requestedCube.GetComponent<CubeMovement>();
         if (requestedCubeMovement == null) return 0;
 
+        // Flip the requested cube if it is trying to move into a horizontally flipped cube
         Vector2Int requestedCubePosition = Relativity.GridPosFromRPos(childGrid.Tiling.y, childGrid.Tiling.x, cRPos);
+        if (!childGrid.CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y) && external && isHorizFlipped)
+        {
+            cRPos.x = -cRPos.x;
+            requestedCubePosition = Relativity.GridPosFromRPos(childGrid.Tiling.y, childGrid.Tiling.x, cRPos);
+            direction = PlayerInputsManager.FlipMovementInput(direction, true);
+        }
+
         Vector2Int requestedPosition;
         if (!childGrid.CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y))
         {
@@ -286,10 +294,10 @@ public class ContainerCube : Cube
         }
         else requestedPosition = requestedCubePosition + PlayerInputsManager.ConvertMovementInputToGridDirection(direction);
 
-        // If the requested cube is not a child of this cube -> Modify it
+        // If the requested cube is not a child of this cube
         if (external)
         {
-            ModifyChildCube(requestedCube);
+            //ModifyChildCube(requestedCube);
             if (childGrid.CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y))
             {
                 requestedCube.PreviousParents.Add(new(PreviousParentDetails.Directions.Out, this));
@@ -405,6 +413,13 @@ public class ContainerCube : Cube
          * - Let the outter cube handle the movement of the requested cube
          */
 
+        // Flip the requested cube if it is trying to move outside of a horizontally flipped cube
+        if (isHorizFlipped)
+        {
+            cRPos.x = -cRPos.x;
+            direction = PlayerInputsManager.FlipMovementInput(direction, true);
+        }
+
         Vector2 outterCubeRPos = Relativity.PRPosToAChild(relativePosition, relativeScale);
         Vector2 outterCubeRScl = Relativity.PRSclToAChild(relativeScale);
 
@@ -415,7 +430,7 @@ public class ContainerCube : Cube
         if (targetTime > 0) return targetTime;
 
         // Fail to move out -> unmodify, set requested cube's parent back to this cube
-        parent.UnModifyChildCube(requestedCube);
+        //parent.UnModifyChildCube(requestedCube);
         requestedCube.Parent = this;
 
         if (useDebug) Debug.Log($"{requestedCube.name} cant move out of {gameObject.name} because its parent rejected!");
@@ -452,7 +467,7 @@ public class ContainerCube : Cube
         if (tempTargetTime > 0) return tempTargetTime;
 
         // Fail to move out -> unmodify, set requested cube's parent back to this cube
-        blockageCube.UnModifyChildCube(requestedCube);
+        //blockageCube.UnModifyChildCube(requestedCube);
         requestedCube.Parent = this;
 
         if (useDebug) Debug.Log($"{requestedCube.name} fail to enter {blockageCube.gameObject.name}!");
@@ -475,7 +490,7 @@ public class ContainerCube : Cube
             
             if (tempTargetTime <= 0)
             {
-                requestedCube.UnModifyChildCube(blockageCube);
+                //requestedCube.UnModifyChildCube(blockageCube);
                 blockageCube.Parent = this;
             }
             return tempTargetTime;

@@ -33,7 +33,6 @@ public class PlayerInputsManager : MonoBehaviour
         // Subscribe actions 
         mainInputSystem.Normal.SetCallbacks(gameplayInputsReceiver);
         mainInputSystem.UI.SetCallbacks(uiInputsReceiver);
-
     }
 
     private void OnEnable()
@@ -105,7 +104,7 @@ public class PlayerInputsManager : MonoBehaviour
                 return Vector2Int.zero;
         }
     }
-    public static MovementInputs FilpMovementInput(MovementInputs input, bool horizontal)
+    public static MovementInputs FlipMovementInput(MovementInputs input, bool horizontal)
     {
         switch (input)
         {

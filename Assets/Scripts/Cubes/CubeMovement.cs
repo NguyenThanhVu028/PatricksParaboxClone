@@ -67,6 +67,10 @@ public class CubeMovement : MonoBehaviour
             !IsMoving && !IsCoolingDown)
         {
             PlayerInputsManager.MovementInputs movementInput = PlayerInputsManager.Instance.GameplayInputs.GetLatestMovementInput();
+            if (MainCamera.Instance != null && MainCamera.Instance.RenderMode == MainCamera.MainCameraRenderMode.SingleCube)
+            {
+                if (MainCamera.Instance.TargetCubeRect.size.x < 0) movementInput = PlayerInputsManager.FlipMovementInput(movementInput, true);
+            }
             if (movementInput != PlayerInputsManager.MovementInputs.None)
             {
                 Debug.Log($"{name} tries to move {movementInput}");
@@ -92,8 +96,17 @@ public class CubeMovement : MonoBehaviour
     public float StartMoving(Vector2 startRPos, Vector2 startRScl, Vector2 endRPos, Vector2 endRScl, float targetTime, ContainerCube targetParent, bool isExternal = false)
     {
         if (IsMoving || (selfCube.IsPlayer && IsCoolingDown)) return 0;
-
+        
+        // Update self cube status
         if (selfCube.PreviousParents.Count > 0) selfCube.Parent = selfCube.PreviousParents[selfCube.PreviousParents.Count - 1].Cube;
+        for(int i = 1; i < selfCube.PreviousParents.Count; i++)
+        {
+            if (selfCube.PreviousParents[i].direction == PreviousParentDetails.Directions.In && selfCube.PreviousParents[i].Cube.IsHorizFlipped) selfCube.IsHorizFlipped = !selfCube.IsHorizFlipped;
+            else if (selfCube.PreviousParents[i].direction == PreviousParentDetails.Directions.Out && i >= 1)
+            {
+                if (selfCube.PreviousParents[i - 1].Cube.IsHorizFlipped) selfCube.IsHorizFlipped = !selfCube.IsHorizFlipped;
+            }
+        }
 
         // Modify the current record and store new record
         HistoryManager historyManager = HistoryManager.Instance;
@@ -167,6 +180,8 @@ public class CubeMovement : MonoBehaviour
         movingCoroutine = null;
 
         isExternal = false;
+        selfCube.PreviousParents.Clear();
+        selfCube.PreviousParents.Add(new(PreviousParentDetails.Directions.Out, selfCube.Parent)); // Update current parent after moving
         if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.GameplayInputs.ContinueUsingMovementInputs();
         onMoveEnd.Invoke();
     }
@@ -197,7 +212,7 @@ public class CubeMovement : MonoBehaviour
         isExternal = false;
         coolDownTimer = coolDownTime;
         selfCube.PreviousParents.Clear();
-        selfCube.PreviousParents.Add(new(PreviousParentDetails.Directions.In, selfCube.Parent)); // Update current parent after moving
+        selfCube.PreviousParents.Add(new(PreviousParentDetails.Directions.Out, selfCube.Parent)); // Update current parent after moving
         selfCube.RelativePosition = endRPos;
         selfCube.RelativeScale = endRScl;
         if (selfCube.IsPlayer && MainCamera.Instance != null)

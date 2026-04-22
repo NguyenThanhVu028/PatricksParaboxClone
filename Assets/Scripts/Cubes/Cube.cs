@@ -77,7 +77,7 @@ public class Cube : MonoBehaviour
         }
 
         previousParents.Clear();
-        previousParents.Add(new(PreviousParentDetails.Directions.In, parent));
+        previousParents.Add(new(PreviousParentDetails.Directions.Out, parent));
 
         AnimationsManager animationsManager = AnimationsManager.Instance;
         if (animationsManager != null && SaveAndLoadManager.GeneralGameData != null)

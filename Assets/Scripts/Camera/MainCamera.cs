@@ -140,7 +140,6 @@ public class MainCamera : MonoBehaviour
         {
             Rect renderPos = renderRect;
             if (isHorizFlipped) renderPos.size = new(-renderPos.size.x, renderPos.size.y);
-            Debug.Log(renderPos);
             targetCube.Draw(renderPos, depth, exposure, GetScreenRect());
         }
     }

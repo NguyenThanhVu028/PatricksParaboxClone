@@ -9,16 +9,11 @@ public class CloneCube : ContainerCube
     private Cube requestedCube;
     private Vector2Int requestedCubeTargetPos = new();
 
-    //public override void Draw(Rect position, float depth = 0)
-    //{
-    //    if (mainContainerCube != null) mainContainerCube.Draw(position, depth);
-    //}
-
     public override void Init()
     {
-        base.Init();
         if (mainContainerCube != null) mainContainerCube.OnFinishedDrawing.AddListener(OnMainCubeDraw);
         if (AnimationsManager.Instance != null) surfaceEffectsAnimation = AnimationsManager.Instance.GetNormalTextureAnimation("Noise");
+        base.Init();
     }
 
     private void Update()
@@ -29,13 +24,6 @@ public class CloneCube : ContainerCube
             if (requestedCubeMovement == null) requestedCube = null;
             if (!requestedCubeMovement.IsMoving || !requestedCubeMovement.IsExternal || requestedCube.Parent != mainContainerCube)
             {
-                //if (mainContainerCube != null)
-                //{
-                //    if (mainContainerCube.ChildGrid.Children[requestedCubeTargetPos.x, requestedCubeTargetPos.y] == null)
-                //    {
-                //        mainContainerCube.ChildGrid.Children[requestedCubeTargetPos.x, requestedCubeTargetPos.y] = requestedCube;
-                //    }
-                //}
                 mainContainerCube.CullingCubes.Remove(requestedCube);
                 requestedCube = null;
             }
@@ -138,8 +126,6 @@ public class CloneCube : ContainerCube
         }
 
         // Take the requested cube from the main container cube -> Return later
-        //requestedCubeTargetPos = mainContainerCube.ChildGrid.FindChild(requestedCube);
-        //mainContainerCube.ChildGrid.RemoveChild(requestedCube);
         if (!mainContainerCube.CullingCubes.Contains(requestedCube))
             mainContainerCube.CullingCubes.Add(requestedCube);
         this.requestedCube = requestedCube;

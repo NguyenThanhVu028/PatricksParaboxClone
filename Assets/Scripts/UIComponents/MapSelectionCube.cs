@@ -44,7 +44,7 @@ public class MapSelectionCube : ContainerCube
             triggerButton.RelativePosition = Relativity.RPosFromGridTile(childGrid.Tiling.y, childGrid.Tiling.x, 0, 0);
             triggerButton.Parent = this;
             emptyCubes.Add(triggerButton);
-            ModifyChildCube(triggerButton);
+            //ModifyChildCube(triggerButton);
             triggerButton.Init();
 
             triggerButton.OnButtonActivated.AddListener(OpenMap);
