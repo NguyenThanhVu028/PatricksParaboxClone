@@ -9,8 +9,7 @@ public interface ICameraTransition
 
 public class ZoomingTransition : ICameraTransition
 {
-    //private Vector2 prevRPosToNew;
-    //private Vector2 prevRSclToNew;
+
     private List<Cube.PreviousParentDetails> cubesToTraverse; 
     private ContainerCube targetCube;
     private Rect targetCubeRect;
@@ -34,6 +33,8 @@ public class ZoomingTransition : ICameraTransition
             mainCamera.FocusOnTargetCube();
             return null;
         }
+
+        // Traverse the previous parents list to calculate new target cube rect
         if (cubesToTraverse == null || cubesToTraverse.Count == 0) return null;
         targetCubeRect = mainCamera.TargetCubeRect;
         ContainerCube currentCube = cubesToTraverse[0].Cube;
@@ -62,6 +63,19 @@ public class ZoomingTransition : ICameraTransition
             }
             currentCube = cubesToTraverse[i].Cube;
         }
+
+        // Record history
+        if (HistoryManager.Instance != null)
+        {
+            if (HistoryManager.Instance.GetCurrentRecord().CameraEvent == null) HistoryManager.Instance.GetCurrentRecord().CameraEvent = new(mainCamera.IsHorizFlipped);
+            else HistoryManager.Instance.GetCurrentRecord().CameraEvent.IsCamHorizFlipped = mainCamera.IsHorizFlipped;
+            if (targetCubeRect.size.x > 0 == targetCube.IsHorizFlipped)
+            {
+                HistoryManager.Instance.RecordCameraInfo(true);
+            }
+            else HistoryManager.Instance.RecordCameraInfo(false);
+        }
+
         // Zooming out
         if (Mathf.Abs(targetCubeRect.size.x) <= Mathf.Abs(mainCamera.TargetCubeRect.size.x) || Mathf.Abs(targetCubeRect.size.y) <= Mathf.Abs(mainCamera.TargetCubeRect.size.y)) return ZoomInCoroutine(mainCamera, targetCube, targetTime);
         // Zooming in

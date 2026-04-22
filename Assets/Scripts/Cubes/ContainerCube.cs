@@ -502,18 +502,6 @@ public class ContainerCube : Cube
         // Update camera transition if the requested cube is a player
         if (requestedCube.IsPlayer && MainCamera.Instance != null)
         {
-            //Vector2 oldParentRPos = Relativity.PRPosToAChild(requestedCubeOldRPos, requestedCubeOldRScl);
-            //Vector2 oldParentRScl = Relativity.PRSclToAChild(requestedCubeOldRScl);
-
-            //Vector2 newParentRPos = Relativity.PRPosToAChild(cRPos, cRScl);
-            //Vector2 newParentRScl = Relativity.PRSclToAChild(cRScl);
-
-            //Vector2 oldParentRPosToNewParent = Relativity.SRPosFromSameParent(newParentRPos, newParentRScl, oldParentRPos);
-            //Vector2 oldParentRSclToNewParent = Relativity.SRSclFromSameParent(newParentRScl, oldParentRScl);
-
-            //requestedCube.RelativePosition = cRPos;
-            //requestedCube.RelativeScale = cRScl;
-
             ZoomingTransition zoomingTransition = new(
                 requestedCube.PreviousParents,
                 this,
