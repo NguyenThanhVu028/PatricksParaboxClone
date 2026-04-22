@@ -65,16 +65,16 @@ public class ZoomingTransition : ICameraTransition
         }
 
         // Record history
-        if (HistoryManager.Instance != null)
-        {
-            if (HistoryManager.Instance.GetCurrentRecord().CameraEvent == null) HistoryManager.Instance.GetCurrentRecord().CameraEvent = new(mainCamera.IsHorizFlipped);
-            else HistoryManager.Instance.GetCurrentRecord().CameraEvent.IsCamHorizFlipped = mainCamera.IsHorizFlipped;
-            if (targetCubeRect.size.x > 0 == targetCube.IsHorizFlipped)
-            {
-                HistoryManager.Instance.RecordCameraInfo(true);
-            }
-            else HistoryManager.Instance.RecordCameraInfo(false);
-        }
+        //if (HistoryManager.Instance != null)
+        //{
+        //    if (HistoryManager.Instance.GetCurrentRecord().CameraEvent == null) HistoryManager.Instance.GetCurrentRecord().CameraEvent = new(mainCamera.IsHorizFlipped);
+        //    else HistoryManager.Instance.GetCurrentRecord().CameraEvent.IsCamHorizFlipped = mainCamera.IsHorizFlipped;
+        //    if (targetCubeRect.size.x > 0 == targetCube.IsHorizFlipped)
+        //    {
+        //        HistoryManager.Instance.RecordCameraInfo(true);
+        //    }
+        //    else HistoryManager.Instance.RecordCameraInfo(false);
+        //}
 
         // Zooming out
         if (Mathf.Abs(targetCubeRect.size.x) <= Mathf.Abs(mainCamera.TargetCubeRect.size.x) || Mathf.Abs(targetCubeRect.size.y) <= Mathf.Abs(mainCamera.TargetCubeRect.size.y)) return ZoomInCoroutine(mainCamera, targetCube, targetTime);

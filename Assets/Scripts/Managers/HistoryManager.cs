@@ -28,9 +28,9 @@ public class HistoryManager : MonoBehaviour
     }
 
     // Called by every cube that moves
-    public void RecordNewEvent(Cube targetCube, ContainerCube previousParent, Vector2 previousRPos, Vector2 previousRScl)
+    public void RecordNewEvent(Cube targetCube, ContainerCube previousParent, Vector2 previousRPos, Vector2 previousRScl, bool isHorizFlipped)
     {
-        newHistoryRecord.AddHistoryEvent(new HistoryEvent(targetCube, previousParent, previousRPos, previousRScl));
+        newHistoryRecord.AddHistoryEvent(new HistoryEvent(targetCube, previousParent, previousRPos, previousRScl, isHorizFlipped));
     }
     public void RecordCameraInfo(bool isHorizFlipped)
     {
@@ -56,6 +56,12 @@ public class HistoryManager : MonoBehaviour
             currentIndex = -1;
             newHistoryRecord = new();
             return;
+        }
+
+        if (MainCamera.Instance != null)
+        {
+            if (newHistoryRecord.CameraEvent == null) newHistoryRecord.CameraEvent = new(MainCamera.Instance.IsHorizFlipped);
+            else newHistoryRecord.CameraEvent.IsCamHorizFlipped = MainCamera.Instance.IsHorizFlipped;
         }
 
         if (currentIndex < 0) currentIndex = 0;
@@ -162,18 +168,21 @@ public class HistoryEvent
     [SerializeField] ContainerCube previousParent;
     [SerializeField] Vector2 previousRPos = new();
     [SerializeField] Vector2 previousRScl = new();
+    [SerializeField] bool isHorizFlipped = false;
 
     public Cube TargetCube { get => targetCube; }
     public ContainerCube PreviousParent { get => previousParent; set => previousParent = value; }
     public Vector2 PreviousRPos { get => previousRPos; set => previousRPos = value; }
     public Vector2 PreviousRScl { get => previousRScl; set => previousRScl = value; }
+    public bool IsHorizFlipped { get => isHorizFlipped; set => isHorizFlipped = value; }
 
-    public HistoryEvent(Cube targetCube, ContainerCube previousParent, Vector2 previousRPos, Vector2 previousRScl)
+    public HistoryEvent(Cube targetCube, ContainerCube previousParent, Vector2 previousRPos, Vector2 previousRScl, bool isHorizFlipped)
     {
         this.targetCube = targetCube;
         this.previousParent = previousParent;
         this.previousRPos = previousRPos;
         this.previousRScl = previousRScl;
+        this.isHorizFlipped = isHorizFlipped;
     }
 }
 [Serializable]

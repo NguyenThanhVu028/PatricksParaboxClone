@@ -70,6 +70,7 @@ public class HistoryTranslator : MonoBehaviour
             historyEvent.TargetCube.PreviousParents.Add(new(PreviousParentDetails.Directions.In, historyEvent.PreviousParent));
             historyEvent.TargetCube.RelativePosition = historyEvent.PreviousRPos;
             historyEvent.TargetCube.RelativeScale = historyEvent.PreviousRScl;
+            historyEvent.TargetCube.IsHorizFlipped = historyEvent.IsHorizFlipped;
             ResetCameraTarget(historyEvent);
         }
         ResetCameraStatus(historyRecord);

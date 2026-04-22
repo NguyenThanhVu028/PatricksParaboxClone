@@ -96,19 +96,8 @@ public class CubeMovement : MonoBehaviour
     public float StartMoving(Vector2 startRPos, Vector2 startRScl, Vector2 endRPos, Vector2 endRScl, float targetTime, ContainerCube targetParent, bool isExternal = false)
     {
         if (IsMoving || (selfCube.IsPlayer && IsCoolingDown)) return 0;
-        
-        // Update self cube status
-        if (selfCube.PreviousParents.Count > 0) selfCube.Parent = selfCube.PreviousParents[selfCube.PreviousParents.Count - 1].Cube;
-        for(int i = 1; i < selfCube.PreviousParents.Count; i++)
-        {
-            if (selfCube.PreviousParents[i].direction == PreviousParentDetails.Directions.In && selfCube.PreviousParents[i].Cube.IsHorizFlipped) selfCube.IsHorizFlipped = !selfCube.IsHorizFlipped;
-            else if (selfCube.PreviousParents[i].direction == PreviousParentDetails.Directions.Out && i >= 1)
-            {
-                if (selfCube.PreviousParents[i - 1].Cube.IsHorizFlipped) selfCube.IsHorizFlipped = !selfCube.IsHorizFlipped;
-            }
-        }
 
-        // Modify the current record and store new record
+        // Update self cube status and history
         HistoryManager historyManager = HistoryManager.Instance;
         if (historyManager != null)
         {
@@ -117,23 +106,37 @@ public class CubeMovement : MonoBehaviour
             if (currentRecord != null)
             {
                 bool foundPreviousEvent = false;
-                foreach(var historyEvent in currentRecord.Events)
+                foreach (var historyEvent in currentRecord.Events)
                 {
                     if (historyEvent == null) continue;
                     if (historyEvent.TargetCube == selfCube)
                     {
-                        historyEvent.PreviousParent = (selfCube.PreviousParents.Count > 0) ? selfCube.PreviousParents[0].Cube : null;
+                        historyEvent.PreviousParent = selfCube.Parent;
                         historyEvent.PreviousRPos = selfCube.RelativePosition;
                         historyEvent.PreviousRScl = selfCube.RelativeScale;
+                        historyEvent.IsHorizFlipped = selfCube.IsHorizFlipped;
                         foundPreviousEvent = true;
                         break;
                     }
                 }
-                if (!foundPreviousEvent) currentRecord.Events.Add(new HistoryEvent(selfCube, (selfCube.PreviousParents.Count > 0) ? selfCube.PreviousParents[0].Cube : null, selfCube.RelativePosition, selfCube.RelativeScale));
+                if (!foundPreviousEvent) currentRecord.Events.Add(new HistoryEvent(selfCube, (selfCube.PreviousParents.Count > 0) ? selfCube.PreviousParents[0].Cube : null, selfCube.RelativePosition, selfCube.RelativeScale, selfCube.IsHorizFlipped));
             }
+        }
 
+        for (int i = 1; i < selfCube.PreviousParents.Count; i++)
+        {
+            if (selfCube.PreviousParents[i].direction == PreviousParentDetails.Directions.In && selfCube.PreviousParents[i].Cube.IsHorizFlipped) selfCube.IsHorizFlipped = !selfCube.IsHorizFlipped;
+            else if (selfCube.PreviousParents[i].direction == PreviousParentDetails.Directions.Out && i >= 1)
+            {
+                if (selfCube.PreviousParents[i - 1].Cube.IsHorizFlipped) selfCube.IsHorizFlipped = !selfCube.IsHorizFlipped;
+            }
+        }
+        if (selfCube.PreviousParents.Count > 0) selfCube.Parent = selfCube.PreviousParents[selfCube.PreviousParents.Count - 1].Cube;
+        
+        if (historyManager != null)
+        {
             // Add new record for its new details
-            historyManager.RecordNewEvent(selfCube, selfCube.Parent, endRPos, endRScl);
+            historyManager.RecordNewEvent(selfCube, selfCube.Parent, endRPos, endRScl, selfCube.IsHorizFlipped);
         }
 
         Vector2 cubeOldRPos = selfCube.RelativePosition;
