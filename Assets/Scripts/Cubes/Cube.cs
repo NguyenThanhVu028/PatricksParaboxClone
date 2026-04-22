@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -31,7 +32,7 @@ public class Cube : MonoBehaviour
     protected float surfaceEffectsDepthOffset = -0.11f;
     [Header("Cube stats")]
     [SerializeField] protected ContainerCube parent;
-    [SerializeField] protected List<ContainerCube> previousParent = new(); // Record self cube's previous parent to record history
+    [SerializeField] protected List<PreviousParentDetails> previousParents = new(); // Record self cube's previous parent to record history
     [SerializeField] protected Vector2 relativeScale = new(1, 1);
     [SerializeField] protected Vector2 relativePosition = new(0, 0);
     [Header("Other cube settings")]
@@ -61,7 +62,7 @@ public class Cube : MonoBehaviour
     public bool IsHorizFlipped { get => isHorizFlipped; set => isHorizFlipped = value; }
     public Material NormalMat { get => normalMat; }
     public ContainerCube Parent { get => parent; set { parent = value; onParentChanged.Invoke(); } }
-    public List<ContainerCube> PreviousParent { get => previousParent; set => previousParent = value; }
+    public List<PreviousParentDetails> PreviousParents { get => previousParents; set => previousParents = value; }
     public Vector2 RelativeScale { get => relativeScale; set => relativeScale = value; }
     public Vector2 RelativePosition { get => relativePosition; set => relativePosition = value; }
     public UnityEvent OnInit { get => onInit; }
@@ -75,8 +76,8 @@ public class Cube : MonoBehaviour
             MainCamera.Instance.FocusOnTargetCube();
         }
 
-        previousParent.Clear();
-        previousParent.Add(parent);
+        previousParents.Clear();
+        previousParents.Add(new(PreviousParentDetails.Directions.In, parent));
 
         AnimationsManager animationsManager = AnimationsManager.Instance;
         if (animationsManager != null && SaveAndLoadManager.GeneralGameData != null)
@@ -95,6 +96,7 @@ public class Cube : MonoBehaviour
         Vector2 rectSizeInPixel = CustomTextureRenderer2D.ConvertScaleToPixel(position.size);
         if (rectSizeInPixel.x < minPixelToRender || rectSizeInPixel.y < minPixelToRender) return; // Don't draw if the requested rectangle is too small (To avoid infinite rendering)
 
+        if (isHorizFlipped) position.size = new(-position.size.x, position.size.y);
         DrawCube(position, depth, exposure, scissorRect);
         DrawPlayerFace(position, depth + playerFaceDepthOffset, exposure, scissorRect);
         DrawSurfaceEffects(position, depth + surfaceEffectsDepthOffset, exposure, scissorRect);
@@ -157,5 +159,26 @@ public class Cube : MonoBehaviour
         // Stop the animation or effect here
         targetCube.IsPlayer = true;
         if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.GameplayInputs.ContinueUsingMovementInputs();
+    }
+
+    public void RemovePreviousParent(ContainerCube cube)
+    {
+        foreach(var previousParent in previousParents)
+        {
+            if (previousParent.Cube == cube)
+            {
+                previousParents.Remove(previousParent);
+                return;
+            }
+        }
+    }
+    [Serializable]
+    public struct PreviousParentDetails
+    {
+        public enum Directions { In, Out }
+        public Directions direction;
+        public ContainerCube Cube;
+
+        public PreviousParentDetails(Directions direction, ContainerCube cube) { this.Cube = cube; this.direction = direction; }
     }
 }

@@ -21,7 +21,7 @@ public class MainCamera : MonoBehaviour
 
     [Header("Single Cube mode")]
     [SerializeField] ContainerCube targetCube;
-    [SerializeField] Rect renderPosition;
+    [SerializeField] Rect renderRect;
     [SerializeField] bool renderParents = true; // Used for SingleCube mode
     [SerializeField] int numberOfParentsToTraverse = 3;
 
@@ -42,7 +42,26 @@ public class MainCamera : MonoBehaviour
     public MainCameraRenderMode RenderMode { get => renderMode; }
     public float Exposure { get => exposure; set => exposure = value; }
     public ContainerCube TargetCube { get => targetCube; }
-    public Rect RenderPosition { get => renderPosition; }
+    public Rect RenderRect
+    {
+        get
+        {
+            Rect realRenderRect = renderRect;
+            if (isHorizFlipped) realRenderRect.size = new(-renderRect.size.x, renderRect.size.y);
+            return realRenderRect;
+        }
+    }
+    public Rect TargetCubeRect
+    {
+        get
+        {
+            if (targetCube == null) return new();
+            Rect realRenderPosition = renderRect;
+            if (isHorizFlipped) realRenderPosition.size = new(-realRenderPosition.size.x, realRenderPosition.size.y);
+            if (targetCube.IsHorizFlipped) realRenderPosition.size = new(-realRenderPosition.size.x, realRenderPosition.size.y);
+            return realRenderPosition;
+        }
+    }
     public float OrthographicSize { get => mainCamera.orthographicSize; set => mainCamera.orthographicSize = value; }
 
     private void Awake()
@@ -53,13 +72,11 @@ public class MainCamera : MonoBehaviour
     }
     private void OnEnable()
     {
-        //RenderPipelineManager.endCameraRendering += OnRender;
         CustomRendererFeature.CustomRenderPass.OnExecuteCmd.AddListener(OnRender);
     }
 
     private void OnDisable()
     {
-        //RenderPipelineManager.endCameraRendering -= OnRender;
         CustomRendererFeature.CustomRenderPass.OnExecuteCmd.RemoveListener(OnRender);
     }
     private void OnRender()
@@ -88,6 +105,8 @@ public class MainCamera : MonoBehaviour
         {
             if (cubeRenderDetail == null || cubeRenderDetail.TargetCube == null) return;
             Rect renderPos = cubeRenderDetail.RenderPosition;
+            if (isHorizFlipped) renderPos.size = new(-renderPos.size.x, renderPos.size.y);
+            if (cubeRenderDetail.TargetCube.IsHorizFlipped) renderPos.size = new(-renderPos.size.x, renderPos.size.y);
             cubeRenderDetail.TargetCube.Draw(renderPos, depth, exposure, GetScreenRect());
         }
     }
@@ -95,27 +114,35 @@ public class MainCamera : MonoBehaviour
     private void RenderSingleCube(float depth)
     {
         if (targetCube == null) return;
-        Rect renderPos = renderPosition;
         if (renderParents)
         {
             // Traverse through the target cube's parents
             ContainerCube newTargetCube = targetCube;
-            Rect newRenderPosition = renderPos;
+            Rect renderPos = TargetCubeRect;
             int parentCount = 0;
             while(parentCount < numberOfParentsToTraverse)
             {
                 if (newTargetCube.Parent == null) break;
-                newRenderPosition = Relativity.PRectFromCRect(newRenderPosition, newTargetCube.RelativeScale, newTargetCube.RelativePosition);
+                Vector3 oldRenderPos = renderPos.position;
+                renderPos = Relativity.PRectFromCRect(renderPos, newTargetCube.RelativeScale, newTargetCube.RelativePosition);
+                if (newTargetCube.IsHorizFlipped)
+                {
+                    renderPos.size = new(-renderPos.size.x, renderPos.size.y);
+                    renderPos.position = new(oldRenderPos.x - (renderPos.position.x - oldRenderPos.x), renderPos.position.y);
+                }
                 newTargetCube = newTargetCube.Parent;
                 parentCount++;
             }
-
-            if (newTargetCube != null)
-            {
-                newTargetCube.Draw(newRenderPosition, depth, exposure, GetScreenRect());
-            }
+            if (newTargetCube.IsHorizFlipped) renderPos.size = new(-renderPos.size.x, renderPos.size.y);
+            newTargetCube.Draw(renderPos, depth, exposure, GetScreenRect());
         }
-        else targetCube.Draw(renderPos, depth, exposure, GetScreenRect());
+        else
+        {
+            Rect renderPos = renderRect;
+            if (isHorizFlipped) renderPos.size = new(-renderPos.size.x, renderPos.size.y);
+            Debug.Log(renderPos);
+            targetCube.Draw(renderPos, depth, exposure, GetScreenRect());
+        }
     }
 
     public void SetNewTargetCube(ContainerCube newTarget)
@@ -131,8 +158,8 @@ public class MainCamera : MonoBehaviour
         if (renderMode != MainCameraRenderMode.SingleCube) return;
         if (targetCube == null) return;
 
-        transform.position = new Vector3 (renderPosition.position.x, renderPosition.position.y, transform.position.z);
-        mainCamera.orthographicSize = GetIdealOrthographicSize(renderPosition, targetCube);
+        transform.position = new Vector3 (RenderRect.position.x, RenderRect.position.y, transform.position.z);
+        mainCamera.orthographicSize = GetIdealOrthographicSize(RenderRect, targetCube);
 
         //Debug.Log("Ideal ortho size: " + GetIdealOrthographicSize(renderPosition, targetCube));
     }
@@ -155,11 +182,11 @@ public class MainCamera : MonoBehaviour
 
         if (Screen.width > Screen.height)
         {
-            return renderPosition.height * 0.5f + ((float)renderPosition.height / target.Tiling.x);
+            return renderPosition.height * 0.5f + (Mathf.Abs((float)renderPosition.height) / target.Tiling.x);
         }
         else
         {
-            float horizontalOrthographicSize = renderPosition.width * 0.5f + ((float)renderPosition.width / target.Tiling.y);
+            float horizontalOrthographicSize = renderPosition.width * 0.5f + (Mathf.Abs((float)renderPosition.width) / target.Tiling.y);
             return horizontalOrthographicSize * (Screen.height / Screen.width);
         }
     }
@@ -187,7 +214,7 @@ public class MainCamera : MonoBehaviour
         switch (renderMode)
         {
             case MainCameraRenderMode.SingleCube:
-                Gizmos.DrawWireCube(renderPosition.position, renderPosition.size);
+                Gizmos.DrawWireCube(RenderRect.position, RenderRect.size);
                 break;
             case MainCameraRenderMode.MultipleCubes:
                 foreach(var cube in cubesToRender)

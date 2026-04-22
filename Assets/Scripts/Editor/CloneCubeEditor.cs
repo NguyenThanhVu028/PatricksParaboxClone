@@ -25,7 +25,7 @@ public class CloneCubeEditor : Editor
 
     // Cube status
     SerializedProperty parent;
-    SerializedProperty previousParent; // Record self cube's previous parent to record history
+    SerializedProperty previousParents; // Record self cube's previous parent to record history
     SerializedProperty relativeScale;
     SerializedProperty relativePosition;
 
@@ -59,7 +59,7 @@ public class CloneCubeEditor : Editor
 
         // Cube status
         parent = serializedObject.FindProperty("parent");
-        previousParent = serializedObject.FindProperty("previousParent"); ;
+        previousParents = serializedObject.FindProperty("previousParents"); ;
         relativeScale = serializedObject.FindProperty("relativeScale");
         relativePosition = serializedObject.FindProperty("relativePosition");
 
@@ -95,7 +95,7 @@ public class CloneCubeEditor : Editor
         EditorGUILayout.Space();
 
         EditorGUILayout.PropertyField(parent);
-        EditorGUILayout.PropertyField(previousParent);
+        EditorGUILayout.PropertyField(previousParents);
         EditorGUILayout.PropertyField(relativeScale);
         EditorGUILayout.PropertyField(relativePosition);
 

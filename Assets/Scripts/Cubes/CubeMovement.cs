@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using static Cube;
 
 [RequireComponent(typeof(Cube))]
 public class CubeMovement : MonoBehaviour
@@ -23,7 +24,7 @@ public class CubeMovement : MonoBehaviour
     protected UnityEvent onMoveEnd = new();
     protected bool isExternal = false;
 
-    private bool debugMovement = true;
+    private bool debugMovement = false;
     private SaveAndLoadManager.GameData gameData;
 
     public bool Movable { get { return selfCube != null && selfCube.CubeType != Cube.CubeTypes.Static && selfCube.CubeType != Cube.CubeTypes.Empty; } }
@@ -92,7 +93,7 @@ public class CubeMovement : MonoBehaviour
     {
         if (IsMoving || (selfCube.IsPlayer && IsCoolingDown)) return 0;
 
-        if (selfCube.PreviousParent.Count > 0) selfCube.Parent = selfCube.PreviousParent[selfCube.PreviousParent.Count - 1];
+        if (selfCube.PreviousParents.Count > 0) selfCube.Parent = selfCube.PreviousParents[selfCube.PreviousParents.Count - 1].Cube;
 
         // Modify the current record and store new record
         HistoryManager historyManager = HistoryManager.Instance;
@@ -108,14 +109,14 @@ public class CubeMovement : MonoBehaviour
                     if (historyEvent == null) continue;
                     if (historyEvent.TargetCube == selfCube)
                     {
-                        historyEvent.PreviousParent = (selfCube.PreviousParent.Count > 0) ? selfCube.PreviousParent[0] : null;
+                        historyEvent.PreviousParent = (selfCube.PreviousParents.Count > 0) ? selfCube.PreviousParents[0].Cube : null;
                         historyEvent.PreviousRPos = selfCube.RelativePosition;
                         historyEvent.PreviousRScl = selfCube.RelativeScale;
                         foundPreviousEvent = true;
                         break;
                     }
                 }
-                if (!foundPreviousEvent) currentRecord.Events.Add(new HistoryEvent(selfCube, (selfCube.PreviousParent.Count > 0) ? selfCube.PreviousParent[0] : null, selfCube.RelativePosition, selfCube.RelativeScale));
+                if (!foundPreviousEvent) currentRecord.Events.Add(new HistoryEvent(selfCube, (selfCube.PreviousParents.Count > 0) ? selfCube.PreviousParents[0].Cube : null, selfCube.RelativePosition, selfCube.RelativeScale));
             }
 
             // Add new record for its new details
@@ -195,8 +196,8 @@ public class CubeMovement : MonoBehaviour
         movingCoroutine = null;
         isExternal = false;
         coolDownTimer = coolDownTime;
-        selfCube.PreviousParent.Clear();
-        selfCube.PreviousParent.Add(selfCube.Parent); // Update current parent after moving
+        selfCube.PreviousParents.Clear();
+        selfCube.PreviousParents.Add(new(PreviousParentDetails.Directions.In, selfCube.Parent)); // Update current parent after moving
         selfCube.RelativePosition = endRPos;
         selfCube.RelativeScale = endRScl;
         if (selfCube.IsPlayer && MainCamera.Instance != null)

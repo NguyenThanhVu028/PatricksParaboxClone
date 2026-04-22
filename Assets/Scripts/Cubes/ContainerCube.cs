@@ -23,7 +23,7 @@ public class ContainerCube : Cube
 
     protected List<Cube> emptyCubes = new(); // Seperate empty cubes from other cubes, empty cubes are only be rendered but ignore checking for interactions by other cubes
     protected List<Cube> cullingCubes = new(); // These cubes wont be rendered if they are children of this cube
-    protected bool useDebug = true;
+    protected bool useDebug = false;
 
     public bool IsEnterable { get => isEnterable; set => isEnterable = value; }
     public Vector2Int Tiling { get => childGrid.Tiling; }
@@ -290,7 +290,14 @@ public class ContainerCube : Cube
         if (external)
         {
             ModifyChildCube(requestedCube);
-            requestedCube.PreviousParent.Add(this);
+            if (childGrid.CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y))
+            {
+                requestedCube.PreviousParents.Add(new(PreviousParentDetails.Directions.Out, this));
+            }
+            else
+            {
+                requestedCube.PreviousParents.Add(new(PreviousParentDetails.Directions.In, this));
+            }
         }
         // If the requested cube is a child of this cube -> Pick it up from its position
         else
@@ -368,7 +375,8 @@ public class ContainerCube : Cube
         requestedCube.StartPossessing(childGrid.Children[requestedPosition.x, requestedPosition.y]);
 
         // Fail to move or possess successfully -> Return child cube to its original position in the cubes grid
-        if (!external && childGrid.CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) childGrid.Children[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
+        if (external) requestedCube.RemovePreviousParent(this);
+        else if (!external && childGrid.CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) childGrid.Children[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
         return 0;
     }
 
@@ -381,7 +389,7 @@ public class ContainerCube : Cube
             if (useDebug) Debug.Log($"{requestedCube.name} cant move out of {gameObject.name} because there is no parent cube!");
             return 0;
         }
-        if (external && requestedCube.PreviousParent.Count > 0 && Parent == requestedCube.PreviousParent[requestedCube.PreviousParent.Count - 1])
+        if (external && requestedCube.PreviousParents.Count > 0 && Parent == requestedCube.PreviousParents[0].Cube)
         {
             // Inifite loop -> teleport to the void
             // This is just a placeholder code for testing
@@ -494,21 +502,20 @@ public class ContainerCube : Cube
         // Update camera transition if the requested cube is a player
         if (requestedCube.IsPlayer && MainCamera.Instance != null)
         {
-            Vector2 oldParentRPos = Relativity.PRPosToAChild(requestedCubeOldRPos, requestedCubeOldRScl);
-            Vector2 oldParentRScl = Relativity.PRSclToAChild(requestedCubeOldRScl);
+            //Vector2 oldParentRPos = Relativity.PRPosToAChild(requestedCubeOldRPos, requestedCubeOldRScl);
+            //Vector2 oldParentRScl = Relativity.PRSclToAChild(requestedCubeOldRScl);
 
-            Vector2 newParentRPos = Relativity.PRPosToAChild(cRPos, cRScl);
-            Vector2 newParentRScl = Relativity.PRSclToAChild(cRScl);
+            //Vector2 newParentRPos = Relativity.PRPosToAChild(cRPos, cRScl);
+            //Vector2 newParentRScl = Relativity.PRSclToAChild(cRScl);
 
-            Vector2 oldParentRPosToNewParent = Relativity.SRPosFromSameParent(newParentRPos, newParentRScl, oldParentRPos);
-            Vector2 oldParentRSclToNewParent = Relativity.SRSclFromSameParent(newParentRScl, oldParentRScl);
+            //Vector2 oldParentRPosToNewParent = Relativity.SRPosFromSameParent(newParentRPos, newParentRScl, oldParentRPos);
+            //Vector2 oldParentRSclToNewParent = Relativity.SRSclFromSameParent(newParentRScl, oldParentRScl);
 
             //requestedCube.RelativePosition = cRPos;
             //requestedCube.RelativeScale = cRScl;
 
             ZoomingTransition zoomingTransition = new(
-                oldParentRPosToNewParent,
-                oldParentRSclToNewParent,
+                requestedCube.PreviousParents,
                 this,
                 targetTime
                 );
