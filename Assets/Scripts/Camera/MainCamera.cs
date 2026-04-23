@@ -22,6 +22,8 @@ public class MainCamera : MonoBehaviour
     [SerializeField] Rect renderRect;
     [SerializeField] bool renderParents = true; // Used for SingleCube mode
     [SerializeField] int numberOfParentsToTraverse = 3;
+    private ContainerCube previousTargetCube;
+    private bool isTargetCubeHorizFlipped = false;
 
     [Header("Multiple Cubes mode")]
     [SerializeField] List<CubeRenderDetail> cubesToRender = new();
@@ -105,7 +107,11 @@ public class MainCamera : MonoBehaviour
         {
             if (cubeRenderDetail == null || cubeRenderDetail.TargetCube == null) return;
             Rect renderPos = cubeRenderDetail.RenderPosition;
-            if (isHorizFlipped) renderPos.size = new(-renderPos.size.x, renderPos.size.y);
+            if (isHorizFlipped)
+            {
+                renderPos.size = new(-renderPos.size.x, renderPos.size.y);
+                renderPos.position = new(-renderPos.position.x, renderPos.position.y);
+            }
             if (cubeRenderDetail.TargetCube.IsHorizFlipped) renderPos.size = new(-renderPos.size.x, renderPos.size.y);
             cubeRenderDetail.TargetCube.Draw(renderPos, depth, exposure, GetScreenRect());
         }
@@ -114,6 +120,12 @@ public class MainCamera : MonoBehaviour
     private void RenderSingleCube(float depth)
     {
         if (targetCube == null) return;
+
+        // Make sure to flip the camera if the target cube is suddenly flipped -> Consistent rendering direction
+        if (targetCube == previousTargetCube && targetCube.IsHorizFlipped != isTargetCubeHorizFlipped) isHorizFlipped = !isHorizFlipped;
+        previousTargetCube = targetCube;
+        isTargetCubeHorizFlipped = targetCube.IsHorizFlipped;
+
         if (renderParents)
         {
             // Traverse through the target cube's parents
