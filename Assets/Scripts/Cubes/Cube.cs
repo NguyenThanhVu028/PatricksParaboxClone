@@ -44,6 +44,7 @@ public class Cube : MonoBehaviour
     protected CustomTexture faceTexture;
     protected CustomTexture surfaceEffectsAnimation;
     protected MaterialPropertyBlock materialPropertyBlock;
+    protected bool hasInit = false;
 
     public bool IsPlayer { get => isPlayer; set => isPlayer = value; }
     public bool CanBePlayer { get => canBePlayer; set => canBePlayer = value; }

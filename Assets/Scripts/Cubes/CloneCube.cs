@@ -11,9 +11,11 @@ public class CloneCube : ContainerCube
 
     public override void Init()
     {
+        if (hasInit) return;
         if (mainContainerCube != null) mainContainerCube.OnFinishedDrawing.AddListener(OnMainCubeDraw);
         if (AnimationsManager.Instance != null) surfaceEffectsAnimation = AnimationsManager.Instance.GetNormalTextureAnimation("Noise");
         base.Init();
+        hasInit = true;
     }
 
     private void Update()
@@ -113,15 +115,27 @@ public class CloneCube : ContainerCube
     {
         if (mainContainerCube == null || mainContainerCube.Parent == null) return 0;
 
+        if (isHorizFlipped != mainContainerCube.IsHorizFlipped)
+        {
+            cRPos.x = -cRPos.x;
+            direction = PlayerInputsManager.FlipMovementInput(direction, true);
+            requestedCube.IsHorizFlipped = !requestedCube.IsHorizFlipped;
+        }
+
         float finalTargetTime = mainContainerCube.RequestToMove(cRPos, cRScl, requestedCube, direction, external, specialMove);
-        if (finalTargetTime <= 0) return 0;
+        if (finalTargetTime <= 0)
+        {
+            if (isHorizFlipped != mainContainerCube.IsHorizFlipped) requestedCube.IsHorizFlipped = !requestedCube.IsHorizFlipped;
+            return 0;
+        }
+
 
         // Override the current transition of the main camera with fade transition
         if (requestedCube.IsPlayer && MainCamera.Instance != null)
         {
             if (MainCamera.Instance.IsPlayingTrasition)
                 MainCamera.Instance.StopTransition();
-            FadeTransition fadeTransition = new(mainContainerCube, finalTargetTime);
+            FadeTransition fadeTransition = new(requestedCube.PreviousParents, finalTargetTime);
             MainCamera.Instance.PlayTransition(fadeTransition);
         }
 

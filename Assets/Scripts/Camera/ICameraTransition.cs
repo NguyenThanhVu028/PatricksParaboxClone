@@ -11,14 +11,12 @@ public class ZoomingTransition : ICameraTransition
 {
 
     private List<Cube.PreviousParentDetails> cubesToTraverse; 
-    private ContainerCube targetCube;
     private Rect targetCubeRect;
     private float targetTime;
 
-    public ZoomingTransition(List<Cube.PreviousParentDetails> cubesToTraverse, ContainerCube targetCube, float targetTime)
+    public ZoomingTransition(List<Cube.PreviousParentDetails> cubesToTraverse, float targetTime)
     {
         this.cubesToTraverse = cubesToTraverse;
-        this.targetCube = targetCube;
         this.targetTime = targetTime;
     }
 
@@ -26,21 +24,13 @@ public class ZoomingTransition : ICameraTransition
     {
         if (mainCamera == null || mainCamera.RenderMode != MainCamera.MainCameraRenderMode.SingleCube) return null;
 
-        if (targetCube == null || targetCube == mainCamera.TargetCube) return null;
-        if (mainCamera.TargetCube == null || targetTime <= 0)
-        {
-            mainCamera.SetNewTargetCube(targetCube);
-            mainCamera.FocusOnTargetCube();
-            return null;
-        }
+        if (cubesToTraverse == null || cubesToTraverse.Count == 0 || cubesToTraverse[cubesToTraverse.Count - 1].Cube == mainCamera.TargetCube) return null;
 
         // Traverse the previous parents list to calculate new target cube rect
-        if (cubesToTraverse == null || cubesToTraverse.Count == 0) return null;
         targetCubeRect = mainCamera.TargetCubeRect;
         ContainerCube currentCube = cubesToTraverse[0].Cube;
         for(int i =1; i < cubesToTraverse.Count; i++)
         {
-            Debug.Log(cubesToTraverse[i]);
             if (cubesToTraverse[i].Cube == null) continue;
             if (cubesToTraverse[i].direction == Cube.PreviousParentDetails.Directions.Out)
             {
@@ -64,22 +54,27 @@ public class ZoomingTransition : ICameraTransition
             currentCube = cubesToTraverse[i].Cube;
         }
 
-        // Record history
-        //if (HistoryManager.Instance != null)
-        //{
-        //    if (HistoryManager.Instance.GetCurrentRecord().CameraEvent == null) HistoryManager.Instance.GetCurrentRecord().CameraEvent = new(mainCamera.IsHorizFlipped);
-        //    else HistoryManager.Instance.GetCurrentRecord().CameraEvent.IsCamHorizFlipped = mainCamera.IsHorizFlipped;
-        //    if (targetCubeRect.size.x > 0 == targetCube.IsHorizFlipped)
-        //    {
-        //        HistoryManager.Instance.RecordCameraInfo(true);
-        //    }
-        //    else HistoryManager.Instance.RecordCameraInfo(false);
-        //}
+        // Save camera's info
+        HistoryManager historyManager = HistoryManager.Instance;
+        if (historyManager != null)
+        {
+            if (targetCubeRect.size.x > 0 == cubesToTraverse[cubesToTraverse.Count - 1].Cube.IsHorizFlipped) historyManager.RecordCameraInfo(true);
+            else historyManager.RecordCameraInfo(false);
+        }
+
+        if (mainCamera.TargetCube == null || targetTime <= 0)
+        {
+            if (targetCubeRect.size.x > 0 == cubesToTraverse[cubesToTraverse.Count - 1].Cube.IsHorizFlipped) mainCamera.IsHorizFlipped = true;
+            else mainCamera.IsHorizFlipped = false;
+            mainCamera.SetNewTargetCube(cubesToTraverse[cubesToTraverse.Count - 1].Cube);
+            mainCamera.FocusOnTargetCube();
+            return null;
+        }
 
         // Zooming out
-        if (Mathf.Abs(targetCubeRect.size.x) <= Mathf.Abs(mainCamera.TargetCubeRect.size.x) || Mathf.Abs(targetCubeRect.size.y) <= Mathf.Abs(mainCamera.TargetCubeRect.size.y)) return ZoomInCoroutine(mainCamera, targetCube, targetTime);
+        if (Mathf.Abs(targetCubeRect.size.x) <= Mathf.Abs(mainCamera.TargetCubeRect.size.x) || Mathf.Abs(targetCubeRect.size.y) <= Mathf.Abs(mainCamera.TargetCubeRect.size.y)) return ZoomInCoroutine(mainCamera, cubesToTraverse[cubesToTraverse.Count - 1].Cube, targetTime);
         // Zooming in
-        else return ZoomOutCoroutine(mainCamera, targetCube, targetTime);
+        else return ZoomOutCoroutine(mainCamera, cubesToTraverse[cubesToTraverse.Count - 1].Cube, targetTime);
     }
 
     private IEnumerator ZoomInCoroutine(MainCamera mainCamera, ContainerCube newTarget, float time)
@@ -119,7 +114,7 @@ public class ZoomingTransition : ICameraTransition
         }
 
         // Check if the camera should be horizontally flipped to display cube direction currectly
-        if ((targetCubeRect.size.x > 0) == targetCube.IsHorizFlipped)
+        if ((targetCubeRect.size.x > 0) == cubesToTraverse[cubesToTraverse.Count - 1].Cube.IsHorizFlipped)
         {
             mainCamera.IsHorizFlipped = true;
         }
@@ -141,7 +136,7 @@ public class ZoomingTransition : ICameraTransition
         Rect oldTargetRect = mainCamera.TargetCubeRect;
         mainCamera.SetNewTargetCube(newTarget);
         // Check if the camera should be horizontally flipped to display cube direction currectly
-        if ((targetCubeRect.size.x > 0) == targetCube.IsHorizFlipped)
+        if ((targetCubeRect.size.x > 0) == cubesToTraverse[cubesToTraverse.Count - 1].Cube.IsHorizFlipped)
         {
             mainCamera.IsHorizFlipped = true;
         }
@@ -183,12 +178,12 @@ public class ZoomingTransition : ICameraTransition
 
 public class FadeTransition : ICameraTransition
 {
-    private ContainerCube targetCube;
+    private List<Cube.PreviousParentDetails> cubesToTraverse;
     private float targetTime;
 
-    public FadeTransition(ContainerCube targetCube, float targetTime)
+    public FadeTransition(List<Cube.PreviousParentDetails> cubesToTraverse, float targetTime)
     {
-        this.targetCube = targetCube;
+        this.cubesToTraverse = cubesToTraverse;
         this.targetTime = targetTime;
     }
 
@@ -197,14 +192,53 @@ public class FadeTransition : ICameraTransition
         if (targetTime <= 0) yield break;
 
         if (mainCamera == null || mainCamera.RenderMode != MainCamera.MainCameraRenderMode.SingleCube) yield break;
-        if (targetCube == null || targetCube == mainCamera.TargetCube) yield break;
+        if (cubesToTraverse == null || cubesToTraverse.Count == 0 || cubesToTraverse[cubesToTraverse.Count - 1].Cube == mainCamera.TargetCube) yield break;
+
+        // Traverse the previous parents list to check for isHorizFlipped status
+        bool isNegative = mainCamera.TargetCubeRect.size.x < 0;
+        Cube currentCube = cubesToTraverse[0].Cube;
+        for (int i = 1; i < cubesToTraverse.Count; i++)
+        {
+            Debug.Log(cubesToTraverse[i]);
+            if (cubesToTraverse[i].Cube == null) continue;
+            if (cubesToTraverse[i].direction == Cube.PreviousParentDetails.Directions.Out)
+            {
+                if (currentCube.IsHorizFlipped)
+                {
+                    isNegative = !isNegative;
+                }
+            }
+            else
+            {
+                if (cubesToTraverse[i].Cube.IsHorizFlipped)
+                {
+                    isNegative = !isNegative;
+                }
+            }
+            currentCube = cubesToTraverse[i].Cube;
+        }
+
+        // Save camera's info
+        HistoryManager historyManager = HistoryManager.Instance;
+        if (historyManager != null)
+        {
+            if (!isNegative == cubesToTraverse[cubesToTraverse.Count - 1].Cube.IsHorizFlipped) historyManager.RecordCameraInfo(true);
+            else historyManager.RecordCameraInfo(false);
+        }
 
         float elapsedTime = -1;
         float defaultExposure = mainCamera.Exposure;
+        bool updatedCamera = false;
         while (elapsedTime < targetTime)
         {
             if (elapsedTime < 0) elapsedTime = 0;
             else elapsedTime += Time.deltaTime;
+
+            if (elapsedTime > targetTime)
+            {
+                mainCamera.Exposure = defaultExposure;
+                yield break;
+            }
 
             if (elapsedTime <= targetTime * 0.5f)
             {
@@ -213,9 +247,12 @@ public class FadeTransition : ICameraTransition
             }
             else
             {
-                if (mainCamera.TargetCube != targetCube)
+                if (!updatedCamera)
                 {
-                    mainCamera.SetNewTargetCube(targetCube);
+                    updatedCamera = true;
+                    if (!isNegative == cubesToTraverse[cubesToTraverse.Count - 1].Cube.IsHorizFlipped) mainCamera.IsHorizFlipped = true;
+                    else mainCamera.IsHorizFlipped = false;
+                    mainCamera.SetNewTargetCube(cubesToTraverse[cubesToTraverse.Count - 1].Cube);
                     mainCamera.FocusOnTargetCube();
                 }
                 // Fade in
@@ -223,6 +260,5 @@ public class FadeTransition : ICameraTransition
             }
             yield return null;
         }
-        mainCamera.Exposure = defaultExposure;
     }
 }

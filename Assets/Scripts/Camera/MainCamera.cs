@@ -1,9 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditorInternal;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 [RequireComponent(typeof(Camera))]
 public class MainCamera : MonoBehaviour
@@ -16,7 +14,7 @@ public class MainCamera : MonoBehaviour
     [Header("Render settings")]
     [SerializeField] bool isRendering = true;
     [SerializeField] MainCameraRenderMode renderMode = MainCameraRenderMode.SingleCube;
-    [SerializeField] float exposure = 0.0f;
+    [SerializeField] float defaultExposure = 0.0f;
     [SerializeField] bool isHorizFlipped = false;
 
     [Header("Single Cube mode")]
@@ -34,6 +32,7 @@ public class MainCamera : MonoBehaviour
 
     private Camera mainCamera;
     private Coroutine transitionCoroutine = null;
+    private float exposure = 0f;
 
     public static MainCamera Instance { get => instance; }
 
@@ -72,6 +71,7 @@ public class MainCamera : MonoBehaviour
     }
     private void OnEnable()
     {
+        exposure = defaultExposure;
         CustomRendererFeature.CustomRenderPass.OnExecuteCmd.AddListener(OnRender);
     }
 
@@ -172,6 +172,7 @@ public class MainCamera : MonoBehaviour
     {
         if (transitionCoroutine != null) StopCoroutine(transitionCoroutine);
         transitionCoroutine = null;
+        exposure = defaultExposure;
     }
 
     public float GetIdealOrthographicSize(Rect renderPosition, ContainerCube target)

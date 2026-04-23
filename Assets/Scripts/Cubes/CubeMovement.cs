@@ -73,7 +73,6 @@ public class CubeMovement : MonoBehaviour
             }
             if (movementInput != PlayerInputsManager.MovementInputs.None)
             {
-                Debug.Log($"{name} tries to move {movementInput}");
                 if (selfCube.Parent.RequestToMove(selfCube.RelativePosition, selfCube.RelativeScale, selfCube, movementInput) == 0)
                 {
                     // If fail to move

@@ -519,7 +519,6 @@ public class ContainerCube : Cube
         {
             ZoomingTransition zoomingTransition = new(
                 requestedCube.PreviousParents,
-                this,
                 targetTime
                 );
 

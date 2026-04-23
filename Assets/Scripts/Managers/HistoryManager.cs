@@ -12,7 +12,7 @@ public class HistoryManager : MonoBehaviour
     [SerializeField] int maxHistoryRecordCount = 50;
 
     [SerializeField] List<HistoryRecord> historyRecords = new();
-    [SerializeField] HistoryRecord newHistoryRecord = new();
+    private HistoryRecord newHistoryRecord = new();
 
     [SerializeField] int currentIndex = -1;
 
@@ -61,7 +61,6 @@ public class HistoryManager : MonoBehaviour
         if (MainCamera.Instance != null)
         {
             if (newHistoryRecord.CameraEvent == null) newHistoryRecord.CameraEvent = new(MainCamera.Instance.IsHorizFlipped);
-            else newHistoryRecord.CameraEvent.IsCamHorizFlipped = MainCamera.Instance.IsHorizFlipped;
         }
 
         if (currentIndex < 0) currentIndex = 0;
@@ -110,7 +109,6 @@ public class HistoryManager : MonoBehaviour
             currentIndex = historyRecords.Count - 1;
             return null;
         }
-
         return historyRecords[currentIndex];
     }
 
