@@ -24,7 +24,7 @@ public class ContainerCube : Cube
 
     protected List<Cube> emptyCubes = new(); // Seperate empty cubes from other cubes, empty cubes are only be rendered but ignore checking for interactions by other cubes
     protected List<Cube> cullingCubes = new(); // These cubes wont be rendered if they are children of this cube
-    protected bool useDebug = false;
+    protected bool useDebug = true;
     public delegate void BeginDrawingChildCube(Cube childCube, Rect parentRect, ref Rect childRect, ref float depth, ref float exposure, ref Rect? scissorRect);
     protected event BeginDrawingChildCube onBeginDrawingChildCube;
     //protected Action<Cube, Rect, Rect, float, float, Rect?> onBeginDrawingChildCube;
@@ -199,15 +199,17 @@ public class ContainerCube : Cube
             }
         }
     }
-    //protected void ModifyChildCube(Cube childCube)
-    //{
-    //    if (childCube == null) return;
-    //}
-    //protected void UnModifyChildCube(Cube childCube)
-    //{
-    //    if (childCube == null) return;
-    //}
-    
+    public virtual void ModifyChildCubeEnter(Cube childCube)
+    {
+        if (childCube == null) return;
+        if (isHorizFlipped) childCube.IsHorizFlipped = !childCube.IsHorizFlipped;
+    }
+    public virtual void ModifyChildCubeExit(Cube childCube)
+    {
+        if (childCube == null) return;
+        if (isHorizFlipped) childCube.IsHorizFlipped = !childCube.IsHorizFlipped;
+    }
+
     // Draw functions
     protected override void DrawCube(Rect position, float depth, float exposure, Rect? scissorRect)
     {
@@ -298,22 +300,25 @@ public class ContainerCube : Cube
             direction = PlayerInputsManager.FlipMovementInput(direction, true);
         }
 
+        // Check if the requested in outside or inside
         Vector2Int requestedPosition;
         if (!childGrid.CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y))
         {
             if (!isEnterable)
             {
                 if (!external && childGrid.CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) childGrid.Children[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
+                requestedCube.PreviousParents.Clear();
+                requestedCube.PreviousParents.Add(new(PreviousParentDetails.Directions.Out, requestedCube.Parent));
                 return 0;
             }
             requestedPosition = childGrid.GetEnterPosition(direction, cRPos);
         }
         else requestedPosition = requestedCubePosition + PlayerInputsManager.ConvertMovementInputToGridDirection(direction);
+        Debug.Log(requestedCubePosition + " " + requestedPosition);
 
-        // If the requested cube is not a child of this cube
+        // If the requested cube is not a child of this cube -> Add to previous parents list
         if (external)
         {
-            //ModifyChildCube(requestedCube);
             if (childGrid.CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y))
             {
                 requestedCube.PreviousParents.Add(new(PreviousParentDetails.Directions.Out, this));
@@ -342,8 +347,12 @@ public class ContainerCube : Cube
         {
             if (useDebug) Debug.Log($"{requestedCube.name} try to move out of {gameObject.name}");
             targetTime = TryPushRequestedCubeOutside(cRPos, cRScl, requestedCube, direction, external);
-            if (targetTime <= 0) 
+            if (targetTime <= 0)
+            {
                 if (!external && childGrid.CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) childGrid.Children[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
+                requestedCube.PreviousParents.Clear();
+                requestedCube.PreviousParents.Add(new(PreviousParentDetails.Directions.Out, requestedCube.Parent));
+            }
             return targetTime;
         }
 
@@ -354,6 +363,8 @@ public class ContainerCube : Cube
             if (tempTargetTime < 0)
             {
                 if(!external && childGrid.CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) childGrid.Children[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
+                requestedCube.PreviousParents.Clear();
+                requestedCube.PreviousParents.Add(new(PreviousParentDetails.Directions.Out, requestedCube.Parent));
                 return 0;
             }
             if (tempTargetTime > 0) targetTime = tempTargetTime;
@@ -364,6 +375,8 @@ public class ContainerCube : Cube
         {
             if (useDebug) Debug.Log($"{requestedCube.name} fail to move because another cube is entering {requestedPosition.x}, {requestedPosition.y} of {gameObject.name}!");
             if (!external && childGrid.CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) childGrid.Children[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
+            requestedCube.PreviousParents.Clear();
+            requestedCube.PreviousParents.Add(new(PreviousParentDetails.Directions.Out, requestedCube.Parent));
             return 0;
         }
 
@@ -399,8 +412,11 @@ public class ContainerCube : Cube
         requestedCube.StartPossessing(childGrid.Children[requestedPosition.x, requestedPosition.y]);
 
         // Fail to move or possess successfully -> Return child cube to its original position in the cubes grid
-        if (external) requestedCube.RemovePreviousParent(this);
-        else if (!external && childGrid.CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) childGrid.Children[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
+        //if (external) requestedCube.RemovePreviousParent(this);
+        //else 
+        if (!external && childGrid.CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) childGrid.Children[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
+        requestedCube.PreviousParents.Clear();
+        requestedCube.PreviousParents.Add(new(PreviousParentDetails.Directions.Out, requestedCube.Parent));
         return 0;
     }
 
@@ -413,13 +429,20 @@ public class ContainerCube : Cube
             if (useDebug) Debug.Log($"{requestedCube.name} cant move out of {gameObject.name} because there is no parent cube!");
             return 0;
         }
-        if (external && requestedCube.PreviousParents.Count > 0 && Parent == requestedCube.PreviousParents[0].Cube)
+        if (requestedCube.PreviousParents.Count > 1 && requestedCube.PreviousParents[0].Cube == this)
         {
             // Inifite loop -> teleport to the void
             // This is just a placeholder code for testing
             if (useDebug) Debug.Log($"{requestedCube.name} cant move out of {gameObject.name} because of infinite loop!");
             return 0;
         }
+        //if (external && requestedCube.PreviousParents.Count > 0 && Parent == requestedCube.PreviousParents[0].Cube)
+        //{
+        //    // Inifite loop -> teleport to the void
+        //    // This is just a placeholder code for testing
+        //    if (useDebug) Debug.Log($"{requestedCube.name} cant move out of {gameObject.name} because of infinite loop!");
+        //    return 0;
+        //}
 
         /* Moving out logic:
          * - Caculate target position in the outter cube
@@ -447,7 +470,7 @@ public class ContainerCube : Cube
 
         // Fail to move out -> unmodify, set requested cube's parent back to this cube
         //parent.UnModifyChildCube(requestedCube);
-        requestedCube.Parent = this;
+        //requestedCube.Parent = this;
 
         if (useDebug) Debug.Log($"{requestedCube.name} cant move out of {gameObject.name} because its parent rejected!");
 
@@ -483,8 +506,8 @@ public class ContainerCube : Cube
         if (tempTargetTime > 0) return tempTargetTime;
 
         // Fail to move out -> unmodify, set requested cube's parent back to this cube
-        //blockageCube.UnModifyChildCube(requestedCube);
-        requestedCube.Parent = this;
+        // blockageCube.UnModifyChildCube(requestedCube);
+        // requestedCube.Parent = this;
 
         if (useDebug) Debug.Log($"{requestedCube.name} fail to enter {blockageCube.gameObject.name}!");
         return 0;
@@ -506,8 +529,8 @@ public class ContainerCube : Cube
             
             if (tempTargetTime <= 0)
             {
-                //requestedCube.UnModifyChildCube(blockageCube);
-                blockageCube.Parent = this;
+                // requestedCube.UnModifyChildCube(blockageCube);
+                // blockageCube.Parent = this;
             }
             return tempTargetTime;
         
@@ -529,17 +552,6 @@ public class ContainerCube : Cube
         Vector2 requestedCubeOldRScl = requestedCube.RelativeScale;
 
         float finalTargetTime = requestedCubeMovement.StartMoving(cRPos, cRScl, childCubeTargetRPos, childCubeTargetRScl, targetTime, this, external);
-
-        // Update camera transition if the requested cube is a player
-        if (requestedCube.IsPlayer && MainCamera.Instance != null)
-        {
-            ZoomingTransition zoomingTransition = new(
-                requestedCube.PreviousParents,
-                targetTime
-                );
-
-            MainCamera.Instance.PlayTransition(zoomingTransition);
-        }
 
         return finalTargetTime;
     }

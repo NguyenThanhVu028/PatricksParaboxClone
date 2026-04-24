@@ -7,7 +7,6 @@ public class CloneCube : ContainerCube
     [SerializeField] ContainerCube mainContainerCube;
 
     private Cube requestedCube;
-    private Vector2Int requestedCubeTargetPos = new();
 
     public override void Init()
     {
@@ -112,6 +111,7 @@ public class CloneCube : ContainerCube
         Vector2 idealRPos = new(requestedCube.RelativePosition.x - normalizedRPos.x * requestedCube.RelativeScale.x + normalizedRPos.x * idealRScl.x,
                                 requestedCube.RelativePosition.y - normalizedRPos.y * requestedCube.RelativeScale.y + normalizedRPos.y * idealRScl.y);
         childRect = Relativity.CRectFromPRect(position, idealRScl, idealRPos);
+        scissorRect = CustomTextureRenderer2D.GetOverlapRect(scissorRect, position);
     }
 
     private void OnMainCubeFinishedDrawChildCube(Cube childCube) {
@@ -147,19 +147,14 @@ public class CloneCube : ContainerCube
             return 0;
         }
 
-
         // Override the current transition of the main camera with fade transition
         if (requestedCube.IsPlayer && MainCamera.Instance != null)
         {
-            if (MainCamera.Instance.IsPlayingTrasition)
-                MainCamera.Instance.StopTransition();
+            MainCamera.Instance.StopTransition();
             FadeTransition fadeTransition = new(requestedCube.PreviousParents, finalTargetTime);
             MainCamera.Instance.PlayTransition(fadeTransition);
         }
 
-        // Take the requested cube from the main container cube -> Return later
-        //if (!mainContainerCube.CullingCubes.Contains(requestedCube))
-        //    mainContainerCube.CullingCubes.Add(requestedCube);
         this.requestedCube = requestedCube;
 
         return finalTargetTime;

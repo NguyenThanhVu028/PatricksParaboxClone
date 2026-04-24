@@ -199,6 +199,7 @@ public class MainCamera : MonoBehaviour
 
     public void PlayTransition(ICameraTransition transition)
     {
+        if (transitionCoroutine != null) return;
         transitionCoroutine = StartCoroutine(TransitionWrapper(transition.ExecuteCoroutine(this)));
     }
 

@@ -46,6 +46,7 @@ public class Cube : MonoBehaviour
     protected MaterialPropertyBlock materialPropertyBlock;
     protected bool hasInit = false;
 
+    // General Info
     public bool IsPlayer { get => isPlayer; set => isPlayer = value; }
     public bool CanBePlayer { get => canBePlayer; set => canBePlayer = value; }
     public CubeTypes CubeType { get => cubeType; }
@@ -60,13 +61,19 @@ public class Cube : MonoBehaviour
         }
     }
     public bool NeedInstantiating { get => needInstantiating; }
+    
+    // Rendering
     public bool IsHorizFlipped { get => isHorizFlipped; set => isHorizFlipped = value; }
     public Material NormalMat { get => normalMat; }
     public bool EnableOcclusionCulling { get => enableOcclusionCulling; set => enableOcclusionCulling = value; }
+
+    // Cube Stats
     public ContainerCube Parent { get => parent; set { parent = value; onParentChanged.Invoke(); } }
     public List<PreviousParentDetails> PreviousParents { get => previousParents; set => previousParents = value; }
     public Vector2 RelativeScale { get => relativeScale; set => relativeScale = value; }
     public Vector2 RelativePosition { get => relativePosition; set => relativePosition = value; }
+
+    // Other Settings
     public UnityEvent OnInit { get => onInit; }
     public UnityEvent<Rect, float, float, Rect?> OnFinishedDrawing { get => onFinishedDrawing; }
 
@@ -178,9 +185,53 @@ public class Cube : MonoBehaviour
     public struct PreviousParentDetails
     {
         public enum Directions { In, Out }
-        public Directions direction;
-        public ContainerCube Cube;
+        private Directions direction;
+        private ContainerCube cube;
+        private Vector2 relativePosition;
+        private Vector2 relativeScale;
+        private bool isHorizFlipped;
 
-        public PreviousParentDetails(Directions direction, ContainerCube cube) { this.Cube = cube; this.direction = direction; }
+        public Directions Direction { get => direction; set => direction = value; }
+        public ContainerCube Cube { get => cube; set => cube = value; }
+        public Vector2 RelativePosition
+        {
+            get
+            {
+                if (relativePosition == null) return cube.RelativePosition;
+                return relativePosition;
+            }
+            set => relativePosition = value;
+        }
+        public Vector2 RelativeScale
+        {
+            get
+            {
+                if (relativeScale == null) return cube.RelativeScale;
+                return relativeScale;
+            }
+            set => relativeScale = value;
+        }
+        public bool IsHorizFlipped
+        {
+            get => isHorizFlipped;
+            set => isHorizFlipped = value;
+        }
+        public PreviousParentDetails(Directions direction, ContainerCube cube)
+        {
+            this.cube = cube;
+            this.direction = direction;
+            this.relativePosition = cube.RelativePosition;
+            this.relativeScale = cube.RelativeScale;
+            this.isHorizFlipped = cube.IsHorizFlipped;
+        }
+
+        public PreviousParentDetails(Directions direction, ContainerCube cube, Vector2 relativePosition, Vector2 relativeScale, bool isHorizFlipped) 
+        { 
+            this.cube = cube;
+            this.direction = direction;
+            this.relativePosition = relativePosition;
+            this.relativeScale = relativeScale;
+            this.isHorizFlipped = isHorizFlipped;
+        }
     }
 }

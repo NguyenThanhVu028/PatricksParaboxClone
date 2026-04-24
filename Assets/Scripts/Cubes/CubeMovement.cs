@@ -73,16 +73,26 @@ public class CubeMovement : MonoBehaviour
             }
             if (movementInput != PlayerInputsManager.MovementInputs.None)
             {
-                if (selfCube.Parent.RequestToMove(selfCube.RelativePosition, selfCube.RelativeScale, selfCube, movementInput) == 0)
+                var targetTime = selfCube.Parent.RequestToMove(selfCube.RelativePosition, selfCube.RelativeScale, selfCube, movementInput);
+                if (targetTime > 0)
                 {
-                    // If fail to move
-                    coolDownTimer = coolDownTime;
+                    // Update camera trasition
+                    if (selfCube.IsPlayer && MainCamera.Instance != null)
+                    {
+                        ZoomingTransition zoomingTransition = new(
+                            selfCube.PreviousParents,
+                            targetTime
+                            );
+
+                        MainCamera.Instance.PlayTransition(zoomingTransition);
+                    }
                 }
                 if (selfCube.IsPlayer)
                 {
                     HistoryManager historyManager = HistoryManager.Instance;
                     if (historyManager != null) historyManager.NormalArchiveHistoryRecord(); // Player will archive the record
                 }
+                coolDownTimer = coolDownTime;
             }
         }
         
@@ -124,10 +134,13 @@ public class CubeMovement : MonoBehaviour
 
         for (int i = 1; i < selfCube.PreviousParents.Count; i++)
         {
-            if (selfCube.PreviousParents[i].direction == PreviousParentDetails.Directions.In && selfCube.PreviousParents[i].Cube.IsHorizFlipped) selfCube.IsHorizFlipped = !selfCube.IsHorizFlipped;
-            else if (selfCube.PreviousParents[i].direction == PreviousParentDetails.Directions.Out && i >= 1)
+            if (selfCube.PreviousParents[i].Direction == PreviousParentDetails.Directions.In)
             {
-                if (selfCube.PreviousParents[i - 1].Cube.IsHorizFlipped) selfCube.IsHorizFlipped = !selfCube.IsHorizFlipped;
+                selfCube.PreviousParents[i].Cube.ModifyChildCubeEnter(selfCube);
+            }
+            else if (selfCube.PreviousParents[i].Direction == PreviousParentDetails.Directions.Out && i >= 1)
+            {
+                selfCube.PreviousParents[i - 1].Cube.ModifyChildCubeExit(selfCube);
             }
         }
         if (selfCube.PreviousParents.Count > 0) selfCube.Parent = selfCube.PreviousParents[selfCube.PreviousParents.Count - 1].Cube;
