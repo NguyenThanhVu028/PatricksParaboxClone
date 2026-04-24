@@ -12,7 +12,11 @@ public class CloneCube : ContainerCube
     public override void Init()
     {
         if (hasInit) return;
-        if (mainContainerCube != null) mainContainerCube.OnFinishedDrawing.AddListener(OnMainCubeDraw);
+        //if (mainContainerCube != null) mainContainerCube.OnFinishedDrawing.AddListener(OnMainCubeDraw);
+        if (mainContainerCube != null)
+        {
+            mainContainerCube.OnBeginDrawingChildCube += OnMainCubeDrawChildCube;
+        }
         if (AnimationsManager.Instance != null) surfaceEffectsAnimation = AnimationsManager.Instance.GetNormalTextureAnimation("Noise");
         base.Init();
         hasInit = true;
@@ -26,7 +30,7 @@ public class CloneCube : ContainerCube
             if (requestedCubeMovement == null) requestedCube = null;
             if (!requestedCubeMovement.IsMoving || !requestedCubeMovement.IsExternal || requestedCube.Parent != mainContainerCube)
             {
-                mainContainerCube.CullingCubes.Remove(requestedCube);
+                //mainContainerCube.CullingCubes.Remove(requestedCube);
                 requestedCube = null;
             }
         }
@@ -99,17 +103,31 @@ public class CloneCube : ContainerCube
     }
 
     // Draw the requested cube on behalf of the main container cube, also clamp the cube
-    private void OnMainCubeDraw(Rect position, float depth, float exposure, Rect? scissorRect)
+    private void OnMainCubeDrawChildCube(Cube childCube, Rect position, ref Rect childRect, ref float depth, ref float exposure, ref Rect? scissorRect)
     {
-        if (requestedCube != null)
-        {
-            Vector2 idealRScl = new(1.0f / mainContainerCube.Tiling.y, 1.0f / mainContainerCube.Tiling.x);
-            Vector2 normalizedRPos = (requestedCube.RelativePosition).normalized;
-            Vector2 idealRPos = new(requestedCube.RelativePosition.x - normalizedRPos.x * requestedCube.RelativeScale.x + normalizedRPos.x * idealRScl.x,
-                                    requestedCube.RelativePosition.y - normalizedRPos.y * requestedCube.RelativeScale.y + normalizedRPos.y * idealRScl.y);
-            requestedCube.Draw(Relativity.CRectFromPRect(position, idealRScl, idealRPos), depth - 0.1f, exposure, CustomTextureRenderer2D.GetOverlapRect(scissorRect, position));
-        }
+        if (childCube != requestedCube) return;
+
+        Vector2 idealRScl = new(1.0f / mainContainerCube.Tiling.y, 1.0f / mainContainerCube.Tiling.x);
+        Vector2 normalizedRPos = (requestedCube.RelativePosition).normalized;
+        Vector2 idealRPos = new(requestedCube.RelativePosition.x - normalizedRPos.x * requestedCube.RelativeScale.x + normalizedRPos.x * idealRScl.x,
+                                requestedCube.RelativePosition.y - normalizedRPos.y * requestedCube.RelativeScale.y + normalizedRPos.y * idealRScl.y);
+        childRect = Relativity.CRectFromPRect(position, idealRScl, idealRPos);
     }
+
+    private void OnMainCubeFinishedDrawChildCube(Cube childCube) {
+        
+    }
+    //private void OnMainCubeDraw(Rect position, float depth, float exposure, Rect? scissorRect)
+    //{
+    //    if (requestedCube != null)
+    //    {
+    //        Vector2 idealRScl = new(1.0f / mainContainerCube.Tiling.y, 1.0f / mainContainerCube.Tiling.x);
+    //        Vector2 normalizedRPos = (requestedCube.RelativePosition).normalized;
+    //        Vector2 idealRPos = new(requestedCube.RelativePosition.x - normalizedRPos.x * requestedCube.RelativeScale.x + normalizedRPos.x * idealRScl.x,
+    //                                requestedCube.RelativePosition.y - normalizedRPos.y * requestedCube.RelativeScale.y + normalizedRPos.y * idealRScl.y);
+    //        requestedCube.Draw(Relativity.CRectFromPRect(position, idealRScl, idealRPos), depth, exposure, CustomTextureRenderer2D.GetOverlapRect(scissorRect, position));
+    //    }
+    //}
 
     public override float RequestToMove(Vector2 cRPos, Vector2 cRScl, Cube requestedCube, PlayerInputsManager.MovementInputs direction, bool external = false, bool specialMove = false)
     {
@@ -140,8 +158,8 @@ public class CloneCube : ContainerCube
         }
 
         // Take the requested cube from the main container cube -> Return later
-        if (!mainContainerCube.CullingCubes.Contains(requestedCube))
-            mainContainerCube.CullingCubes.Add(requestedCube);
+        //if (!mainContainerCube.CullingCubes.Contains(requestedCube))
+        //    mainContainerCube.CullingCubes.Add(requestedCube);
         this.requestedCube = requestedCube;
 
         return finalTargetTime;

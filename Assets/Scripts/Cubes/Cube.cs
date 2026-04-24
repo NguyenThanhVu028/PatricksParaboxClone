@@ -62,6 +62,7 @@ public class Cube : MonoBehaviour
     public bool NeedInstantiating { get => needInstantiating; }
     public bool IsHorizFlipped { get => isHorizFlipped; set => isHorizFlipped = value; }
     public Material NormalMat { get => normalMat; }
+    public bool EnableOcclusionCulling { get => enableOcclusionCulling; set => enableOcclusionCulling = value; }
     public ContainerCube Parent { get => parent; set { parent = value; onParentChanged.Invoke(); } }
     public List<PreviousParentDetails> PreviousParents { get => previousParents; set => previousParents = value; }
     public Vector2 RelativeScale { get => relativeScale; set => relativeScale = value; }

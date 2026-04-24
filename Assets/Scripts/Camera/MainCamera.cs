@@ -23,7 +23,7 @@ public class MainCamera : MonoBehaviour
     [SerializeField] bool renderParents = true; // Used for SingleCube mode
     [SerializeField] int numberOfParentsToTraverse = 3;
     private ContainerCube previousTargetCube;
-    private bool isTargetCubeHorizFlipped = false;
+    private bool isRenderFlipped = false;
 
     [Header("Multiple Cubes mode")]
     [SerializeField] List<CubeRenderDetail> cubesToRender = new();
@@ -122,16 +122,26 @@ public class MainCamera : MonoBehaviour
         if (targetCube == null) return;
 
         // Make sure to flip the camera if the target cube is suddenly flipped -> Consistent rendering direction
-        if (targetCube == previousTargetCube && targetCube.IsHorizFlipped != isTargetCubeHorizFlipped) isHorizFlipped = !isHorizFlipped;
+        if (targetCube == previousTargetCube && (TargetCubeRect.size.x < 0) != isRenderFlipped)
+        {
+            isHorizFlipped = !isHorizFlipped;
+            if (HistoryManager.Instance != null)
+            {
+                HistoryRecord currentRecord = HistoryManager.Instance.GetCurrentRecord();
+                if (currentRecord != null && currentRecord.CameraEvent != null) currentRecord.CameraEvent.IsCamHorizFlipped = isHorizFlipped;
+            }
+        }
         previousTargetCube = targetCube;
-        isTargetCubeHorizFlipped = targetCube.IsHorizFlipped;
+        isRenderFlipped = TargetCubeRect.size.x < 0;
 
+        List<ParentDetails> parents = new();
         if (renderParents)
         {
             // Traverse through the target cube's parents
             ContainerCube newTargetCube = targetCube;
             Rect renderPos = TargetCubeRect;
             int parentCount = 0;
+            parents.Add(new(newTargetCube, renderPos));
             while(parentCount < numberOfParentsToTraverse)
             {
                 if (newTargetCube.Parent == null) break;
@@ -144,9 +154,21 @@ public class MainCamera : MonoBehaviour
                 }
                 newTargetCube = newTargetCube.Parent;
                 parentCount++;
+                parents.Add(new(newTargetCube, renderPos));
             }
-            if (newTargetCube.IsHorizFlipped) renderPos.size = new(-renderPos.size.x, renderPos.size.y);
-            newTargetCube.Draw(renderPos, depth, exposure, GetScreenRect());
+            //if (newTargetCube.IsHorizFlipped) renderPos.size = new(-renderPos.size.x, renderPos.size.y);
+            //newTargetCube.Draw(renderPos, depth, exposure, GetScreenRect());
+            for(int i = parents.Count - 1; i >= 0; i--)
+            {
+                bool isOcclusionCulling = parents[i].Parent.EnableOcclusionCulling;
+                parents[i].Parent.EnableOcclusionCulling = false;
+                if (i > 0) parents[i].Parent.CullingCubes.Add(parents[i - 1].Parent);
+                var renderRect = parents[i].RenderRect;
+                if (parents[i].Parent.IsHorizFlipped) renderRect.size = new(-renderRect.size.x, renderRect.size.y);
+                parents[i].Parent.Draw(renderRect, depth, exposure, GetScreenRect());
+                if (i > 0) parents[i].Parent.CullingCubes.Remove(parents[i - 1].Parent);
+                parents[i].Parent.EnableOcclusionCulling = true;
+            }
         }
         else
         {
@@ -247,5 +269,17 @@ public class MainCamera : MonoBehaviour
 
         public Cube TargetCube { get => targetCube; }
         public Rect RenderPosition { get => renderPosition; }
+    }
+
+    struct ParentDetails
+    {
+        public ContainerCube Parent;
+        public Rect RenderRect;
+
+        public ParentDetails(ContainerCube parent, Rect renderRect)
+        {
+            this.Parent = parent;
+            this.RenderRect = renderRect;
+        }
     }
 }

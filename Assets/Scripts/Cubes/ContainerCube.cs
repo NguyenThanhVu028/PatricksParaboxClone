@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class ContainerCube : Cube
 {
@@ -24,6 +25,10 @@ public class ContainerCube : Cube
     protected List<Cube> emptyCubes = new(); // Seperate empty cubes from other cubes, empty cubes are only be rendered but ignore checking for interactions by other cubes
     protected List<Cube> cullingCubes = new(); // These cubes wont be rendered if they are children of this cube
     protected bool useDebug = false;
+    public delegate void BeginDrawingChildCube(Cube childCube, Rect parentRect, ref Rect childRect, ref float depth, ref float exposure, ref Rect? scissorRect);
+    protected event BeginDrawingChildCube onBeginDrawingChildCube;
+    //protected Action<Cube, Rect, Rect, float, float, Rect?> onBeginDrawingChildCube;
+    protected Action<Cube> onFinishedDrawingChildCube;
 
     public bool IsEnterable { get => isEnterable; set => isEnterable = value; }
     public Vector2Int Tiling { get => childGrid.Tiling; }
@@ -40,6 +45,8 @@ public class ContainerCube : Cube
     public RenderTexture StaticTexturesRT { get => staticTexturesRT; }
     public List<Cube> EmptyCubes { get => emptyCubes; }
     public List<Cube> CullingCubes { get => cullingCubes; }
+    public BeginDrawingChildCube OnBeginDrawingChildCube { get => onBeginDrawingChildCube; set => onBeginDrawingChildCube = value; }
+    public Action<Cube> OnFinishedDrawingChildCUbe { get => onFinishedDrawingChildCube; }
 
     // Used by the Editor
     public void SetChildCubeInitDetails(int row, int col, ChildCubeInitDetail details)
@@ -222,7 +229,10 @@ public class ContainerCube : Cube
         // Draw empty cubes first
         foreach (var emptyCube in emptyCubes)
         {
-            emptyCube.Draw(Relativity.CRectFromPRect(position, emptyCube.RelativeScale, emptyCube.RelativePosition), depth, exposure, scissorRect);
+            Rect childRect = Relativity.CRectFromPRect(position, emptyCube.RelativeScale, emptyCube.RelativePosition);
+            onBeginDrawingChildCube?.Invoke(emptyCube, position, ref childRect, ref depth, ref exposure, ref scissorRect);
+            emptyCube.Draw(childRect, depth, exposure, scissorRect);
+            onFinishedDrawingChildCube?.Invoke(emptyCube);
         }
 
         List<Cube> movingCubes = new();
@@ -240,13 +250,19 @@ public class ContainerCube : Cube
                 movingCubes.Add(childCube);
                 continue;
             }
-            childCube.Draw(Relativity.CRectFromPRect(position, childCube.RelativeScale, childCube.RelativePosition), depth, exposure, scissorRect);
+            Rect childRect = Relativity.CRectFromPRect(position, childCube.RelativeScale, childCube.RelativePosition);
+            onBeginDrawingChildCube?.Invoke(childCube, position, ref childRect, ref depth, ref exposure, ref scissorRect);
+            childCube.Draw(childRect, depth, exposure, scissorRect);
+            onFinishedDrawingChildCube?.Invoke(childCube);        
         }
 
         // Drawing moving cubes on top of other cubes to avoid being covered
         foreach (var movingCube in movingCubes)
         {
-            movingCube.Draw(Relativity.CRectFromPRect(position, movingCube.RelativeScale, movingCube.RelativePosition), depth - 0.1f, exposure, scissorRect);
+            Rect childRect = Relativity.CRectFromPRect(position, movingCube.RelativeScale, movingCube.RelativePosition);
+            onBeginDrawingChildCube?.Invoke(movingCube, position, ref childRect, ref depth, ref exposure, ref scissorRect);
+            movingCube.Draw(childRect, depth - 0.1f, exposure, scissorRect);
+            onFinishedDrawingChildCube?.Invoke(movingCube);
         }
     }
     protected override void DrawSurfaceEffects(Rect position, float depth, float exposure, Rect? scissorRect)
