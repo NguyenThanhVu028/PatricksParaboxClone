@@ -307,14 +307,12 @@ public class ContainerCube : Cube
             if (!isEnterable)
             {
                 if (!external && childGrid.CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) childGrid.Children[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
-                requestedCube.PreviousParents.Clear();
-                requestedCube.PreviousParents.Add(new(PreviousParentDetails.Directions.Out, requestedCube.Parent));
+                if (external) requestedCube.RemovePreviousParent(this);
                 return 0;
             }
             requestedPosition = childGrid.GetEnterPosition(direction, cRPos);
         }
         else requestedPosition = requestedCubePosition + PlayerInputsManager.ConvertMovementInputToGridDirection(direction);
-        Debug.Log(requestedCubePosition + " " + requestedPosition);
 
         // If the requested cube is not a child of this cube -> Add to previous parents list
         if (external)
@@ -350,8 +348,7 @@ public class ContainerCube : Cube
             if (targetTime <= 0)
             {
                 if (!external && childGrid.CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) childGrid.Children[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
-                requestedCube.PreviousParents.Clear();
-                requestedCube.PreviousParents.Add(new(PreviousParentDetails.Directions.Out, requestedCube.Parent));
+                if (external) requestedCube.RemovePreviousParent(this);
             }
             return targetTime;
         }
@@ -363,8 +360,8 @@ public class ContainerCube : Cube
             if (tempTargetTime < 0)
             {
                 if(!external && childGrid.CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) childGrid.Children[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
-                requestedCube.PreviousParents.Clear();
-                requestedCube.PreviousParents.Add(new(PreviousParentDetails.Directions.Out, requestedCube.Parent));
+                childGrid.Children[requestedPosition.x, requestedPosition.y].PreviousParents.Clear();
+                childGrid.Children[requestedPosition.x, requestedPosition.y].PreviousParents.Add(new(PreviousParentDetails.Directions.Out, childGrid.Children[requestedPosition.x, requestedPosition.y].Parent));
                 return 0;
             }
             if (tempTargetTime > 0) targetTime = tempTargetTime;
@@ -375,8 +372,7 @@ public class ContainerCube : Cube
         {
             if (useDebug) Debug.Log($"{requestedCube.name} fail to move because another cube is entering {requestedPosition.x}, {requestedPosition.y} of {gameObject.name}!");
             if (!external && childGrid.CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) childGrid.Children[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
-            requestedCube.PreviousParents.Clear();
-            requestedCube.PreviousParents.Add(new(PreviousParentDetails.Directions.Out, requestedCube.Parent));
+            if (external) requestedCube.RemovePreviousParent(this);
             return 0;
         }
 
@@ -396,7 +392,12 @@ public class ContainerCube : Cube
             var tempTargetTime = TryLetBlockageCubeEnterRequestedCube(blockageCube, enterable, cRPos, cRScl, direction);
 
             // Fail to move the blockage cube -> return the blockage cube
-            if (tempTargetTime <= 0) childGrid.Children[requestedPosition.x, requestedPosition.y] = blockageCube;
+            if (tempTargetTime <= 0)
+            {
+                childGrid.Children[requestedPosition.x, requestedPosition.y] = blockageCube;
+                blockageCube.PreviousParents.Clear();
+                blockageCube.PreviousParents.Add(new(PreviousParentDetails.Directions.Out, blockageCube.Parent));
+            }
             else targetTime = tempTargetTime;
 
             // If move successfully, the position at [row, column] should be empty by now
@@ -415,8 +416,7 @@ public class ContainerCube : Cube
         //if (external) requestedCube.RemovePreviousParent(this);
         //else 
         if (!external && childGrid.CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) childGrid.Children[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
-        requestedCube.PreviousParents.Clear();
-        requestedCube.PreviousParents.Add(new(PreviousParentDetails.Directions.Out, requestedCube.Parent));
+        if (external) requestedCube.RemovePreviousParent(this);
         return 0;
     }
 

@@ -87,6 +87,11 @@ public class CubeMovement : MonoBehaviour
                         MainCamera.Instance.PlayTransition(zoomingTransition);
                     }
                 }
+                else
+                {
+                    selfCube.PreviousParents.Clear();
+                    selfCube.PreviousParents.Add(new(PreviousParentDetails.Directions.Out, selfCube.Parent));
+                }
                 if (selfCube.IsPlayer)
                 {
                     HistoryManager historyManager = HistoryManager.Instance;

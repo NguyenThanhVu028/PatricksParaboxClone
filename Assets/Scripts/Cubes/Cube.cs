@@ -172,11 +172,19 @@ public class Cube : MonoBehaviour
 
     public void RemovePreviousParent(ContainerCube cube)
     {
-        foreach(var previousParent in previousParents)
+        //foreach(var previousParent in previousParents)
+        //{
+        //    if (previousParent.Cube == cube)
+        //    {
+        //        previousParents.Remove(previousParent);
+        //        return;
+        //    }
+        //}
+        for(int i = previousParents.Count - 1; i >= 0; i--)
         {
-            if (previousParent.Cube == cube)
+            if (previousParents[i].Cube == cube)
             {
-                previousParents.Remove(previousParent);
+                previousParents.RemoveAt(i);
                 return;
             }
         }
