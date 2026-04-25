@@ -29,7 +29,6 @@ public class CloneCube : ContainerCube
             if (requestedCubeMovement == null) requestedCube = null;
             if (!requestedCubeMovement.IsMoving || !requestedCubeMovement.IsExternal || requestedCube.Parent != mainContainerCube)
             {
-                //mainContainerCube.CullingCubes.Remove(requestedCube);
                 requestedCube = null;
             }
         }
@@ -101,6 +100,18 @@ public class CloneCube : ContainerCube
         }
     }
 
+    public override void ModifyChildCubeEnter(Cube childCube)
+    {
+        if (childCube == null) return;
+        if (isHorizFlipped != mainContainerCube.IsHorizFlipped) childCube.IsHorizFlipped = !childCube.IsHorizFlipped;
+    }
+
+    public override void ModifyChildCubeExit(Cube childCube)
+    {
+        if (childCube == null) return;
+        if (isHorizFlipped != mainContainerCube.IsHorizFlipped) childCube.IsHorizFlipped = !childCube.IsHorizFlipped;
+    }
+    
     // Draw the requested cube on behalf of the main container cube, also clamp the cube
     private void OnMainCubeDrawChildCube(Cube childCube, Rect position, ref Rect childRect, ref float depth, ref float exposure, ref Rect? scissorRect)
     {
@@ -114,21 +125,6 @@ public class CloneCube : ContainerCube
         scissorRect = CustomTextureRenderer2D.GetOverlapRect(scissorRect, position);
     }
 
-    private void OnMainCubeFinishedDrawChildCube(Cube childCube) {
-        
-    }
-    //private void OnMainCubeDraw(Rect position, float depth, float exposure, Rect? scissorRect)
-    //{
-    //    if (requestedCube != null)
-    //    {
-    //        Vector2 idealRScl = new(1.0f / mainContainerCube.Tiling.y, 1.0f / mainContainerCube.Tiling.x);
-    //        Vector2 normalizedRPos = (requestedCube.RelativePosition).normalized;
-    //        Vector2 idealRPos = new(requestedCube.RelativePosition.x - normalizedRPos.x * requestedCube.RelativeScale.x + normalizedRPos.x * idealRScl.x,
-    //                                requestedCube.RelativePosition.y - normalizedRPos.y * requestedCube.RelativeScale.y + normalizedRPos.y * idealRScl.y);
-    //        requestedCube.Draw(Relativity.CRectFromPRect(position, idealRScl, idealRPos), depth, exposure, CustomTextureRenderer2D.GetOverlapRect(scissorRect, position));
-    //    }
-    //}
-
     public override float RequestToMove(Vector2 cRPos, Vector2 cRScl, Cube requestedCube, PlayerInputsManager.MovementInputs direction, bool external = false, bool specialMove = false)
     {
         if (mainContainerCube == null || mainContainerCube.Parent == null) return 0;
@@ -137,13 +133,13 @@ public class CloneCube : ContainerCube
         {
             cRPos.x = -cRPos.x;
             direction = PlayerInputsManager.FlipMovementInput(direction, true);
-            requestedCube.IsHorizFlipped = !requestedCube.IsHorizFlipped;
+            requestedCube.PreviousParents.Add(new(PreviousParentDetails.Directions.In, this, Vector2.zero, Vector2.one, true));
         }
+        else requestedCube.PreviousParents.Add(new(PreviousParentDetails.Directions.In, this, Vector2.zero, Vector2.one, false));
 
         float finalTargetTime = mainContainerCube.RequestToMove(cRPos, cRScl, requestedCube, direction, external, specialMove);
         if (finalTargetTime <= 0)
         {
-            if (isHorizFlipped != mainContainerCube.IsHorizFlipped) requestedCube.IsHorizFlipped = !requestedCube.IsHorizFlipped;
             return 0;
         }
 

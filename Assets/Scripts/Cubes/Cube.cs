@@ -228,9 +228,9 @@ public class Cube : MonoBehaviour
         {
             this.cube = cube;
             this.direction = direction;
-            this.relativePosition = cube.RelativePosition;
-            this.relativeScale = cube.RelativeScale;
-            this.isHorizFlipped = cube.IsHorizFlipped;
+            this.relativePosition = (cube != null) ? cube.RelativePosition : Vector2.zero;
+            this.relativeScale = (cube != null) ? cube.RelativeScale : Vector2.zero;
+            this.isHorizFlipped = (cube != null) ? cube.IsHorizFlipped : false;
         }
 
         public PreviousParentDetails(Directions direction, ContainerCube cube, Vector2 relativePosition, Vector2 relativeScale, bool isHorizFlipped) 
