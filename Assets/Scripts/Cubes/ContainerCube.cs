@@ -307,7 +307,6 @@ public class ContainerCube : Cube
             if (!isEnterable)
             {
                 if (!external && childGrid.CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y)) childGrid.Children[requestedCubePosition.x, requestedCubePosition.y] = requestedCube;
-                if (external) requestedCube.RemovePreviousParent(this);
                 return 0;
             }
             requestedPosition = childGrid.GetEnterPosition(direction, cRPos);
