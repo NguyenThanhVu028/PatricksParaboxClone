@@ -14,6 +14,7 @@ public class MapSelectionCube : ContainerCube
     [SerializeField] float defaultDelayTime = 0.5f;
     [SerializeField] TextMeshPro mapIndexText;
     [SerializeField] float mapIndexTextPadding = 0.75f;
+    [SerializeField] string notFinishedEffect = "RegularShiny";
 
     private SaveAndLoadManager.GameData gameData;
     private bool hasFinished = false;
@@ -71,7 +72,7 @@ public class MapSelectionCube : ContainerCube
         if (!hasFinished)
         {
             if (surfaceEffectsAnimation == null)
-                SetSurfaceEffects("RegularShiny");
+                SetSurfaceEffects(notFinishedEffect);
             foreach(var dependentMap in dependentMapSelectionCubes)
             {
                 if (dependentMap == null) continue;

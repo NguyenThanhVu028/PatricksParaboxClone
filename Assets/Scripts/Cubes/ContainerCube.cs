@@ -27,7 +27,6 @@ public class ContainerCube : Cube
     protected bool useDebug = true;
     public delegate void BeginDrawingChildCube(Cube childCube, Rect parentRect, ref Rect childRect, ref float depth, ref float exposure, ref Rect? scissorRect);
     protected event BeginDrawingChildCube onBeginDrawingChildCube;
-    //protected Action<Cube, Rect, Rect, float, float, Rect?> onBeginDrawingChildCube;
     protected Action<Cube> onFinishedDrawingChildCube;
 
     public bool IsEnterable { get => isEnterable; set => isEnterable = value; }

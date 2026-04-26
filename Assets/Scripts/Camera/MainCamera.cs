@@ -58,8 +58,8 @@ public class MainCamera : MonoBehaviour
         {
             if (targetCube == null) return new();
             Rect realRenderPosition = renderRect;
-            if (isHorizFlipped) realRenderPosition.size = new(-realRenderPosition.size.x, realRenderPosition.size.y);
-            if (targetCube.IsHorizFlipped) realRenderPosition.size = new(-realRenderPosition.size.x, realRenderPosition.size.y);
+            if (isHorizFlipped) realRenderPosition.width = - realRenderPosition.width;
+            if (targetCube.IsHorizFlipped) realRenderPosition.width = -realRenderPosition.width;
             return realRenderPosition;
         }
     }
@@ -149,25 +149,23 @@ public class MainCamera : MonoBehaviour
                 renderPos = Relativity.PRectFromCRect(renderPos, newTargetCube.RelativeScale, newTargetCube.RelativePosition);
                 if (newTargetCube.IsHorizFlipped)
                 {
-                    renderPos.size = new(-renderPos.size.x, renderPos.size.y);
-                    renderPos.position = new(oldRenderPos.x - (renderPos.position.x - oldRenderPos.x), renderPos.position.y);
+                    renderPos.width = - renderPos.width;
+                    renderPos.x = oldRenderPos.x - (renderPos.x - oldRenderPos.x);
                 }
                 newTargetCube = newTargetCube.Parent;
                 parentCount++;
                 parents.Add(new(newTargetCube, renderPos));
             }
-            //if (newTargetCube.IsHorizFlipped) renderPos.size = new(-renderPos.size.x, renderPos.size.y);
-            //newTargetCube.Draw(renderPos, depth, exposure, GetScreenRect());
             for(int i = parents.Count - 1; i >= 0; i--)
             {
-                bool isOcclusionCulling = parents[i].Parent.EnableOcclusionCulling;
-                parents[i].Parent.EnableOcclusionCulling = false;
-                if (i > 0) parents[i].Parent.CullingCubes.Add(parents[i - 1].Parent);
+                bool isOcclusionCulling = parents[i].Cube.EnableOcclusionCulling;
+                parents[i].Cube.EnableOcclusionCulling = false;
+                if (i > 0) parents[i].Cube.CullingCubes.Add(parents[i - 1].Cube);
                 var renderRect = parents[i].RenderRect;
-                if (parents[i].Parent.IsHorizFlipped) renderRect.size = new(-renderRect.size.x, renderRect.size.y);
-                parents[i].Parent.Draw(renderRect, depth, exposure, GetScreenRect());
-                if (i > 0) parents[i].Parent.CullingCubes.Remove(parents[i - 1].Parent);
-                parents[i].Parent.EnableOcclusionCulling = true;
+                if (parents[i].Cube.IsHorizFlipped) renderRect.width = -renderRect.width;
+                parents[i].Cube.Draw(renderRect, depth, exposure, GetScreenRect());
+                if (i > 0) parents[i].Cube.CullingCubes.Remove(parents[i - 1].Cube);
+                parents[i].Cube.EnableOcclusionCulling = isOcclusionCulling;
             }
         }
         else
@@ -274,12 +272,12 @@ public class MainCamera : MonoBehaviour
 
     struct ParentDetails
     {
-        public ContainerCube Parent;
+        public ContainerCube Cube;
         public Rect RenderRect;
 
-        public ParentDetails(ContainerCube parent, Rect renderRect)
+        public ParentDetails(ContainerCube cube, Rect renderRect)
         {
-            this.Parent = parent;
+            this.Cube = cube;
             this.RenderRect = renderRect;
         }
     }

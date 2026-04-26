@@ -28,6 +28,7 @@ public class Cube : MonoBehaviour
     [SerializeField] protected Mesh cubeMesh;
     [SerializeField] protected CustomTexture possessableFaceTexture;
     [SerializeField] protected bool enableOcclusionCulling = true;
+    [SerializeField] protected string mirrorEffectID = "Mirror";
     protected float playerFaceDepthOffset = -0.11f;
     protected float surfaceEffectsDepthOffset = -0.11f;
     [Header("Cube stats")]
@@ -105,7 +106,7 @@ public class Cube : MonoBehaviour
         Vector2 rectSizeInPixel = CustomTextureRenderer2D.ConvertScaleToPixel(position.size);
         if (rectSizeInPixel.x < minPixelToRender || rectSizeInPixel.y < minPixelToRender) return; // Don't draw if the requested rectangle is too small (To avoid infinite rendering)
 
-        if (isHorizFlipped) position.size = new(-position.size.x, position.size.y);
+        if (isHorizFlipped) position.width = - position.width;
         DrawCube(position, depth, exposure, scissorRect);
         DrawPlayerFace(position, depth + playerFaceDepthOffset, exposure, scissorRect);
         DrawSurfaceEffects(position, depth + surfaceEffectsDepthOffset, exposure, scissorRect);
@@ -140,6 +141,12 @@ public class Cube : MonoBehaviour
         {
             CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, surfaceEffectsAnimation.GetTexture(), cubeColor, exposure, position.position, position.size, depth, scissorRect);
         }
+        if (isHorizFlipped)
+        {
+            if (AnimationsManager.Instance == null) return;
+            var mirrorEffect = AnimationsManager.Instance.GetNormalTextureAnimation("Mirror");
+            if (mirrorEffect != null) CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, mirrorEffect.GetTexture(), cubeColor, exposure, position.position, position.size, depth, scissorRect);
+        }
     }
 
     public void SetSurfaceEffects(string aniID)
@@ -172,14 +179,6 @@ public class Cube : MonoBehaviour
 
     public void RemovePreviousParent(ContainerCube cube)
     {
-        //foreach(var previousParent in previousParents)
-        //{
-        //    if (previousParent.Cube == cube)
-        //    {
-        //        previousParents.Remove(previousParent);
-        //        return;
-        //    }
-        //}
         for(int i = previousParents.Count - 1; i >= 0; i--)
         {
             if (previousParents[i].Cube == cube)

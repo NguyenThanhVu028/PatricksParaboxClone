@@ -38,8 +38,8 @@ public class ZoomingTransition : ICameraTransition
                 targetCubeRect = Relativity.PRectFromCRect(targetCubeRect, currentCube.RelativeScale, currentCube.RelativePosition);
                 if (currentCube.IsHorizFlipped)
                 {
-                    targetCubeRect.size = new(-targetCubeRect.size.x, targetCubeRect.size.y);
-                    targetCubeRect.position = new(oldTargetRectPos.x - (targetCubeRect.position.x - oldTargetRectPos.x), targetCubeRect.position.y);
+                    targetCubeRect.width = -targetCubeRect.width;
+                    targetCubeRect.x = oldTargetRectPos.x - (targetCubeRect.position.x - oldTargetRectPos.x);
                 }
             }
             else
@@ -47,7 +47,7 @@ public class ZoomingTransition : ICameraTransition
                 targetCubeRect = Relativity.CRectFromPRect(targetCubeRect, cubesToTraverse[i].RelativeScale, cubesToTraverse[i].RelativePosition);
                 if (cubesToTraverse[i].IsHorizFlipped)
                 {
-                    targetCubeRect.size = new(-targetCubeRect.size.x, targetCubeRect.size.y);
+                    targetCubeRect.width = -targetCubeRect.width;
                 }
             }
             currentCube = cubesToTraverse[i];
@@ -145,8 +145,10 @@ public class ZoomingTransition : ICameraTransition
         // old --> [new]
         Rect oldTargetNewRect = new();
         Vector2 oldDistanceFromNewTarget = oldTargetRect.position - targetCubeRect.position;
-        oldTargetNewRect.size = new((oldTargetRect.size.x / targetCubeRect.size.x) * mainCamera.TargetCubeRect.size.x, (oldTargetRect.size.y / targetCubeRect.size.y) * mainCamera.TargetCubeRect.size.y);
-        oldTargetNewRect.position = new(mainCamera.TargetCubeRect.position.x + (oldDistanceFromNewTarget.x / targetCubeRect.size.x) * mainCamera.TargetCubeRect.size.x, mainCamera.TargetCubeRect.position.y + (oldDistanceFromNewTarget.y / targetCubeRect.size.y) * mainCamera.TargetCubeRect.size.y);
+        oldTargetNewRect.width = (oldTargetRect.size.x / targetCubeRect.size.x) * mainCamera.TargetCubeRect.size.x;
+        oldTargetNewRect.height = (oldTargetRect.size.y / targetCubeRect.size.y) * mainCamera.TargetCubeRect.size.y;
+        oldTargetNewRect.x = mainCamera.TargetCubeRect.position.x + (oldDistanceFromNewTarget.x / targetCubeRect.size.x) * mainCamera.TargetCubeRect.size.x;
+        oldTargetNewRect.y = mainCamera.TargetCubeRect.position.y + (oldDistanceFromNewTarget.y / targetCubeRect.size.y) * mainCamera.TargetCubeRect.size.y;
 
         float cameraRelativeOrthoSize = mainCamera.OrthographicSize / mainCamera.TargetCubeRect.height;
         Vector2 cameraRPosToOldTarget = Relativity.CRPosFromCRealPos(mainCamera.TargetCubeRect, mainCamera.transform.position);
