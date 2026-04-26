@@ -5,6 +5,11 @@ using UnityEngine.Events;
 
 public class ContainerCube : Cube
 {
+    public const float floorDepthOffset = 0f;
+    public const float wallDepthOffset = 0f;
+    public const float childCubesDepthOffset = 0f;
+    public const float movingChildCubesDepthOffset = -0.1f;
+
     [SerializeField] protected bool isEnterable = true;
     [SerializeField] protected bool isLeavable = true;
     [SerializeField] protected CustomGrid<Cube> childGrid = new();
@@ -17,13 +22,13 @@ public class ContainerCube : Cube
     [SerializeField] Color unenterableColor = new(0, 0, 0, 0.9f);
     [SerializeField] Color unleavableColor = new(1, 0, 0, 0);
 
-
     [SerializeField]
     [Min(0)]
     ChildCubeInitDetail[] childCubesInitDetails = {new()};
 
     protected List<Cube> emptyCubes = new(); // Seperate empty cubes from other cubes, empty cubes are only be rendered but ignore checking for interactions by other cubes
-    protected List<Cube> cullingCubes = new(); // These cubes wont be rendered if they are children of this cube
+    protected List<Cube> cullingCubesAll = new(); // These cubes wont be rendered if they are children of this cube, apply to all cube
+    protected List<Cube> cullingCubesOne = new(); // Same as culling cubes all but only apply to one specific instance of a cube
     protected bool useDebug = true;
     public delegate void BeginDrawingChildCube(Cube childCube, Rect parentRect, ref Rect childRect, ref float depth, ref float exposure, ref Rect? scissorRect);
     protected event BeginDrawingChildCube onBeginDrawingChildCube;
@@ -43,7 +48,8 @@ public class ContainerCube : Cube
     public Cube[,] ChildCubes { get => childGrid.Children; }
     public RenderTexture StaticTexturesRT { get => staticTexturesRT; }
     public List<Cube> EmptyCubes { get => emptyCubes; }
-    public List<Cube> CullingCubes { get => cullingCubes; }
+    public List<Cube> CullingCubesAll { get => cullingCubesAll; }
+    public List<Cube> CullingCubesOne { get => cullingCubesOne; }
     public BeginDrawingChildCube OnBeginDrawingChildCube { get => onBeginDrawingChildCube; set => onBeginDrawingChildCube = value; }
     public Action<Cube> OnFinishedDrawingChildCUbe { get => onFinishedDrawingChildCube; }
 
@@ -210,11 +216,11 @@ public class ContainerCube : Cube
     }
 
     // Draw functions
-    protected override void DrawCube(Rect position, float depth, float exposure, Rect? scissorRect)
+    public override void DrawCube(Rect position, float depth, float exposure, Rect? scissorRect)
     {
-        DrawFloor(position, depth, exposure, scissorRect);
-        DrawWalls(position, depth, exposure, scissorRect);
-        DrawChildCubes(position, depth, exposure, scissorRect);
+        DrawFloor(position, depth + floorDepthOffset, exposure, scissorRect);
+        DrawWalls(position, depth + wallDepthOffset, exposure, scissorRect);
+        DrawChildCubes(position, depth + childCubesDepthOffset, exposure, scissorRect);
     }   
     protected virtual void DrawFloor(Rect position, float depth, float exposure, Rect? scissorRect)
     {
@@ -241,7 +247,7 @@ public class ContainerCube : Cube
         // Draw static cubes
         foreach (var childCube in childGrid.Children)
         {
-            if (childCube == null || cullingCubes.Contains(childCube)) continue;
+            if (childCube == null || (cullingCubesOne != null && (cullingCubesOne.Contains(childCube) || cullingCubesAll.Contains(childCube)))) continue;
             if (childCube is WallCube) // Ignore walls that aren't or can't potentially be a player
             {
                 if (!(childCube.CanBePlayer || childCube.IsPlayer)) continue;
@@ -251,22 +257,42 @@ public class ContainerCube : Cube
                 movingCubes.Add(childCube);
                 continue;
             }
+            List<Cube> tempCullingCubeOne = null;
+            if (childCube == this)
+            {
+                tempCullingCubeOne = cullingCubesOne;
+                cullingCubesOne = null;
+            }
             Rect childRect = Relativity.CRectFromPRect(position, childCube.RelativeScale, childCube.RelativePosition);
             onBeginDrawingChildCube?.Invoke(childCube, position, ref childRect, ref depth, ref exposure, ref scissorRect);
             childCube.Draw(childRect, depth, exposure, scissorRect);
-            onFinishedDrawingChildCube?.Invoke(childCube);        
+            onFinishedDrawingChildCube?.Invoke(childCube);
+            if (childCube == this && tempCullingCubeOne != null)
+            {
+                cullingCubesOne = tempCullingCubeOne;
+            }
         }
 
         // Drawing moving cubes on top of other cubes to avoid being covered
         foreach (var movingCube in movingCubes)
         {
+            List<Cube> tempCullingCubeOne = null;
+            if (movingCube == this)
+            {
+                tempCullingCubeOne = cullingCubesOne;
+                cullingCubesOne = null;
+            }
             Rect childRect = Relativity.CRectFromPRect(position, movingCube.RelativeScale, movingCube.RelativePosition);
             onBeginDrawingChildCube?.Invoke(movingCube, position, ref childRect, ref depth, ref exposure, ref scissorRect);
-            movingCube.Draw(childRect, depth - 0.1f, exposure, scissorRect);
+            movingCube.Draw(childRect, depth + movingChildCubesDepthOffset, exposure, scissorRect);
             onFinishedDrawingChildCube?.Invoke(movingCube);
+            if (movingCube == this && tempCullingCubeOne != null)
+            {
+                cullingCubesOne = tempCullingCubeOne;
+            }
         }
     }
-    protected override void DrawSurfaceEffects(Rect position, float depth, float exposure, Rect? scissorRect)
+    public override void DrawSurfaceEffects(Rect position, float depth, float exposure, Rect? scissorRect)
     {
         base.DrawSurfaceEffects(position, depth, exposure, scissorRect);
         if (!isEnterable) CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, Texture2D.whiteTexture, unenterableColor, exposure, position.position, position.size, depth - 0.2f);

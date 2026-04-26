@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UIElements;
 
 public class Cube : MonoBehaviour
 {
@@ -11,6 +10,8 @@ public class Cube : MonoBehaviour
     // Static: cube that can't be pushed -> Try entering and possessing
     // Empty: cube that other cubes can go through -> Ignore
     public enum CubeTypes { Normal, Static, Empty }
+    public const float playerFaceDepthOffset = -0.11f;
+    public const float surfaceEffectsDepthOffset = -0.12f;
 
     [Header("General Info")]
     [SerializeField] protected bool isPlayer = false;
@@ -29,8 +30,6 @@ public class Cube : MonoBehaviour
     [SerializeField] protected CustomTexture possessableFaceTexture;
     [SerializeField] protected bool enableOcclusionCulling = true;
     [SerializeField] protected string mirrorEffectID = "Mirror";
-    protected float playerFaceDepthOffset = -0.11f;
-    protected float surfaceEffectsDepthOffset = -0.11f;
     [Header("Cube stats")]
     [SerializeField] protected ContainerCube parent;
     [SerializeField] protected List<PreviousParentDetails> previousParents = new(); // Record self cube's previous parent to record history
@@ -113,14 +112,14 @@ public class Cube : MonoBehaviour
 
         onFinishedDrawing.Invoke(position, depth, exposure, scissorRect);
     }
-    protected virtual void DrawCube(Rect position, float depth, float exposure, Rect? scissorRect)
+    public virtual void DrawCube(Rect position, float depth, float exposure, Rect? scissorRect)
     {
         if (defaultTexture != null && defaultTexture.GetTexture() != null)
         {
             CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, defaultTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect);
         }
     }
-    protected virtual void DrawPlayerFace(Rect position, float depth, float exposure, Rect? scissorRect)
+    public virtual void DrawPlayerFace(Rect position, float depth, float exposure, Rect? scissorRect)
     {
         // Get player face texture
         if (IsPlayer && faceTexture != null)
@@ -132,7 +131,7 @@ public class Cube : MonoBehaviour
             CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, possessableFaceTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect);
         }
     }
-    protected virtual void DrawSurfaceEffects(Rect position, float depth, float exposure, Rect? scissorRect)
+    public virtual void DrawSurfaceEffects(Rect position, float depth, float exposure, Rect? scissorRect)
     {
         var cubeColor = Color.white;
         //if (colorPalette != null) cubeColor = colorPalette.GetColor(this.cubeColor);

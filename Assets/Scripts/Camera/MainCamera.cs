@@ -158,14 +158,10 @@ public class MainCamera : MonoBehaviour
             }
             for(int i = parents.Count - 1; i >= 0; i--)
             {
-                bool isOcclusionCulling = parents[i].Cube.EnableOcclusionCulling;
-                parents[i].Cube.EnableOcclusionCulling = false;
-                if (i > 0) parents[i].Cube.CullingCubes.Add(parents[i - 1].Cube);
+                if (i > 0) parents[i].Cube.CullingCubesOne.Add(parents[i - 1].Cube);
                 var renderRect = parents[i].RenderRect;
-                if (parents[i].Cube.IsHorizFlipped) renderRect.width = -renderRect.width;
-                parents[i].Cube.Draw(renderRect, depth, exposure, GetScreenRect());
-                if (i > 0) parents[i].Cube.CullingCubes.Remove(parents[i - 1].Cube);
-                parents[i].Cube.EnableOcclusionCulling = isOcclusionCulling;
+                parents[i].Cube.DrawCube(renderRect, depth, exposure, GetScreenRect());
+                if (i > 0) parents[i].Cube.CullingCubesOne.Remove(parents[i - 1].Cube);
             }
         }
         else

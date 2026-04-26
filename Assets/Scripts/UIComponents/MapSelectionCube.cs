@@ -92,7 +92,7 @@ public class MapSelectionCube : ContainerCube
         onInit.Invoke();
     }
 
-    protected override void DrawSurfaceEffects(Rect position, float depth, float exposure, Rect? scissorRect)
+    public override void DrawSurfaceEffects(Rect position, float depth, float exposure, Rect? scissorRect)
     {
         base.DrawSurfaceEffects(position, depth, exposure, scissorRect);
         if (mapIndexText != null)

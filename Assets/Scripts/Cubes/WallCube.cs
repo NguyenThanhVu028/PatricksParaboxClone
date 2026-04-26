@@ -37,7 +37,7 @@ public class WallCube : Cube
         cubeColor = parent.CubeColor;
     }
 
-    protected override void DrawCube(Rect position, float depth, float exposure, Rect? scissorRect)
+    public override void DrawCube(Rect position, float depth, float exposure, Rect? scissorRect)
     {
         Vector2 texSize = new((float)position.width / wallSubdivision, (float)position.height / wallSubdivision);
         Vector2 startingPos = new(position.x - position.width * 0.5f + texSize.x * 0.5f, position.y + position.height * 0.5f - texSize.y * 0.5f);
