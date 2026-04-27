@@ -44,16 +44,16 @@ public class WorldCube : ContainerCube
         if (requiredMapCountText != null) requiredMapCountText.text = finishedCount.ToString() + "/" + requiredMapCount.ToString();
     }
 
-    public override void DrawSurfaceEffects(Rect position, float depth, float exposure, Rect? scissorRect)
+    public override void DrawCube(Rect position, float depth, float exposure, Rect? scissorRect)
     {
-        base.DrawSurfaceEffects(position, depth, exposure, scissorRect);
+        base.DrawCube(position, depth, exposure, scissorRect);
 
         if (requiredMapCountText != null)
         {
             requiredMapCountText.gameObject.SetActive(true);
 
             Vector3 textPos = position.position + Vector2.down * (position.size.y * 0.5f + requiredMapCountText.rectTransform.sizeDelta.y * 0.5f);
-            textPos.z = -1f;
+            textPos.z = depth - 1f;
             requiredMapCountText.rectTransform.position = textPos;
         }
     }

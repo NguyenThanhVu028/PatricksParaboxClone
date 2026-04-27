@@ -92,16 +92,16 @@ public class MapSelectionCube : ContainerCube
         onInit.Invoke();
     }
 
-    public override void DrawSurfaceEffects(Rect position, float depth, float exposure, Rect? scissorRect)
+    public override void DrawCube(Rect position, float depth, float exposure, Rect? scissorRect)
     {
-        base.DrawSurfaceEffects(position, depth, exposure, scissorRect);
+        base.DrawCube(position, depth, exposure, scissorRect);
         if (mapIndexText != null)
         {
             mapIndexText.gameObject.SetActive(true);
             Vector2 textSize = new(Mathf.Abs(position.size.x), Mathf.Abs(position.size.y));
             mapIndexText.rectTransform.sizeDelta = textSize * mapIndexTextPadding;
             mapIndexText.text = mapIndex.ToString();
-            mapIndexText.transform.position = new(position.x, position.y, depth);
+            mapIndexText.transform.position = new(position.x, position.y, depth - 1f);
         }
     }
 
