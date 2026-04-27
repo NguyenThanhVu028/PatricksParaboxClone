@@ -161,6 +161,26 @@ public class Cube : MonoBehaviour
         if (targetCube == null) return false;
         if (targetCube.IsPlayer) return false;
         if (!targetCube.CanBePlayer) return false;
+        // Update self cube status and history
+        HistoryManager historyManager = HistoryManager.Instance;
+        if (historyManager != null)
+        {
+            // Modify current record to save its previous details
+            var currentRecord = historyManager.GetCurrentRecord();
+            if (currentRecord != null)
+            {
+                currentRecord.AddHistoryEvent(this, (previousParents.Count > 0) ? previousParents[0].Cube : null, relativePosition, relativeScale, isHorizFlipped, true);
+                currentRecord.AddHistoryEvent(targetCube, (targetCube.PreviousParents.Count > 0) ? targetCube.PreviousParents[0].Cube : null, targetCube.RelativePosition, targetCube.RelativeScale, targetCube.IsHorizFlipped, false);
+            }
+            historyManager.RecordNewEvent(this, (previousParents.Count > 0) ? previousParents[0].Cube : null, relativePosition, relativeScale, isHorizFlipped, false);
+            historyManager.RecordNewEvent(targetCube, (targetCube.PreviousParents.Count > 0) ? targetCube.PreviousParents[0].Cube : null, targetCube.RelativePosition, targetCube.RelativeScale, targetCube.IsHorizFlipped, true);
+        }
+        if (MainCamera.Instance != null)
+        {
+            ZoomingTransition zoomingTransition = new(previousParents, possessingTime);
+            MainCamera.Instance.PlayTransition(zoomingTransition);
+        }
+        if (historyManager != null) historyManager.NormalArchiveHistoryRecord();
         StartCoroutine(PossessingCoroutine(targetCube));
         return true;
     }

@@ -24,7 +24,7 @@ public class ZoomingTransition : ICameraTransition
     {
         if (mainCamera == null || mainCamera.RenderMode != MainCamera.MainCameraRenderMode.SingleCube) return null;
 
-        if (cubesToTraverse == null || cubesToTraverse.Count <= 1 || cubesToTraverse[cubesToTraverse.Count - 1].Cube == cubesToTraverse[0].Cube) return null;
+        if (cubesToTraverse == null || cubesToTraverse.Count <= 1 || cubesToTraverse[cubesToTraverse.Count - 1].Cube == null || cubesToTraverse[cubesToTraverse.Count - 1].Cube == cubesToTraverse[0].Cube) return null;
 
         // Traverse the previous parents list to calculate new target cube rect
         targetCubeRect = mainCamera.TargetCubeRect;
@@ -113,7 +113,7 @@ public class ZoomingTransition : ICameraTransition
         }
 
         // Check if the camera should be horizontally flipped to display cube direction currectly
-        if ((targetCubeRect.size.x > 0) == cubesToTraverse[cubesToTraverse.Count - 1].IsHorizFlipped)
+        if ((targetCubeRect.size.x > 0) == newTarget.IsHorizFlipped)
         {
             mainCamera.IsHorizFlipped = true;
         }
@@ -135,7 +135,7 @@ public class ZoomingTransition : ICameraTransition
         Rect oldTargetRect = mainCamera.TargetCubeRect;
         mainCamera.SetNewTargetCube(newTarget);
         // Check if the camera should be horizontally flipped to display cube direction currectly
-        if ((targetCubeRect.size.x > 0) == cubesToTraverse[cubesToTraverse.Count - 1].IsHorizFlipped)
+        if ((targetCubeRect.size.x > 0) == newTarget.IsHorizFlipped)
         {
             mainCamera.IsHorizFlipped = true;
         }

@@ -35,7 +35,11 @@ public class WallCube : Cube
     protected void OnParentChanged(ContainerCube previousParent, ContainerCube newParent)
     {
         if (previousParent != null) previousParent.CalculateStaticTextures();
-        if (newParent != null) cubeColor = newParent.CubeColor;
+        if (newParent != null)
+        {
+            cubeColor = newParent.CubeColor;
+            newParent.CalculateStaticTextures();
+        }
     }
 
     public override void DrawCube(Rect position, float depth, float exposure, Rect? scissorRect)

@@ -114,21 +114,7 @@ public class CubeMovement : MonoBehaviour
             var currentRecord = historyManager.GetCurrentRecord();
             if (currentRecord != null)
             {
-                bool foundPreviousEvent = false;
-                foreach (var historyEvent in currentRecord.Events)
-                {
-                    if (historyEvent == null) continue;
-                    if (historyEvent.TargetCube == selfCube)
-                    {
-                        historyEvent.PreviousParent = selfCube.Parent;
-                        historyEvent.PreviousRPos = selfCube.RelativePosition;
-                        historyEvent.PreviousRScl = selfCube.RelativeScale;
-                        historyEvent.IsHorizFlipped = selfCube.IsHorizFlipped;
-                        foundPreviousEvent = true;
-                        break;
-                    }
-                }
-                if (!foundPreviousEvent) currentRecord.Events.Add(new HistoryEvent(selfCube, (selfCube.PreviousParents.Count > 0) ? selfCube.PreviousParents[0].Cube : null, selfCube.RelativePosition, selfCube.RelativeScale, selfCube.IsHorizFlipped));
+                currentRecord.AddHistoryEvent(selfCube, (selfCube.PreviousParents.Count > 0) ? selfCube.PreviousParents[0].Cube : null, selfCube.RelativePosition, selfCube.RelativeScale, selfCube.IsHorizFlipped, selfCube.IsPlayer);
             }
         }
 
@@ -148,7 +134,7 @@ public class CubeMovement : MonoBehaviour
         if (historyManager != null)
         {
             // Add new record for its new details
-            historyManager.RecordNewEvent(selfCube, selfCube.Parent, endRPos, endRScl, selfCube.IsHorizFlipped);
+            historyManager.RecordNewEvent(selfCube, selfCube.Parent, endRPos, endRScl, selfCube.IsHorizFlipped, selfCube.IsPlayer);
         }
 
         Vector2 cubeOldRPos = selfCube.RelativePosition;

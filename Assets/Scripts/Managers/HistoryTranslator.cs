@@ -77,6 +77,7 @@ public class HistoryTranslator : MonoBehaviour
             historyEvent.TargetCube.RelativePosition = historyEvent.PreviousRPos;
             historyEvent.TargetCube.RelativeScale = historyEvent.PreviousRScl;
             historyEvent.TargetCube.IsHorizFlipped = historyEvent.IsHorizFlipped;
+            historyEvent.TargetCube.IsPlayer = historyEvent.IsPlayer;
             ResetCameraTarget(historyEvent);
         }
         ResetCameraStatus(historyRecord);
