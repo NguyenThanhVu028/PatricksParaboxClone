@@ -40,7 +40,7 @@ public class Cube : MonoBehaviour
     [SerializeField] protected UnityEvent onInit = new();
     [SerializeField] protected UnityEvent<Rect, float, float, Rect?> onFinishedDrawing = new();
 
-    protected UnityEvent onParentChanged = new();
+    protected Action<ContainerCube, ContainerCube> onParentChanged;
     protected CustomTexture faceTexture;
     protected CustomTexture surfaceEffectsAnimation;
     protected MaterialPropertyBlock materialPropertyBlock;
@@ -68,7 +68,7 @@ public class Cube : MonoBehaviour
     public bool EnableOcclusionCulling { get => enableOcclusionCulling; set => enableOcclusionCulling = value; }
 
     // Cube Stats
-    public ContainerCube Parent { get => parent; set { parent = value; onParentChanged.Invoke(); } }
+    public ContainerCube Parent { get => parent; set { onParentChanged?.Invoke(parent, value); parent = value; } }
     public List<PreviousParentDetails> PreviousParents { get => previousParents; set => previousParents = value; }
     public Vector2 RelativeScale { get => relativeScale; set => relativeScale = value; }
     public Vector2 RelativePosition { get => relativePosition; set => relativePosition = value; }
