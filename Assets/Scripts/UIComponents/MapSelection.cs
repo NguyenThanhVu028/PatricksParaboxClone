@@ -42,7 +42,7 @@ public class MapSelection : MonoBehaviour
             playerCube.Init();
 
             var targetPosInGrid = lastOpenedWorld.ChildGrid.GetEnterPosition(PlayerInputsManager.MovementInputs.Down, playerCube.RelativePosition);
-            lastOpenedWorld.ChildGrid.Children[targetPosInGrid.x, targetPosInGrid.y] = playerCube;
+            lastOpenedWorld.ChildGrid.Children[targetPosInGrid.x, targetPosInGrid.y].Cube = playerCube;
 
             Vector2 targetRScl = new(1.0f / lastOpenedWorld.ChildGrid.Tiling.y, 1.0f / lastOpenedWorld.ChildGrid.Tiling.x);
             Vector2 targetRPos = new(0, 1.0f - targetRScl.y);

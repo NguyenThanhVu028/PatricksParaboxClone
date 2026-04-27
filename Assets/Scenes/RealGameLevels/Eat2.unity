@@ -119,6 +119,17 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &321196892 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3330600575587197656, guid: a9d5fe7847b3a894fa714f95f94030dc, type: 3}
+  m_PrefabInstance: {fileID: 860415091}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a79d719644dad549ac1ae04a95e3ce0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &331930788
 GameObject:
   m_ObjectHideFlags: 0
@@ -161,6 +172,10 @@ PrefabInstance:
     - target: {fileID: 2305724275024120085, guid: 8cd60fb214fed354989e3e3e443dd8d2, type: 3}
       propertyPath: m_Name
       value: WallCube
+      objectReference: {fileID: 0}
+    - target: {fileID: 3279298194327505553, guid: 8cd60fb214fed354989e3e3e443dd8d2, type: 3}
+      propertyPath: cubeType
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6173853863250928157, guid: 8cd60fb214fed354989e3e3e443dd8d2, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1570,6 +1585,14 @@ PrefabInstance:
       propertyPath: childCubesInitDetails.Array.data[56].canBePlayer
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childCubesInitDetails.Array.data[57].canBePlayer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
+      propertyPath: childCubesInitDetails.Array.data[59].canBePlayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1545740933770737201, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: m_LocalPosition.x
       value: -3.1
@@ -1619,7 +1642,7 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
---- !u!1001 &929107667
+--- !u!1001 &860415091
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -1634,6 +1657,10 @@ PrefabInstance:
     - target: {fileID: 3330600575587197656, guid: a9d5fe7847b3a894fa714f95f94030dc, type: 3}
       propertyPath: cubeColor
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3330600575587197656, guid: a9d5fe7847b3a894fa714f95f94030dc, type: 3}
+      propertyPath: needInstantiating
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4745218084157380791, guid: a9d5fe7847b3a894fa714f95f94030dc, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1775,7 +1802,7 @@ PrefabInstance:
     - target: {fileID: 6333287652591081063, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
       propertyPath: allCubes.Array.data[3].cube
       value: 
-      objectReference: {fileID: 1584155044}
+      objectReference: {fileID: 321196892}
     - target: {fileID: 6333287652591081063, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
       propertyPath: allCubes.Array.data[4].cube
       value: 
@@ -1869,17 +1896,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b2175bc2550af648b7bdd6f1103246f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1584155044 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3330600575587197656, guid: a9d5fe7847b3a894fa714f95f94030dc, type: 3}
-  m_PrefabInstance: {fileID: 929107667}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1a79d719644dad549ac1ae04a95e3ce0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1596037500
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1971,7 +1987,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isRendering: 1
   renderMode: 0
-  exposure: 0
+  defaultExposure: 0
   isHorizFlipped: 1
   targetCube: {fileID: 0}
   renderRect:
@@ -2806,6 +2822,7 @@ MonoBehaviour:
   cubeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   possessableFaceTexture: {fileID: 11400000, guid: 478f5cbe753240a418d149fbab64e0cd, type: 2}
   enableOcclusionCulling: 1
+  mirrorEffectID: Mirror
   parent: {fileID: 0}
   previousParents: []
   relativeScale: {x: 1, y: 1}
@@ -2844,10 +2861,10 @@ SceneRoots:
   - {fileID: 1737576853}
   - {fileID: 460022993}
   - {fileID: 375554311}
-  - {fileID: 929107667}
   - {fileID: 400880456}
   - {fileID: 1596037500}
   - {fileID: 1805612355}
+  - {fileID: 860415091}
   - {fileID: 331930789}
   - {fileID: 697996021}
   - {fileID: 1702194837}

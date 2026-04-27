@@ -19,8 +19,8 @@ public class WorldCube : ContainerCube
         int finishedCount = 0;
         foreach(var childCube in childGrid.Children)
         {
-            if (childCube == null || !(childCube is MapSelectionCube)) continue;
-            if ((childCube as MapSelectionCube).HasFinished) finishedCount++;
+            if (childCube.Cube == null || !(childCube.Cube is MapSelectionCube)) continue;
+            if ((childCube.Cube as MapSelectionCube).HasFinished) finishedCount++;
             if (finishedCount >= requiredMapCount)
             {
                 foreach(var depedentWorld in dependentWorldCubes)

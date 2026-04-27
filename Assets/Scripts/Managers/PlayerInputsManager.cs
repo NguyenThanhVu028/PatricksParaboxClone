@@ -136,7 +136,14 @@ public class PlayerInputsManager : MonoBehaviour
                 return MovementInputs.None;
         }
     }
-
+    public static bool CheckOppositeMovementInputs(MovementInputs input1, MovementInputs input2)
+    {
+        if (input1 == MovementInputs.None || input2 == MovementInputs.None) return false;
+        return (input1 == MovementInputs.Up && input2 == MovementInputs.Down) ||
+               (input1 == MovementInputs.Down && input2 == MovementInputs.Up) ||
+               (input1 == MovementInputs.Left && input2 == MovementInputs.Right) ||
+               (input1 == MovementInputs.Right && input2 == MovementInputs.Left);
+    }
     [Serializable]
     public class GameplayInputsReceiver: MainInputSystem.INormalActions
     {

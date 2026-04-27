@@ -52,7 +52,10 @@ public class HistoryTranslator : MonoBehaviour
             if (historyEvent.TargetCube.Parent != null)
             {
                 Debug.Log($"{historyEvent.TargetCube.Parent} removes {historyEvent.TargetCube}");
-                historyEvent.TargetCube.Parent.ChildGrid.RemoveChild(historyEvent.TargetCube);
+                historyEvent.TargetCube.Parent.ChildGrid.RemoveChild(
+                    (child) => child.Cube == historyEvent.TargetCube,
+                    (ref ContainerCube.ChildCubeDetails child) => { child.Cube = null; child.MovingDirection = PlayerInputsManager.MovementInputs.None; }
+                    );
             }
 
             // Let target cube return to its previous parent
@@ -64,10 +67,13 @@ public class HistoryTranslator : MonoBehaviour
 
             Vector2Int targetCubePrevPosInParent = Relativity.GridPosFromRPos(historyEvent.PreviousParent.Tiling.y, historyEvent.PreviousParent.Tiling.x, historyEvent.PreviousRPos);
             if (!historyEvent.PreviousParent.ChildGrid.CheckValidGridPosition(targetCubePrevPosInParent.x, targetCubePrevPosInParent.y)) return;
-            historyEvent.PreviousParent.ChildCubes[targetCubePrevPosInParent.x, targetCubePrevPosInParent.y] = historyEvent.TargetCube;
+            // Return target cube back to its previous parent cube
+            historyEvent.PreviousParent.ChildCubes[targetCubePrevPosInParent.x, targetCubePrevPosInParent.y].Cube = historyEvent.TargetCube;
+            historyEvent.PreviousParent.ChildCubes[targetCubePrevPosInParent.x, targetCubePrevPosInParent.y].MovingDirection = PlayerInputsManager.MovementInputs.None;
             historyEvent.TargetCube.Parent = historyEvent.PreviousParent;
             historyEvent.TargetCube.PreviousParents.Clear();
             historyEvent.TargetCube.PreviousParents.Add(new(PreviousParentDetails.Directions.In, historyEvent.PreviousParent));
+            // Return target cube's relative position, relative scale and horizontal flip status back to previous values
             historyEvent.TargetCube.RelativePosition = historyEvent.PreviousRPos;
             historyEvent.TargetCube.RelativeScale = historyEvent.PreviousRScl;
             historyEvent.TargetCube.IsHorizFlipped = historyEvent.IsHorizFlipped;

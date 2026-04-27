@@ -61,17 +61,17 @@ public class CloneCube : ContainerCube
         // Draw static cubes
         foreach (var childCube in mainContainerCube.ChildCubes)
         {
-            if (childCube == null || childCube == requestedCube) continue;
-            if (childCube is WallCube) // Ignore walls that aren't or can't potentially be a player
+            if (childCube.Cube == null || childCube.Cube == requestedCube) continue;
+            if (childCube.Cube is WallCube) // Ignore walls that aren't or can't potentially be a player
             {
-                if (!(childCube.CanBePlayer || childCube.IsPlayer)) continue;
+                if (!(childCube.Cube.CanBePlayer || childCube.Cube.IsPlayer)) continue;
             }
-            if (childCube.GetComponent<CubeMovement>() != null && childCube.GetComponent<CubeMovement>().IsMoving)
+            if (childCube.Cube.GetComponent<CubeMovement>() != null && childCube.Cube.GetComponent<CubeMovement>().IsMoving)
             {
-                movingCubes.Add(childCube);
+                movingCubes.Add(childCube.Cube);
                 continue;
             }
-            childCube.Draw(Relativity.CRectFromPRect(position, childCube.RelativeScale, childCube.RelativePosition), depth, exposure, scissorRect);
+            childCube.Cube.Draw(Relativity.CRectFromPRect(position, childCube.Cube.RelativeScale, childCube.Cube.RelativePosition), depth, exposure, scissorRect);
         }
 
         // Drawing moving cubes on top of other cubes to avoid being covered

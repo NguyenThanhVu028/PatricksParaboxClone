@@ -28,7 +28,7 @@ public class TriggerButton : Cube
         {
             var targetCube = parent.ChildCubes[positionInParent.x, positionInParent.y];
 
-            if (targetCube != null)
+            if (targetCube.Cube != null)
             {
                 if (!isActivated)
                 {

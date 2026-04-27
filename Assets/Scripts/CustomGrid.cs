@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public class CustomGrid <T> where T: Cube
+public class CustomGrid <T> where T: new()
 {
     [Min(1)]
     [SerializeField] Vector2Int tiling = new(9, 9);
@@ -17,27 +17,59 @@ public class CustomGrid <T> where T: Cube
     public void Init()
     {
         children = new T[tiling.x, tiling.y];
+        for(int row = 0; row < tiling.x; row++)
+        {
+            for (int column = 0; column < tiling.y; column++)
+            {
+                children[row, column] = new();
+            }
+        }
     }
-    public Vector2Int FindChild(T child)
+    //public Vector2Int FindChild(T child)
+    //{
+    //    for (int row = 0; row < children.GetLength(0); row++)
+    //    {
+    //        for (int column = 0; column < children.GetLength(1); column++)
+    //        {
+    //            if (Children[row, column] == child) return new(row, column);
+    //        }
+    //    }
+    //    return new(-1, -1);
+    //}
+    public Vector2Int FindChild(Func<T, bool> condition)
     {
         for (int row = 0; row < children.GetLength(0); row++)
         {
             for (int column = 0; column < children.GetLength(1); column++)
             {
-                if (Children[row, column] == child) return new(row, column);
+                if (condition(children[row, column])) return new(row, column);
             }
         }
         return new(-1, -1);
     }
-    public void RemoveChild(T child)
+    //public void RemoveChild(T child)
+    //{
+    //    for (int row = 0; row < children.GetLength(0); row++)
+    //    {
+    //        for (int column = 0; column < children.GetLength(1); column++)
+    //        {
+    //            if (children[row, column] == child)
+    //            {
+    //                children[row, column] = null;
+    //            }
+    //        }
+    //    }
+    //}
+    public delegate void RemovalAction(ref T child);
+    public void RemoveChild(Func<T, bool> condition, RemovalAction removalAction)
     {
         for (int row = 0; row < children.GetLength(0); row++)
         {
             for (int column = 0; column < children.GetLength(1); column++)
             {
-                if (children[row, column] == child)
+                if (condition(children[row, column]))
                 {
-                    children[row, column] = null;
+                    removalAction(ref children[row, column]);
                 }
             }
         }
