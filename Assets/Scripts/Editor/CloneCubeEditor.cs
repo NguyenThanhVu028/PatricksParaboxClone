@@ -22,6 +22,7 @@ public class CloneCubeEditor : Editor
     SerializedProperty unenterableColor;
     SerializedProperty unleavableColor;
     SerializedProperty enableOcclusionCulling;
+    SerializedProperty surfaceEffectsAnimationIDs;
 
     // Cube status
     SerializedProperty parent;
@@ -56,6 +57,7 @@ public class CloneCubeEditor : Editor
         unenterableColor = serializedObject.FindProperty("unenterableColor");
         unleavableColor = serializedObject.FindProperty("unleavableColor");
         enableOcclusionCulling = serializedObject.FindProperty("enableOcclusionCulling");
+        surfaceEffectsAnimationIDs = serializedObject.FindProperty("surfaceEffectsAnimationIDs");
 
         // Cube status
         parent = serializedObject.FindProperty("parent");
@@ -91,6 +93,7 @@ public class CloneCubeEditor : Editor
         EditorGUILayout.PropertyField(unenterableColor);
         EditorGUILayout.PropertyField(unleavableColor);
         EditorGUILayout.PropertyField(enableOcclusionCulling);
+        EditorGUILayout.PropertyField(surfaceEffectsAnimationIDs);
 
         EditorGUILayout.Space();
 

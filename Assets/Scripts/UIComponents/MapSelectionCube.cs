@@ -71,8 +71,7 @@ public class MapSelectionCube : ContainerCube
         // Init effects and announce all dependent cubes
         if (!hasFinished)
         {
-            if (surfaceEffectsAnimation == null)
-                SetSurfaceEffects(notFinishedEffect);
+            AddSurfaceEffect(notFinishedEffect);
             foreach(var dependentMap in dependentMapSelectionCubes)
             {
                 if (dependentMap == null) continue;
@@ -81,7 +80,6 @@ public class MapSelectionCube : ContainerCube
         }
         else if (hasFinished)
         {
-            surfaceEffectsAnimation = null;
             foreach (var dependentMap in dependentMapSelectionCubes)
             {
                 if (dependentMap == null) continue;

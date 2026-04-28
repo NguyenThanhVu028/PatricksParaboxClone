@@ -1362,6 +1362,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 85889fba1a8fd05419051f9256512ad6, type: 2}
   - {fileID: 11400000, guid: ad39bd32887342a4e9407db0a578bbd7, type: 2}
   - {fileID: 11400000, guid: f51ee01e2a75e834db038b5643c870b7, type: 2}
+  - {fileID: 11400000, guid: 236bb0a9ec13f594db33356b175374ec, type: 2}
+  - {fileID: 11400000, guid: 14b486a8e65f7a4498af2b112368f970, type: 2}
   playerFacesTextureAnimation:
   - {fileID: 11400000, guid: a2eb29ecdd7846d4c9b6e1123bb5c001, type: 2}
 --- !u!1 &5478760104357305090

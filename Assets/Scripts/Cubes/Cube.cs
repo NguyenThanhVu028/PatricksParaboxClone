@@ -30,6 +30,7 @@ public class Cube : MonoBehaviour
     [SerializeField] protected CustomTexture possessableFaceTexture;
     [SerializeField] protected bool enableOcclusionCulling = true;
     [SerializeField] protected string mirrorEffectID = "Mirror";
+    [SerializeField] protected List<string> surfaceEffectsAnimationIDs = new();
     [Header("Cube stats")]
     [SerializeField] protected ContainerCube parent;
     [SerializeField] protected List<PreviousParentDetails> previousParents = new(); // Record self cube's previous parent to record history
@@ -42,7 +43,7 @@ public class Cube : MonoBehaviour
 
     protected Action<ContainerCube, ContainerCube> onParentChanged;
     protected CustomTexture faceTexture;
-    protected CustomTexture surfaceEffectsAnimation;
+    protected List<CustomTexture> surfaceEffects = new();
     protected MaterialPropertyBlock materialPropertyBlock;
     protected bool hasInit = false;
     protected Coroutine possessingCoroutine = null;
@@ -65,7 +66,16 @@ public class Cube : MonoBehaviour
     public float PossessingTime { get => possessingTime; }
 
     // Rendering
-    public bool IsHorizFlipped { get => isHorizFlipped; set => isHorizFlipped = value; }
+    public bool IsHorizFlipped 
+    { 
+        get => isHorizFlipped; 
+        set
+        {
+            isHorizFlipped = value;
+            if (isHorizFlipped) AddSurfaceEffect(mirrorEffectID);
+            else RemoveSurfaceEffect(mirrorEffectID);
+        }
+    }
     public Material NormalMat { get => normalMat; }
     public bool EnableOcclusionCulling { get => enableOcclusionCulling; set => enableOcclusionCulling = value; }
 
@@ -97,6 +107,13 @@ public class Cube : MonoBehaviour
             var gameData = SaveAndLoadManager.GeneralGameData;
             faceTexture = animationsManager.GetPlayerFaceTextureAnimation(gameData.LastUsedFaceAniID);
         }
+
+        foreach(var surfaceEffectID in surfaceEffectsAnimationIDs)
+        {
+            AddSurfaceEffect(surfaceEffectID);
+        }
+
+        IsHorizFlipped = isHorizFlipped; // To add mirror effect if needed
 
         onInit.Invoke();
     }
@@ -138,24 +155,47 @@ public class Cube : MonoBehaviour
     {
         var cubeColor = Color.white;
         //if (colorPalette != null) cubeColor = colorPalette.GetColor(this.cubeColor);
-
-        if (surfaceEffectsAnimation != null)
+        foreach( var surfaceEffect in surfaceEffects)
         {
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, surfaceEffectsAnimation.GetTexture(), cubeColor, exposure, position.position, position.size, depth, scissorRect);
-        }
-        if (isHorizFlipped)
-        {
-            if (AnimationsManager.Instance == null) return;
-            var mirrorEffect = AnimationsManager.Instance.GetNormalTextureAnimation("Mirror");
-            if (mirrorEffect != null) CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, mirrorEffect.GetTexture(), cubeColor, exposure, position.position, position.size, depth, scissorRect);
+            if (surfaceEffect != null)
+            {
+                CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, surfaceEffect.GetTexture(), cubeColor, exposure, position.position, position.size, depth, scissorRect);
+            }
         }
     }
 
-    public void SetSurfaceEffects(string aniID)
+    public void AddSurfaceEffect(string aniID)
     {
         AnimationsManager animationsManager = AnimationsManager.Instance;
         if (animationsManager != null)
-            surfaceEffectsAnimation = animationsManager.GetNormalTextureAnimation(aniID);
+        {
+            var newEffect = animationsManager.GetNormalTextureAnimation(aniID);
+            if (newEffect == null) return;
+            foreach(var effect in surfaceEffects)
+            {
+                if (effect == newEffect) return;
+            }
+            surfaceEffects.Add(newEffect);
+        }
+            
+    }
+
+    public void RemoveSurfaceEffect(string aniID)
+    {
+        AnimationsManager animationsManager = AnimationsManager.Instance;
+        if (animationsManager != null)
+        {
+            var effectToRemove = animationsManager.GetNormalTextureAnimation(aniID);
+            if (effectToRemove == null) return;
+            foreach (var effect in surfaceEffects)
+            {
+                if (effect == effectToRemove)
+                {
+                    surfaceEffects.Remove(effect);
+                    return;
+                }
+            }
+        }
     }
 
     public bool StartPossessing(Cube targetCube)

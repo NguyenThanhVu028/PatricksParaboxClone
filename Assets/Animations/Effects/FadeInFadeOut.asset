@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a245a440ae0c3f40a0654188de53772, type: 3}
+  m_Name: FadeInFadeOut
+  m_EditorClassIdentifier: 
+  texture: {fileID: 0}
+  frames:
+  - texture: {fileID: 2800000, guid: d9797fed385133041af1689ecd314c48, type: 3}
+    duration: 1
+  - texture: {fileID: 2800000, guid: e1cc0a0eb2f8ca34c8802587dee2de00, type: 3}
+    duration: 0.25
+  - texture: {fileID: 2800000, guid: 6d657f23954183141bebdb61fa8daca2, type: 3}
+    duration: 0.25
+  - texture: {fileID: 2800000, guid: 1f9a7690b7f24ad4988cbba6fdab49e6, type: 3}
+    duration: 0.25
+  - texture: {fileID: 2800000, guid: 4fca96679d344d94082a6a3a9441e97b, type: 3}
+    duration: 0.25
+  - texture: {fileID: 2800000, guid: d560793e771f3d643b65787676ab9815, type: 3}
+    duration: 0.25
+  - texture: {fileID: 2800000, guid: c82cb6d4b0e03784c95f19453b997450, type: 3}
+    duration: 0.25
+  - texture: {fileID: 2800000, guid: bc2bf1fad51436e4db3dc8e22ce1a7ba, type: 3}
+    duration: 0.25
+  totalDuration: 2.75

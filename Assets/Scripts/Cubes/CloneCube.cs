@@ -16,7 +16,6 @@ public class CloneCube : ContainerCube
         {
             mainContainerCube.OnBeginDrawingChildCube += OnMainCubeDrawChildCube;
         }
-        if (AnimationsManager.Instance != null) surfaceEffectsAnimation = AnimationsManager.Instance.GetNormalTextureAnimation("Noise");
         base.Init();
         hasInit = true;
     }

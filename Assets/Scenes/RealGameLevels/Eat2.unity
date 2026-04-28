@@ -915,6 +915,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 481638596036600023, guid: 8a76e30f9d2d8004bba486c6199ab053, type: 3}
+      propertyPath: isHorizFlipped
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 481638596036600023, guid: 8a76e30f9d2d8004bba486c6199ab053, type: 3}
       propertyPath: mainContainerCube
       value: 
       objectReference: {fileID: 695063177}

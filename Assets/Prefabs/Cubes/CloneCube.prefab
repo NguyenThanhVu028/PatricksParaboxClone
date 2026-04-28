@@ -61,6 +61,8 @@ MonoBehaviour:
   possessableFaceTexture: {fileID: 11400000, guid: 478f5cbe753240a418d149fbab64e0cd, type: 2}
   enableOcclusionCulling: 1
   mirrorEffectID: Mirror
+  surfaceEffectsAnimationIDs:
+  - FadeInFadeOut
   parent: {fileID: 0}
   previousParents: []
   relativeScale: {x: 1, y: 1}
