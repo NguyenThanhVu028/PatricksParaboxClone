@@ -125,7 +125,7 @@ public class CloneCube : ContainerCube
         scissorRect = CustomTextureRenderer2D.GetOverlapRect(scissorRect, position);
     }
 
-    public override float RequestToMove(Vector2 cRPos, Vector2 cRScl, Cube requestedCube, PlayerInputsManager.MovementInputs direction, bool external = false, bool specialMove = false)
+    public override float RequestToMove(Vector2 cRPos, Vector2 cRScl, Cube requestedCube, CubeMovement.MovementDirections direction, bool external = false, bool specialMove = false)
     {
         if (mainContainerCube == null) return 0;
 
@@ -139,10 +139,10 @@ public class CloneCube : ContainerCube
         if (isHorizFlipped != mainContainerCube.IsHorizFlipped)
         {
             cRPos.x = -cRPos.x;
-            direction = PlayerInputsManager.FlipMovementInput(direction, true);
-            requestedCube.PreviousParents.Add(new(PreviousParentDetails.Directions.In, this, Vector2.zero, Vector2.one, true));
+            direction = CubeMovement.FlipMovementInput(direction, true);
+            requestedCube.PreviousParents.Add(new(CubeMovement.LayerDirections.In, this, Vector2.zero, Vector2.one, true));
         }
-        else requestedCube.PreviousParents.Add(new(PreviousParentDetails.Directions.In, this, Vector2.zero, Vector2.one, false));
+        else requestedCube.PreviousParents.Add(new(CubeMovement.LayerDirections.In, this, Vector2.zero, Vector2.one, false));
 
         float finalTargetTime = mainContainerCube.RequestToMove(cRPos, cRScl, requestedCube, direction, external, specialMove);
 

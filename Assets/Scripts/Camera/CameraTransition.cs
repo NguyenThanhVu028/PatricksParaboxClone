@@ -44,7 +44,7 @@ public class ZoomingTransition : CameraTransition
         for(int i =1; i < cubesToTraverse.Count; i++)
         {
             if (cubesToTraverse[i].Cube == null) continue;
-            if (cubesToTraverse[i].Direction == Cube.PreviousParentDetails.Directions.Out)
+            if (cubesToTraverse[i].Direction == CubeMovement.LayerDirections.Out)
             {
                 Vector2 oldTargetRectPos = targetCubeRect.position;
                 targetCubeRect = Relativity.PRectFromCRect(targetCubeRect, currentCube.RelativeScale, currentCube.RelativePosition);
@@ -209,7 +209,7 @@ public class FadeTransition : CameraTransition
         for (int i = 1; i < cubesToTraverse.Count; i++)
         {
             if (cubesToTraverse[i].Cube == null) continue;
-            if (cubesToTraverse[i].Direction == Cube.PreviousParentDetails.Directions.Out)
+            if (cubesToTraverse[i].Direction == CubeMovement.LayerDirections.Out)
             {
                 if (currentCube.IsHorizFlipped)
                 {

@@ -55,7 +55,7 @@ public class HistoryTranslator : MonoBehaviour
                 Debug.Log($"{historyEvent.TargetCube.Parent} removes {historyEvent.TargetCube}");
                 historyEvent.TargetCube.Parent.ChildGrid.RemoveChild(
                     (child) => child.Cube == historyEvent.TargetCube,
-                    (ref ContainerCube.ChildCubeDetails child) => { child.Cube = null; child.MovingDirection = PlayerInputsManager.MovementInputs.None; }
+                    (ref ContainerCube.ChildCubeDetails child) => { child.Cube = null; child.MovingDirection = CubeMovement.MovementDirections.None; }
                     );
             }
 
@@ -70,10 +70,10 @@ public class HistoryTranslator : MonoBehaviour
             if (!historyEvent.PreviousParent.ChildGrid.CheckValidGridPosition(targetCubePrevPosInParent.x, targetCubePrevPosInParent.y)) return;
             // Return target cube back to its previous parent cube
             historyEvent.PreviousParent.ChildCubes[targetCubePrevPosInParent.x, targetCubePrevPosInParent.y].Cube = historyEvent.TargetCube;
-            historyEvent.PreviousParent.ChildCubes[targetCubePrevPosInParent.x, targetCubePrevPosInParent.y].MovingDirection = PlayerInputsManager.MovementInputs.None;
+            historyEvent.PreviousParent.ChildCubes[targetCubePrevPosInParent.x, targetCubePrevPosInParent.y].MovingDirection = CubeMovement.MovementDirections.None;
             historyEvent.TargetCube.Parent = historyEvent.PreviousParent;
             historyEvent.TargetCube.PreviousParents.Clear();
-            historyEvent.TargetCube.PreviousParents.Add(new(PreviousParentDetails.Directions.In, historyEvent.PreviousParent));
+            historyEvent.TargetCube.PreviousParents.Add(new(CubeMovement.LayerDirections.In, historyEvent.PreviousParent));
             // Return target cube's relative position, relative scale and horizontal flip status back to previous values
             historyEvent.TargetCube.RelativePosition = historyEvent.PreviousRPos;
             historyEvent.TargetCube.RelativeScale = historyEvent.PreviousRScl;

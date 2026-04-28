@@ -89,7 +89,7 @@ public class Cube : MonoBehaviour
         }
 
         previousParents.Clear();
-        previousParents.Add(new(PreviousParentDetails.Directions.Out, parent));
+        previousParents.Add(new(CubeMovement.LayerDirections.Out, parent));
 
         AnimationsManager animationsManager = AnimationsManager.Instance;
         if (animationsManager != null && SaveAndLoadManager.GeneralGameData != null)
@@ -220,14 +220,13 @@ public class Cube : MonoBehaviour
     [Serializable]
     public struct PreviousParentDetails
     {
-        public enum Directions { In, Out }
-        private Directions direction;
+        private CubeMovement.LayerDirections direction;
         private ContainerCube cube;
         private Vector2 relativePosition;
         private Vector2 relativeScale;
         private bool isHorizFlipped;
 
-        public Directions Direction { get => direction; set => direction = value; }
+        public CubeMovement.LayerDirections Direction { get => direction; set => direction = value; }
         public ContainerCube Cube { get => cube; set => cube = value; }
         public Vector2 RelativePosition
         {
@@ -252,7 +251,7 @@ public class Cube : MonoBehaviour
             get => isHorizFlipped;
             set => isHorizFlipped = value;
         }
-        public PreviousParentDetails(Directions direction, ContainerCube cube)
+        public PreviousParentDetails(CubeMovement.LayerDirections direction, ContainerCube cube)
         {
             this.cube = cube;
             this.direction = direction;
@@ -261,7 +260,7 @@ public class Cube : MonoBehaviour
             this.isHorizFlipped = (cube != null) ? cube.IsHorizFlipped : false;
         }
 
-        public PreviousParentDetails(Directions direction, ContainerCube cube, Vector2 relativePosition, Vector2 relativeScale, bool isHorizFlipped) 
+        public PreviousParentDetails(CubeMovement.LayerDirections direction, ContainerCube cube, Vector2 relativePosition, Vector2 relativeScale, bool isHorizFlipped) 
         { 
             this.cube = cube;
             this.direction = direction;
