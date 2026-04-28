@@ -480,7 +480,6 @@ public class ContainerCube : Cube
 
         // If all above fail, try to possess the cube
         requestedCube.StartPossessing(childGrid.Children[requestedPosition.x, requestedPosition.y].Cube);
-        Debug.Log(requestedCube.PreviousParents.Count);
 
         // Fail to move or possess successfully -> Return child cube to its original position in the cubes grid
         HandleFailToMove(requestedCube, requestedCubePosition, external);

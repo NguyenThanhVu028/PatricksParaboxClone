@@ -127,7 +127,7 @@ public class CloneCube : ContainerCube
 
     public override float RequestToMove(Vector2 cRPos, Vector2 cRScl, Cube requestedCube, PlayerInputsManager.MovementInputs direction, bool external = false, bool specialMove = false)
     {
-        if (mainContainerCube == null || mainContainerCube.Parent == null) return 0;
+        if (mainContainerCube == null) return 0;
 
         // Set up camera transition
         if (requestedCube.IsPlayer && MainCamera.Instance != null)
