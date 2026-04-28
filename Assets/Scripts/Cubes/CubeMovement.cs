@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
-using static Cube;
 
 [RequireComponent(typeof(Cube))]
 public class CubeMovement : MonoBehaviour
@@ -74,24 +73,30 @@ public class CubeMovement : MonoBehaviour
             if (movementInput != PlayerInputsManager.MovementInputs.None)
             {
                 var targetTime = selfCube.Parent.RequestToMove(selfCube.RelativePosition, selfCube.RelativeScale, selfCube, movementInput);
+                Debug.Log(selfCube.name + " " + selfCube.PreviousParents.Count);
+                // Update camera trasition
                 if (targetTime > 0)
                 {
-                    // Update camera trasition
-                    if (selfCube.IsPlayer && MainCamera.Instance != null)
+                    if (MainCamera.Instance != null)
                     {
-                        ZoomingTransition zoomingTransition = new(
-                            selfCube.PreviousParents,
-                            targetTime
-                            );
-
-                        MainCamera.Instance.PlayTransition(zoomingTransition);
+                        MainCamera.Instance.PlayTransition(selfCube.PreviousParents, targetTime);
                     }
                 }
-                if (selfCube.IsPlayer)
+                else if (selfCube.IsPossessing)
                 {
-                    HistoryManager historyManager = HistoryManager.Instance;
-                    if (historyManager != null) historyManager.NormalArchiveHistoryRecord(); // Player will archive the record
+                    Debug.Log(selfCube.name + " is possessing: " + selfCube.PreviousParents[selfCube.PreviousParents.Count - 1].Cube);
+                    if (MainCamera.Instance != null)
+                    {
+                        MainCamera.Instance.PlayTransition(selfCube.PreviousParents, selfCube.PossessingTime);
+                    }
+                    selfCube.PreviousParents.Clear();
+                    selfCube.PreviousParents.Add(new Cube.PreviousParentDetails(Cube.PreviousParentDetails.Directions.Out, selfCube.Parent));
                 }
+                else if (MainCamera.Instance != null) MainCamera.Instance.ClearTransition();
+
+                HistoryManager historyManager = HistoryManager.Instance;
+                if (historyManager != null) historyManager.NormalArchiveHistoryRecord(); // Player will archive the record
+                
                 coolDownTimer = coolDownTime;
             }
         }
@@ -120,11 +125,11 @@ public class CubeMovement : MonoBehaviour
 
         for (int i = 1; i < selfCube.PreviousParents.Count; i++)
         {
-            if (selfCube.PreviousParents[i].Direction == PreviousParentDetails.Directions.In)
+            if (selfCube.PreviousParents[i].Direction == Cube.PreviousParentDetails.Directions.In)
             {
                 selfCube.PreviousParents[i].Cube.ModifyChildCubeEnter(selfCube);
             }
-            else if (selfCube.PreviousParents[i].Direction == PreviousParentDetails.Directions.Out && i >= 1)
+            else if (selfCube.PreviousParents[i].Direction == Cube.PreviousParentDetails.Directions.Out && i >= 1)
             {
                 selfCube.PreviousParents[i - 1].Cube.ModifyChildCubeExit(selfCube);
             }
@@ -182,7 +187,7 @@ public class CubeMovement : MonoBehaviour
 
         isExternal = false;
         selfCube.PreviousParents.Clear();
-        selfCube.PreviousParents.Add(new(PreviousParentDetails.Directions.Out, selfCube.Parent)); // Update current parent after moving
+        selfCube.PreviousParents.Add(new(Cube.PreviousParentDetails.Directions.Out, selfCube.Parent)); // Update current parent after moving
         if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.GameplayInputs.ContinueUsingMovementInputs();
         onMoveEnd.Invoke();
     }
@@ -213,7 +218,7 @@ public class CubeMovement : MonoBehaviour
         isExternal = false;
         coolDownTimer = coolDownTime;
         selfCube.PreviousParents.Clear();
-        selfCube.PreviousParents.Add(new(PreviousParentDetails.Directions.Out, selfCube.Parent)); // Update current parent after moving
+        selfCube.PreviousParents.Add(new(Cube.PreviousParentDetails.Directions.Out, selfCube.Parent)); // Update current parent after moving
         selfCube.RelativePosition = endRPos;
         selfCube.RelativeScale = endRScl;
         if (selfCube.IsPlayer && MainCamera.Instance != null)

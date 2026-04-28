@@ -29,7 +29,7 @@ public class ContainerCube : Cube
     protected List<Cube> emptyCubes = new(); // Seperate empty cubes from other cubes, empty cubes are only be rendered but ignore checking for interactions by other cubes
     protected List<Cube> cullingCubesAll = new(); // These cubes wont be rendered if they are children of this cube, apply to all cube
     protected List<Cube> cullingCubesOne = new(); // Same as culling cubes all but only apply to one specific instance of a cube
-    protected bool useDebug = false;
+    protected bool useDebug = true;
 
     // Delegates and events
     public delegate void BeginDrawingChildCube(Cube childCube, Rect parentRect, ref Rect childRect, ref float depth, ref float exposure, ref Rect? scissorRect);
@@ -332,6 +332,13 @@ public class ContainerCube : Cube
         var requestedCubeMovement = requestedCube.GetComponent<CubeMovement>();
         if (requestedCubeMovement == null) return 0;
 
+        // Set up camera transition
+        if (MainCamera.Instance != null && requestedCube.IsPlayer)
+        {
+            ZoomingTransition zoomingTransition = new();
+            MainCamera.Instance.SetTransition(zoomingTransition);
+        }
+
         // Flip the requested cube if it is trying to move into a horizontally flipped cube from the outside
         Vector2Int requestedCubePosition = Relativity.GridPosFromRPos(childGrid.Tiling.y, childGrid.Tiling.x, cRPos);
         if (isHorizFlipped)
@@ -473,6 +480,7 @@ public class ContainerCube : Cube
 
         // If all above fail, try to possess the cube
         requestedCube.StartPossessing(childGrid.Children[requestedPosition.x, requestedPosition.y].Cube);
+        Debug.Log(requestedCube.PreviousParents.Count);
 
         // Fail to move or possess successfully -> Return child cube to its original position in the cubes grid
         HandleFailToMove(requestedCube, requestedCubePosition, external);
@@ -488,10 +496,14 @@ public class ContainerCube : Cube
                 childGrid.Children[requestedCubePosition.x, requestedCubePosition.y].Cube = requestedCube;
                 childGrid.Children[requestedCubePosition.x, requestedCubePosition.y].MovingDirection = PlayerInputsManager.MovementInputs.None;
             }
-            requestedCube.PreviousParents.Clear();
-            requestedCube.PreviousParents.Add(new(PreviousParentDetails.Directions.Out, this));
+            if (!requestedCube.IsPossessing)
+            {
+                requestedCube.PreviousParents.Clear();
+                requestedCube.PreviousParents.Add(new(PreviousParentDetails.Directions.Out, this));
+            }
         }
-        else requestedCube.RemovePreviousParent(this);
+        else if (!requestedCube.IsPossessing) requestedCube.RemovePreviousParent(this);
+        // Dont clear previous parents list if the requested cube is possessing another cube, which is later used to play camera transition
     }
 
     private float TryPushRequestedCubeOutside(Vector2 cRPos, Vector2 cRScl, Cube requestedCube, PlayerInputsManager.MovementInputs direction)

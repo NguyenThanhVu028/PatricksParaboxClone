@@ -33,6 +33,7 @@ public class MainCamera : MonoBehaviour
     [SerializeField] Color cubeRenderPositionColor = Color.yellow;
 
     private Camera mainCamera;
+    private CameraTransition currentTransition = null;
     private Coroutine transitionCoroutine = null;
     private float exposure = 0f;
 
@@ -64,7 +65,7 @@ public class MainCamera : MonoBehaviour
         }
     }
     public float OrthographicSize { get => mainCamera.orthographicSize; set => mainCamera.orthographicSize = value; }
-
+    
     private void Awake()
     {
         mainCamera = GetComponent<Camera>();
@@ -191,16 +192,37 @@ public class MainCamera : MonoBehaviour
         //Debug.Log("Ideal ortho size: " + GetIdealOrthographicSize(renderPosition, targetCube));
     }
 
-    public void PlayTransition(ICameraTransition transition)
+    public void SetTransition(CameraTransition newTransition)
     {
-        if (transitionCoroutine != null) return;
-        transitionCoroutine = StartCoroutine(TransitionWrapper(transition.ExecuteCoroutine(this)));
+        Debug.Log("Set transition: " + newTransition);
+        if (newTransition == null || newTransition == currentTransition) return;
+        if (currentTransition == null)
+        {
+            currentTransition = newTransition;
+            return;
+        }
+
+        if (newTransition.IsHigherPriorityThan(currentTransition))
+        {
+            currentTransition = newTransition;
+        }
+    }
+    public void ClearTransition() { currentTransition = null; }
+
+    public void PlayTransition(List<Cube.PreviousParentDetails> cubesToTraverse, float targetTime)
+    {
+        if (transitionCoroutine != null || currentTransition == null) return;
+        currentTransition.SetTargetTime(targetTime);
+        currentTransition.SetCubesToTraverse(cubesToTraverse);
+        transitionCoroutine = StartCoroutine(TransitionWrapper(currentTransition.ExecuteCoroutine(this)));
+        currentTransition = null;
     }
 
     public void StopTransition()
     {
         if (transitionCoroutine != null) StopCoroutine(transitionCoroutine);
         transitionCoroutine = null;
+        currentTransition = null;
         exposure = defaultExposure;
     }
 

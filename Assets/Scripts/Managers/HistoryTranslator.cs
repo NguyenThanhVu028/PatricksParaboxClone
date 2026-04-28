@@ -44,9 +44,10 @@ public class HistoryTranslator : MonoBehaviour
         {
             if (historyEvent == null || historyEvent.TargetCube == null) continue;
 
-            // Stop moving coroutine
+            // Stop all coroutines
             if (historyEvent.TargetCube.GetComponent<CubeMovement>() != null)
                 historyEvent.TargetCube.GetComponent<CubeMovement>().StopMoving();
+            historyEvent.TargetCube.StopPossessing();
 
             // Let target cube leave its current parent
             if (historyEvent.TargetCube.Parent != null)

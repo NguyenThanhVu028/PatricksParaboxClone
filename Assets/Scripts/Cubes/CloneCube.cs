@@ -129,6 +129,13 @@ public class CloneCube : ContainerCube
     {
         if (mainContainerCube == null || mainContainerCube.Parent == null) return 0;
 
+        // Set up camera transition
+        if (requestedCube.IsPlayer && MainCamera.Instance != null)
+        {
+            FadeTransition fadeTransition = new();
+            MainCamera.Instance.SetTransition(fadeTransition);
+        }
+
         if (isHorizFlipped != mainContainerCube.IsHorizFlipped)
         {
             cRPos.x = -cRPos.x;
@@ -138,17 +145,10 @@ public class CloneCube : ContainerCube
         else requestedCube.PreviousParents.Add(new(PreviousParentDetails.Directions.In, this, Vector2.zero, Vector2.one, false));
 
         float finalTargetTime = mainContainerCube.RequestToMove(cRPos, cRScl, requestedCube, direction, external, specialMove);
+
         if (finalTargetTime <= 0)
         {
             return 0;
-        }
-
-        // Override the current transition of the main camera with fade transition
-        if (requestedCube.IsPlayer && MainCamera.Instance != null)
-        {
-            MainCamera.Instance.StopTransition();
-            FadeTransition fadeTransition = new(requestedCube.PreviousParents, finalTargetTime);
-            MainCamera.Instance.PlayTransition(fadeTransition);
         }
 
         this.requestedCube = requestedCube;

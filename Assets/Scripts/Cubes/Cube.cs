@@ -45,6 +45,7 @@ public class Cube : MonoBehaviour
     protected CustomTexture surfaceEffectsAnimation;
     protected MaterialPropertyBlock materialPropertyBlock;
     protected bool hasInit = false;
+    protected Coroutine possessingCoroutine = null;
 
     // General Info
     public bool IsPlayer { get => isPlayer; set => isPlayer = value; }
@@ -61,7 +62,8 @@ public class Cube : MonoBehaviour
         }
     }
     public bool NeedInstantiating { get => needInstantiating; }
-    
+    public float PossessingTime { get => possessingTime; }
+
     // Rendering
     public bool IsHorizFlipped { get => isHorizFlipped; set => isHorizFlipped = value; }
     public Material NormalMat { get => normalMat; }
@@ -72,6 +74,7 @@ public class Cube : MonoBehaviour
     public List<PreviousParentDetails> PreviousParents { get => previousParents; set => previousParents = value; }
     public Vector2 RelativeScale { get => relativeScale; set => relativeScale = value; }
     public Vector2 RelativePosition { get => relativePosition; set => relativePosition = value; }
+    public bool IsPossessing { get => possessingCoroutine != null; }
 
     // Other Settings
     public UnityEvent OnInit { get => onInit; }
@@ -175,14 +178,19 @@ public class Cube : MonoBehaviour
             historyManager.RecordNewEvent(this, (previousParents.Count > 0) ? previousParents[0].Cube : null, relativePosition, relativeScale, isHorizFlipped, false);
             historyManager.RecordNewEvent(targetCube, (targetCube.PreviousParents.Count > 0) ? targetCube.PreviousParents[0].Cube : null, targetCube.RelativePosition, targetCube.RelativeScale, targetCube.IsHorizFlipped, true);
         }
-        if (MainCamera.Instance != null)
-        {
-            ZoomingTransition zoomingTransition = new(previousParents, possessingTime);
-            MainCamera.Instance.PlayTransition(zoomingTransition);
-        }
         if (historyManager != null) historyManager.NormalArchiveHistoryRecord();
-        StartCoroutine(PossessingCoroutine(targetCube));
+        Debug.Log("Start possessing!");
+        possessingCoroutine = StartCoroutine(PossessingCoroutine(targetCube));
         return true;
+    }
+
+    public void StopPossessing()
+    {
+        if (possessingCoroutine != null)
+        {
+            StopCoroutine(possessingCoroutine);
+            possessingCoroutine = null;
+        }
     }
 
     private IEnumerator PossessingCoroutine(Cube targetCube)
@@ -193,6 +201,7 @@ public class Cube : MonoBehaviour
         yield return new WaitForSeconds(possessingTime);
         // Stop the animation or effect here
         targetCube.IsPlayer = true;
+        possessingCoroutine = null;
         if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.GameplayInputs.ContinueUsingMovementInputs();
     }
 
@@ -207,6 +216,7 @@ public class Cube : MonoBehaviour
             }
         }
     }
+    
     [Serializable]
     public struct PreviousParentDetails
     {

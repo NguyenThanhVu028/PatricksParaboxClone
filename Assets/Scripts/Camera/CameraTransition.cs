@@ -2,25 +2,37 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface ICameraTransition
+public abstract class CameraTransition
 {
-    public IEnumerator ExecuteCoroutine(MainCamera mainCamera);
+    protected int priority; // The higher the priority, the earlier the transition
+    protected float targetTime;
+    protected List<Cube.PreviousParentDetails> cubesToTraverse = null;
+    public abstract IEnumerator ExecuteCoroutine(MainCamera mainCamera);
+    public bool IsHigherPriorityThan(CameraTransition other)
+    {
+        if (other == null) return true;
+        return priority > other.priority;
+    }
+    public void SetTargetTime(float time)
+    {
+        targetTime = time;
+    }
+    public void SetCubesToTraverse(List<Cube.PreviousParentDetails> cubes)
+    {
+        cubesToTraverse = cubes;
+    }
 }
 
-public class ZoomingTransition : ICameraTransition
+public class ZoomingTransition : CameraTransition
 {
-
-    private List<Cube.PreviousParentDetails> cubesToTraverse; 
     private Rect targetCubeRect;
-    private float targetTime;
 
-    public ZoomingTransition(List<Cube.PreviousParentDetails> cubesToTraverse, float targetTime)
+    public ZoomingTransition()
     {
-        this.cubesToTraverse = cubesToTraverse;
-        this.targetTime = targetTime;
+        priority = 0;
     }
 
-    public IEnumerator ExecuteCoroutine(MainCamera mainCamera)
+    public override IEnumerator ExecuteCoroutine(MainCamera mainCamera)
     {
         if (mainCamera == null || mainCamera.RenderMode != MainCamera.MainCameraRenderMode.SingleCube) return null;
 
@@ -177,23 +189,19 @@ public class ZoomingTransition : ICameraTransition
     }
 }
 
-public class FadeTransition : ICameraTransition
+public class FadeTransition : CameraTransition
 {
-    private List<Cube.PreviousParentDetails> cubesToTraverse;
-    private float targetTime;
-
-    public FadeTransition(List<Cube.PreviousParentDetails> cubesToTraverse, float targetTime)
+    public FadeTransition()
     {
-        this.cubesToTraverse = cubesToTraverse;
-        this.targetTime = targetTime;
+        priority = 1;
     }
 
-    public IEnumerator ExecuteCoroutine(MainCamera mainCamera)
+    public override IEnumerator ExecuteCoroutine(MainCamera mainCamera)
     {
         if (targetTime <= 0) yield break;
 
         if (mainCamera == null || mainCamera.RenderMode != MainCamera.MainCameraRenderMode.SingleCube) yield break;
-        if (cubesToTraverse == null || cubesToTraverse.Count <= 1 || cubesToTraverse[cubesToTraverse.Count - 1].Cube == cubesToTraverse[0].Cube) yield break;
+        if (cubesToTraverse == null || cubesToTraverse.Count <= 1 || cubesToTraverse[cubesToTraverse.Count - 1].Cube == null || cubesToTraverse[cubesToTraverse.Count - 1].Cube == cubesToTraverse[0].Cube) yield break;
 
         // Traverse the previous parents list to check for isHorizFlipped status
         bool isNegative = mainCamera.TargetCubeRect.size.x < 0;
@@ -229,6 +237,7 @@ public class FadeTransition : ICameraTransition
         float elapsedTime = -1;
         float defaultExposure = mainCamera.Exposure;
         bool updatedCamera = false;
+        ContainerCube targetCube = cubesToTraverse[cubesToTraverse.Count - 1].Cube;
         while (elapsedTime < targetTime)
         {
             if (elapsedTime < 0) elapsedTime = 0;
@@ -250,9 +259,9 @@ public class FadeTransition : ICameraTransition
                 if (!updatedCamera)
                 {
                     updatedCamera = true;
-                    if (!isNegative == cubesToTraverse[cubesToTraverse.Count - 1].IsHorizFlipped) mainCamera.IsHorizFlipped = true;
+                    if (!isNegative == targetCube.IsHorizFlipped) mainCamera.IsHorizFlipped = true;
                     else mainCamera.IsHorizFlipped = false;
-                    mainCamera.SetNewTargetCube(cubesToTraverse[cubesToTraverse.Count - 1].Cube);
+                    mainCamera.SetNewTargetCube(targetCube);
                     mainCamera.FocusOnTargetCube();
                 }
                 // Fade in
