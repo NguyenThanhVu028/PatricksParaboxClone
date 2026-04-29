@@ -8,7 +8,7 @@ public class ContainerCube : Cube
     public const float floorDepthOffset = 0f;
     public const float wallDepthOffset = 0f;
     public const float childCubesDepthOffset = 0f;
-    public const float movingChildCubesDepthOffset = -0.1f;
+    public const float movingChildCubesDepthOffset = -0.14f;
 
     [SerializeField] protected bool isEnterable = true;
     [SerializeField] protected bool isLeavable = true;
@@ -102,6 +102,39 @@ public class ContainerCube : Cube
     {
         childCubesInitDetails = new ChildCubeInitDetail[childGrid.Tiling.x * childGrid.Tiling.y];
     }
+    private void InitChildCubes()
+    {
+        CubesManager cubesManager = CubesManager.Instance;
+        if (cubesManager == null ) { Debug.LogWarning("No cubes manager is found in this scene to spawn cubes!"); return; }
+
+        // Init cubes
+        //childCubes = new Cube[tiling.x, tiling.y];
+        for(int row = 0; row < childGrid.Tiling.x; row++)
+        {
+            for(int column = 0; column < childGrid.Tiling.y; column++)
+            {
+                var cubeToSpawnDetails = GetChildCubeInitDetails(row, column);
+                if (cubeToSpawnDetails == null) continue;
+
+                var spawnedCube = cubesManager.GetCube(cubeToSpawnDetails.CubeID);
+                if (spawnedCube == null) continue;
+
+                spawnedCube.RelativeScale = new Vector2(1.0f / childGrid.Tiling.y, 1.0f / childGrid.Tiling.x);
+                spawnedCube.RelativePosition = Relativity.RPosFromGridTile(childGrid.Tiling.y, childGrid.Tiling.x, row, column);
+                spawnedCube.Parent = this;
+                spawnedCube.IsPlayer = cubeToSpawnDetails.IsPlayer;
+                spawnedCube.CanBePlayer = cubeToSpawnDetails.CanBePlayer;
+                if (spawnedCube.CubeType == CubeTypes.Empty) emptyCubes.Add(spawnedCube);
+                else
+                {
+                    childGrid.Children[row, column].Cube = spawnedCube;
+                    childGrid.Children[row, column].MovingDirection = CubeMovement.MovementDirections.None;
+                }
+                //ModifyChildCube(spawnedCube);
+                spawnedCube.Init();
+            }
+        }
+    }    
     public void CalculateStaticTextures()
     {
         if (staticTexturesRT == null)
@@ -187,39 +220,8 @@ public class ContainerCube : Cube
 
         return wallsGrid;
     }
-    private void InitChildCubes()
-    {
-        CubesManager cubesManager = CubesManager.Instance;
-        if (cubesManager == null ) { Debug.LogWarning("No cubes manager is found in this scene to spawn cubes!"); return; }
 
-        // Init cubes
-        //childCubes = new Cube[tiling.x, tiling.y];
-        for(int row = 0; row < childGrid.Tiling.x; row++)
-        {
-            for(int column = 0; column < childGrid.Tiling.y; column++)
-            {
-                var cubeToSpawnDetails = GetChildCubeInitDetails(row, column);
-                if (cubeToSpawnDetails == null) continue;
-
-                var spawnedCube = cubesManager.GetCube(cubeToSpawnDetails.CubeID);
-                if (spawnedCube == null) continue;
-
-                spawnedCube.RelativeScale = new Vector2(1.0f / childGrid.Tiling.y, 1.0f / childGrid.Tiling.x);
-                spawnedCube.RelativePosition = Relativity.RPosFromGridTile(childGrid.Tiling.y, childGrid.Tiling.x, row, column);
-                spawnedCube.Parent = this;
-                spawnedCube.IsPlayer = cubeToSpawnDetails.IsPlayer;
-                spawnedCube.CanBePlayer = cubeToSpawnDetails.CanBePlayer;
-                if (spawnedCube.CubeType == CubeTypes.Empty) emptyCubes.Add(spawnedCube);
-                else
-                {
-                    childGrid.Children[row, column].Cube = spawnedCube;
-                    childGrid.Children[row, column].MovingDirection = CubeMovement.MovementDirections.None;
-                }
-                //ModifyChildCube(spawnedCube);
-                spawnedCube.Init();
-            }
-        }
-    }
+    // Modification functions
     public virtual void ModifyChildCubeEnter(Cube childCube)
     {
         if (childCube == null) return;
@@ -316,7 +318,8 @@ public class ContainerCube : Cube
         {
             if (materialPropertyBlock == null) materialPropertyBlock = new();
             else materialPropertyBlock.Clear();
-            materialPropertyBlock.SetColor(CustomTextureRenderer2D.colorID, unleavableColor);
+            materialPropertyBlock.SetColor(CustomTextureRenderer2D.colorID, Color.clear);
+            materialPropertyBlock.SetColor(CustomTextureRenderer2D.borderHightlightColorID, unleavableColor);
             materialPropertyBlock.SetTexture(CustomTextureRenderer2D.mainTexID, Texture2D.whiteTexture);
             materialPropertyBlock.SetFloat(CustomTextureRenderer2D.isHighlightedID, 1);
 
@@ -331,6 +334,34 @@ public class ContainerCube : Cube
         if (requestedCube.CubeType == CubeTypes.Static || requestedCube.CubeType == CubeTypes.Empty) return 0;
         var requestedCubeMovement = requestedCube.GetComponent<CubeMovement>();
         if (requestedCubeMovement == null) return 0;
+
+        // Check for infinite loop possibility
+        if (requestedCube.PreviousParents.Count > 1)
+        {
+            int entriesLoopCount = 0;
+            int exitsLoopCount = 0;
+            for (int i = 0; i < requestedCube.PreviousParents.Count; i++)
+            {
+                if (requestedCube.PreviousParents[i].Cube == this)
+                {
+                    if (requestedCube.PreviousParents[i].Direction == CubeMovement.LayerDirections.In) entriesLoopCount++;
+                    else if (requestedCube.PreviousParents[i].Direction == CubeMovement.LayerDirections.Out) exitsLoopCount++;
+                }
+                // If the cube keep trying to exit for more than 3 times -> Teleport to infinity cube
+                if (exitsLoopCount >= 3)
+                {
+                    if (useDebug) Debug.Log($"{requestedCube.name} cant move out of {gameObject.name} because of infinite exits!");
+                    return 0;
+                }
+                // If the cube keep trying to enter for more than 3 times -> Teleport to epsilon cube
+                else if (entriesLoopCount >= 3)
+                {
+                    if (useDebug) Debug.Log($"{requestedCube.name} cant enter {gameObject.name} because of infinite entries!");
+                    return 0;
+                }
+            }
+            Debug.Log($"Exit count: {exitsLoopCount}, entry count: {entriesLoopCount}");
+        }
 
         // Set up camera transition
         if (MainCamera.Instance != null && requestedCube.IsPlayer)
@@ -416,16 +447,18 @@ public class ContainerCube : Cube
         if (childGrid.Children[requestedPosition.x, requestedPosition.y].Cube != null)
         {
             float tempTargetTime = TryPushBlockageCubeAway(childGrid.Children[requestedPosition.x, requestedPosition.y].Cube, requestedPosition.x, requestedPosition.y, direction, specialMove);
-            if (tempTargetTime < 0)
-            {
-                HandleFailToMove(requestedCube, requestedCubePosition, external);
-                return 0;
-            }
+            //if (tempTargetTime < 0)
+            //{
+            //    HandleFailToMove(requestedCube, requestedCubePosition, external);
+            //    return 0;
+            //}
             if (tempTargetTime > 0) targetTime = tempTargetTime;
         }
 
         // If there is another cube that is trying to move into this position first
-        if (childGrid.Children[requestedPosition.x, requestedPosition.y].Cube != null && childGrid.Children[requestedPosition.x, requestedPosition.y].Cube.GetComponent<CubeMovement>() != null && childGrid.Children[requestedPosition.x, requestedPosition.y].Cube.GetComponent<CubeMovement>().IsMoving)
+        if (childGrid.Children[requestedPosition.x, requestedPosition.y].Cube != null && 
+            childGrid.Children[requestedPosition.x, requestedPosition.y].Cube.GetComponent<CubeMovement>() != null && 
+            childGrid.Children[requestedPosition.x, requestedPosition.y].Cube.GetComponent<CubeMovement>().IsMoving)
         {
             if (useDebug) Debug.Log($"{requestedCube.name} fail to move because another cube is entering {requestedPosition.x}, {requestedPosition.y} of {gameObject.name}!");
             HandleFailToMove(requestedCube, requestedCubePosition, external);
@@ -510,25 +543,9 @@ public class ContainerCube : Cube
         if (!isLeavable) return 0;
         if (Parent == null)
         {
-            // Teleport to the void
+            // Teleport to the infitive cube
             if (useDebug) Debug.Log($"{requestedCube.name} cant move out of {gameObject.name} because there is no parent cube!");
             return 0;
-        }
-        if (requestedCube.PreviousParents.Count > 1 && requestedCube.PreviousParents[0].Cube == this)
-        {
-            // Inifite loop -> teleport to the void
-            // This is just a placeholder code for testing
-            int loopCount = 0;
-            for(int i = 0; i < requestedCube.PreviousParents.Count; i++)
-            {
-                if (requestedCube.PreviousParents[i].Cube == this) loopCount++;
-                if (loopCount > 3)
-                {
-                    if (useDebug) Debug.Log($"{requestedCube.name} cant move out of {gameObject.name} because of infinite loop!");
-                    return 0;
-                }
-            }
-
         }
 
         /* Moving out logic:
@@ -568,7 +585,7 @@ public class ContainerCube : Cube
             if (blockageCubeMovement.IsMoving)
             {
                 if (useDebug) Debug.Log($"Try to push {blockageCubeMovement.gameObject.name} but it's moving!");
-                return -1; //  Immediately stop, not continue to try other options
+                return 0; //  Immediately stop, not continue to try other options
             }
             return RequestToMove(blockageCube.RelativePosition, blockageCube.RelativeScale, blockageCube, direction, false, specialMove);
 

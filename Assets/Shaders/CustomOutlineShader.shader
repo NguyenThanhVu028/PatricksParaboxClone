@@ -6,6 +6,7 @@ Shader "Custom/CustomOutlineShader"
         _Color ("Tint", Color) = (1,1,1,1)
         _Exposure ("Exposure", float) = 0
         [Toggle] _IsHighlighted ("Is Highlighted", float) = 0
+        _BorderHighlightColor ("Highlight Color", Color) = (1, 1, 1, 1)
         _BorderThickness ("Border Thickness", float) = 5
         _BorderMaxPercentThickness ("Border Max Percent Thickness", float) = 0.02
         _BorderDarkness ("Border Darkness", float) = 0.8
@@ -46,6 +47,7 @@ Shader "Custom/CustomOutlineShader"
             UNITY_INSTANCING_BUFFER_START(Props)
                 UNITY_DEFINE_INSTANCED_PROP(fixed4, _Color)
                 UNITY_DEFINE_INSTANCED_PROP(float, _IsHighlighted)
+                UNITY_DEFINE_INSTANCED_PROP(fixed4, _BorderHighlightColor)
                 UNITY_DEFINE_INSTANCED_PROP(float, _Exposure)
             UNITY_INSTANCING_BUFFER_END(Props)
 
@@ -63,7 +65,6 @@ Shader "Custom/CustomOutlineShader"
             //float _IsHighlighted;
             float _BorderThickness;
             float _BorderMaxPercentThickness;
-            fixed4 _BorderColor;
             float _BorderDarkness;
             float _BorderShininessOffset;
 
@@ -92,10 +93,12 @@ Shader "Custom/CustomOutlineShader"
 
                 float mask = saturate(border); // Clamp the border value between 0 and 1
 
-                fixed4 borderColor = fixed4(_Color.rgb, 1.0); // Calculate border's color
+                fixed4 borderColor = fixed4(1, 1, 1, 1); // Calculate border's color
+
                 // If highlighted -> dont calculate darkness and opacity
                 if (UNITY_ACCESS_INSTANCED_PROP(Props, _IsHighlighted) < 1) 
                 {
+                    borderColor = fixed4(_Color.rgb, 1.0);
                     if (col.a == 0) 
                     {
                         //borderColor.a = 0.5; // Calculate border's opacity
@@ -108,7 +111,12 @@ Shader "Custom/CustomOutlineShader"
                     }
                     else
                         borderColor.rgb = lerp(borderColor.rgb, float3(0, 0, 0), borderDarkness); // Calculate border's darkness
-
+                
+                    
+                }
+                else
+                {
+                    borderColor.rbg = UNITY_ACCESS_INSTANCED_PROP(Props, _BorderHighlightColor).rbg;
                 }
 
                 fixed4 finalColor = lerp(col, borderColor, mask);

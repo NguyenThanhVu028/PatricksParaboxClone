@@ -92,15 +92,27 @@ public class Cube : MonoBehaviour
 
     public virtual void Init()
     {
+        InitCamera();
+        InitPreviousParents();
+        InitAnimations();
+
+        onInit.Invoke();
+    }
+    protected virtual void InitCamera()
+    {
         if (isPlayer && MainCamera.Instance != null)
         {
             MainCamera.Instance.SetNewTargetCube(parent);
             MainCamera.Instance.FocusOnTargetCube();
         }
-
+    }
+    protected virtual void InitPreviousParents()
+    {
         previousParents.Clear();
         previousParents.Add(new(CubeMovement.LayerDirections.Out, parent));
-
+    }
+    protected virtual void InitAnimations()
+    {
         AnimationsManager animationsManager = AnimationsManager.Instance;
         if (animationsManager != null && SaveAndLoadManager.GeneralGameData != null)
         {
@@ -108,14 +120,12 @@ public class Cube : MonoBehaviour
             faceTexture = animationsManager.GetPlayerFaceTextureAnimation(gameData.LastUsedFaceAniID);
         }
 
-        foreach(var surfaceEffectID in surfaceEffectsAnimationIDs)
+        foreach (var surfaceEffectID in surfaceEffectsAnimationIDs)
         {
             AddSurfaceEffect(surfaceEffectID);
         }
 
         IsHorizFlipped = isHorizFlipped; // To add mirror effect if needed
-
-        onInit.Invoke();
     }
 
     public virtual void Draw(Rect position, float depth = 0, float exposure = 0, Rect? scissorRect = null)
