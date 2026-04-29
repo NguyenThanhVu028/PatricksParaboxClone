@@ -28,7 +28,7 @@ public class TriggerButton : Cube
         {
             var targetCube = parent.ChildCubes[positionInParent.x, positionInParent.y];
 
-            if (targetCube != null)
+            if (targetCube.Cube != null)
             {
                 if (!isActivated)
                 {
@@ -59,7 +59,7 @@ public class TriggerButton : Cube
         onButtonDeactivated.Invoke();
     }
 
-    protected override void DrawCube(Rect position, float depth, float exposure, Rect? scissorRect)
+    public override void DrawCube(Rect position, float depth, float exposure, Rect? scissorRect)
     {
         if (defaultTexture != null && defaultTexture.GetTexture() != null)
         {

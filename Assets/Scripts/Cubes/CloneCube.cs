@@ -7,18 +7,17 @@ public class CloneCube : ContainerCube
     [SerializeField] ContainerCube mainContainerCube;
 
     private Cube requestedCube;
-    private Vector2Int requestedCubeTargetPos = new();
-
-    //public override void Draw(Rect position, float depth = 0)
-    //{
-    //    if (mainContainerCube != null) mainContainerCube.Draw(position, depth);
-    //}
 
     public override void Init()
     {
+        if (hasInit) return;
+        //if (mainContainerCube != null) mainContainerCube.OnFinishedDrawing.AddListener(OnMainCubeDraw);
+        if (mainContainerCube != null)
+        {
+            mainContainerCube.OnBeginDrawingChildCube += OnMainCubeDrawChildCube;
+        }
         base.Init();
-        if (mainContainerCube != null) mainContainerCube.OnFinishedDrawing.AddListener(OnMainCubeDraw);
-        if (AnimationsManager.Instance != null) surfaceEffectsAnimation = AnimationsManager.Instance.GetNormalTextureAnimation("Noise");
+        hasInit = true;
     }
 
     private void Update()
@@ -29,14 +28,6 @@ public class CloneCube : ContainerCube
             if (requestedCubeMovement == null) requestedCube = null;
             if (!requestedCubeMovement.IsMoving || !requestedCubeMovement.IsExternal || requestedCube.Parent != mainContainerCube)
             {
-                //if (mainContainerCube != null)
-                //{
-                //    if (mainContainerCube.ChildGrid.Children[requestedCubeTargetPos.x, requestedCubeTargetPos.y] == null)
-                //    {
-                //        mainContainerCube.ChildGrid.Children[requestedCubeTargetPos.x, requestedCubeTargetPos.y] = requestedCube;
-                //    }
-                //}
-                mainContainerCube.CullingCubes.Remove(requestedCube);
                 requestedCube = null;
             }
         }
@@ -69,17 +60,17 @@ public class CloneCube : ContainerCube
         // Draw static cubes
         foreach (var childCube in mainContainerCube.ChildCubes)
         {
-            if (childCube == null || childCube == requestedCube) continue;
-            if (childCube is WallCube) // Ignore walls that aren't or can't potentially be a player
+            if (childCube.Cube == null || childCube.Cube == requestedCube) continue;
+            if (childCube.Cube is WallCube) // Ignore walls that aren't or can't potentially be a player
             {
-                if (!(childCube.CanBePlayer || childCube.IsPlayer)) continue;
+                if (!(childCube.Cube.CanBePlayer || childCube.Cube.IsPlayer)) continue;
             }
-            if (childCube.GetComponent<CubeMovement>() != null && childCube.GetComponent<CubeMovement>().IsMoving)
+            if (childCube.Cube.GetComponent<CubeMovement>() != null && childCube.Cube.GetComponent<CubeMovement>().IsMoving)
             {
-                movingCubes.Add(childCube);
+                movingCubes.Add(childCube.Cube);
                 continue;
             }
-            childCube.Draw(Relativity.CRectFromPRect(position, childCube.RelativeScale, childCube.RelativePosition), depth, exposure, scissorRect);
+            childCube.Cube.Draw(Relativity.CRectFromPRect(position, childCube.Cube.RelativeScale, childCube.Cube.RelativePosition), depth, exposure, scissorRect);
         }
 
         // Drawing moving cubes on top of other cubes to avoid being covered
@@ -108,40 +99,57 @@ public class CloneCube : ContainerCube
         }
     }
 
-    // Draw the requested cube on behalf of the main container cube, also clamp the cube
-    private void OnMainCubeDraw(Rect position, float depth, float exposure, Rect? scissorRect)
+    public override void ModifyChildCubeEnter(Cube childCube)
     {
-        if (requestedCube != null)
-        {
-            Vector2 idealRScl = new(1.0f / mainContainerCube.Tiling.y, 1.0f / mainContainerCube.Tiling.x);
-            Vector2 normalizedRPos = (requestedCube.RelativePosition).normalized;
-            Vector2 idealRPos = new(requestedCube.RelativePosition.x - normalizedRPos.x * requestedCube.RelativeScale.x + normalizedRPos.x * idealRScl.x,
-                                    requestedCube.RelativePosition.y - normalizedRPos.y * requestedCube.RelativeScale.y + normalizedRPos.y * idealRScl.y);
-            requestedCube.Draw(Relativity.CRectFromPRect(position, idealRScl, idealRPos), depth - 0.1f, exposure, CustomTextureRenderer2D.GetOverlapRect(scissorRect, position));
-        }
+        if (childCube == null) return;
+        if (isHorizFlipped != mainContainerCube.IsHorizFlipped) childCube.IsHorizFlipped = !childCube.IsHorizFlipped;
     }
 
-    public override float RequestToMove(Vector2 cRPos, Vector2 cRScl, Cube requestedCube, PlayerInputsManager.MovementInputs direction, bool external = false, bool specialMove = false)
+    public override void ModifyChildCubeExit(Cube childCube)
     {
-        if (mainContainerCube == null || mainContainerCube.Parent == null) return 0;
+        if (childCube == null) return;
+        if (isHorizFlipped != mainContainerCube.IsHorizFlipped) childCube.IsHorizFlipped = !childCube.IsHorizFlipped;
+    }
+    
+    // Draw the requested cube on behalf of the main container cube, also clamp the cube
+    private void OnMainCubeDrawChildCube(Cube childCube, Rect position, ref Rect childRect, ref float depth, ref float exposure, ref Rect? scissorRect)
+    {
+        if (childCube != requestedCube) return;
 
-        float finalTargetTime = mainContainerCube.RequestToMove(cRPos, cRScl, requestedCube, direction, external, specialMove);
-        if (finalTargetTime <= 0) return 0;
+        Vector2 idealRScl = new(1.0f / mainContainerCube.Tiling.y, 1.0f / mainContainerCube.Tiling.x);
+        Vector2 normalizedRPos = (requestedCube.RelativePosition).normalized;
+        Vector2 idealRPos = new(requestedCube.RelativePosition.x - normalizedRPos.x * requestedCube.RelativeScale.x + normalizedRPos.x * idealRScl.x,
+                                requestedCube.RelativePosition.y - normalizedRPos.y * requestedCube.RelativeScale.y + normalizedRPos.y * idealRScl.y);
+        childRect = Relativity.CRectFromPRect(position, idealRScl, idealRPos);
+        scissorRect = CustomTextureRenderer2D.GetOverlapRect(scissorRect, position);
+    }
 
-        // Override the current transition of the main camera with fade transition
+    public override float RequestToMove(Vector2 cRPos, Vector2 cRScl, Cube requestedCube, CubeMovement.MovementDirections direction, bool external = false, bool specialMove = false)
+    {
+        if (mainContainerCube == null) return 0;
+
+        // Set up camera transition
         if (requestedCube.IsPlayer && MainCamera.Instance != null)
         {
-            if (MainCamera.Instance.IsPlayingTrasition)
-                MainCamera.Instance.StopTransition();
-            FadeTransition fadeTransition = new(mainContainerCube, finalTargetTime);
-            MainCamera.Instance.PlayTransition(fadeTransition);
+            FadeTransition fadeTransition = new();
+            MainCamera.Instance.SetTransition(fadeTransition);
         }
 
-        // Take the requested cube from the main container cube -> Return later
-        //requestedCubeTargetPos = mainContainerCube.ChildGrid.FindChild(requestedCube);
-        //mainContainerCube.ChildGrid.RemoveChild(requestedCube);
-        if (!mainContainerCube.CullingCubes.Contains(requestedCube))
-            mainContainerCube.CullingCubes.Add(requestedCube);
+        if (isHorizFlipped != mainContainerCube.IsHorizFlipped)
+        {
+            cRPos.x = -cRPos.x;
+            direction = CubeMovement.FlipMovementInput(direction, true);
+            requestedCube.PreviousParents.Add(new(CubeMovement.LayerDirections.In, this, Vector2.zero, Vector2.one, true));
+        }
+        else requestedCube.PreviousParents.Add(new(CubeMovement.LayerDirections.In, this, Vector2.zero, Vector2.one, false));
+
+        float finalTargetTime = mainContainerCube.RequestToMove(cRPos, cRScl, requestedCube, direction, external, specialMove);
+
+        if (finalTargetTime <= 0)
+        {
+            return 0;
+        }
+
         this.requestedCube = requestedCube;
 
         return finalTargetTime;

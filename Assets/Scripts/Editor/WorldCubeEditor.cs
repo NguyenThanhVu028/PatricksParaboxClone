@@ -22,6 +22,7 @@ public class WorldCubeEditor : Editor
     SerializedProperty requiredMapCountText;
 
     // Rendering
+    SerializedProperty isHorizFlipped;
     SerializedProperty minPixelToRender;
     SerializedProperty normalMat;
     SerializedProperty outlineMat;
@@ -37,7 +38,7 @@ public class WorldCubeEditor : Editor
 
     // Cube status
     SerializedProperty parent;
-    SerializedProperty previousParent; // Record self cube's previous parent to record history
+    SerializedProperty previousParents; // Record self cube's previous parent to record history
     SerializedProperty relativeScale;
     SerializedProperty relativePosition;
 
@@ -69,6 +70,7 @@ public class WorldCubeEditor : Editor
         requiredMapCountText = serializedObject.FindProperty("requiredMapCountText");
 
         // Rendering
+        isHorizFlipped = serializedObject.FindProperty("isHorizFlipped");
         minPixelToRender = serializedObject.FindProperty("minPixelToRender");
         normalMat = serializedObject.FindProperty("normalMat");
         outlineMat = serializedObject.FindProperty("outlineMat");
@@ -84,7 +86,7 @@ public class WorldCubeEditor : Editor
 
         // Cube status
         parent = serializedObject.FindProperty("parent");
-        previousParent = serializedObject.FindProperty("previousParent"); ;
+        previousParents = serializedObject.FindProperty("previousParents"); ;
         relativeScale = serializedObject.FindProperty("relativeScale");
         relativePosition = serializedObject.FindProperty("relativePosition");
 
@@ -116,6 +118,7 @@ public class WorldCubeEditor : Editor
 
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Rendering", EditorStyles.boldLabel);
+        EditorGUILayout.PropertyField(isHorizFlipped);
         EditorGUILayout.PropertyField(minPixelToRender);
         EditorGUILayout.PropertyField(normalMat);
         EditorGUILayout.PropertyField(outlineMat);
@@ -132,7 +135,7 @@ public class WorldCubeEditor : Editor
         EditorGUILayout.Space();
 
         EditorGUILayout.PropertyField(parent);
-        EditorGUILayout.PropertyField(previousParent);
+        EditorGUILayout.PropertyField(previousParents);
         EditorGUILayout.PropertyField(relativeScale);
         EditorGUILayout.PropertyField(relativePosition);
 

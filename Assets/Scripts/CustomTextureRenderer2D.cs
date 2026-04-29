@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -10,6 +8,7 @@ public class CustomTextureRenderer2D
     public static readonly int mainTexID = Shader.PropertyToID("_MainTex");
     public static readonly int colorID = Shader.PropertyToID("_Color");
     public static readonly int isHighlightedID = Shader.PropertyToID("_IsHighlighted");
+    public static readonly int borderHightlightColorID = Shader.PropertyToID("_BorderHighlightColor");
     public static readonly int exposureID = Shader.PropertyToID("_Exposure");
 
     public static void RenderMesh(Mesh mesh,
@@ -141,11 +140,15 @@ public class CustomTextureRenderer2D
             if (rect1 != null) return rect1.Value;
             return new(0, 0, 0, 0);
         }
-        Vector2 bottomLeft1 = new Vector2(rect1.Value.x - rect1.Value.width * 0.5f, rect1.Value.y - rect1.Value.height * 0.5f);
-        Vector2 topRight1 = new Vector2(rect1.Value.x + rect1.Value.width * 0.5f, rect1.Value.y + rect1.Value.height * 0.5f);
 
-        Vector2 bottomLeft2 = new Vector2(rect2.Value.x - rect2.Value.width * 0.5f, rect2.Value.y - rect2.Value.height * 0.5f);
-        Vector2 topRight2 = new Vector2(rect2.Value.x + rect2.Value.width * 0.5f, rect2.Value.y + rect2.Value.height * 0.5f);
+        Rect realRect1 = new(rect1.Value.position, new(Mathf.Abs(rect1.Value.size.x), Mathf.Abs(rect1.Value.size.y)));
+        Rect realRect2 = new(rect2.Value.position, new(Mathf.Abs(rect2.Value.size.x), Mathf.Abs(rect2.Value.size.y)));
+
+        Vector2 bottomLeft1 = new Vector2(realRect1.x - realRect1.width * 0.5f, realRect1.y - realRect1.height * 0.5f);
+        Vector2 topRight1 = new Vector2(realRect1.x + realRect1.width * 0.5f, realRect1.y + realRect1.height * 0.5f);
+
+        Vector2 bottomLeft2 = new Vector2(realRect2.x - realRect2.width * 0.5f, realRect2.y - realRect2.height * 0.5f);
+        Vector2 topRight2 = new Vector2(realRect2.x + realRect2.width * 0.5f, realRect2.y + realRect2.height * 0.5f);
 
         Vector2 bottomLeft = new();
         Vector2 topRight = new();
@@ -215,6 +218,9 @@ public class CustomTextureRenderer2D
     public static bool CheckVisibility(Vector2 position, Vector2 size)
     {
         if (Camera.main == null) return false;
+
+        size.x = Mathf.Abs(size.x);
+        size.y = Mathf.Abs(size.y);
 
         Vector2 topLeftPos = new Vector2(position.x - size.x * 0.5f, position.y + size.y * 0.5f);
         Vector2 bottomRightPos = new Vector2(topLeftPos.x + size.x, topLeftPos.y - size.y);

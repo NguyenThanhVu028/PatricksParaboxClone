@@ -18,7 +18,6 @@ public class CustomAnimatedTexture : CustomTexture
 
     public void StartAnimation() 
     {
-        Debug.Log("Start " + name);
         currentFrameIndex = 0;
 
         ContinueAnimation();
@@ -33,9 +32,6 @@ public class CustomAnimatedTexture : CustomTexture
     {
         isRunning = true;
         lastFrameTime = Time.timeSinceLevelLoad;
-
-        Debug.Log("Continue: " + lastFrameTime);
-
     }
 
     public override Texture GetTexture()

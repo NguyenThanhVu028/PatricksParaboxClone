@@ -53,14 +53,18 @@ MonoBehaviour:
   cubeColor: 0
   needInstantiating: 1
   defaultTexture: {fileID: 11400000, guid: 82b438aed21c8d541a9ac5bdc32b459f, type: 2}
-  minPixelToRender: 40
+  isHorizFlipped: 0
+  minPixelToRender: 2
   normalMat: {fileID: 2100000, guid: 78b9e2b83bf5d0643b88372fc8f8b336, type: 2}
   outlineMat: {fileID: 2100000, guid: 5f0c8b0400fd3074d84c1d22d0c58c68, type: 2}
   cubeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   possessableFaceTexture: {fileID: 11400000, guid: 478f5cbe753240a418d149fbab64e0cd, type: 2}
   enableOcclusionCulling: 1
+  mirrorEffectID: Mirror
+  surfaceEffectsAnimationIDs:
+  - FadeInFadeOut
   parent: {fileID: 0}
-  previousParent: {fileID: 0}
+  previousParents: []
   relativeScale: {x: 1, y: 1}
   relativePosition: {x: 0, y: 0}
   possessingTime: 0.5
@@ -87,7 +91,6 @@ MonoBehaviour:
     canBePlayer: 0
   staticTexturesRT: {fileID: 0}
   mainContainerCube: {fileID: 0}
-  requestedCube: {fileID: 0}
 --- !u!114 &6296814832987857410
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -100,11 +103,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c40dd76a8993a234ea82ff15f914c21e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalMoveTime: 0.1
-  specialMoveTime: 0.5
+  defaultMoveTime: 0.1
+  defaultEnterTime: 0.5
   coolDownTime: 0.075
   selfCube: {fileID: 0}
-  isExternal: 0
+  movementAudioID: Movement
+  zoomInAudioID: ZoomIn
+  zoomOutAudioID: ZoomOut
+  noZoomAudioID: NoZoom
 --- !u!1 &8505538043018857543
 GameObject:
   m_ObjectHideFlags: 0

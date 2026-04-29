@@ -12,13 +12,13 @@ public class PlayerButton : TriggerButton
         if (parent != null && parent.ChildGrid != null && parent.ChildGrid.CheckValidGridPosition(positionInParent.x, positionInParent.y))
         {
             var targetCube = parent.ChildCubes[positionInParent.x, positionInParent.y];
-            if (targetCube != null)
+            if (targetCube.Cube != null)
             {
-                if (targetCube.IsPlayer && !isActivated)
+                if (targetCube.Cube.IsPlayer && !isActivated)
                 {
                     OnActivated();
                 }
-                if (!targetCube.IsPlayer && isActivated)
+                if (!targetCube.Cube.IsPlayer && isActivated)
                 {
                     OnDeactivated();
                 }

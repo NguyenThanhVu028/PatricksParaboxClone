@@ -12,12 +12,12 @@ public class HistoryManager : MonoBehaviour
     [SerializeField] int maxHistoryRecordCount = 50;
 
     [SerializeField] List<HistoryRecord> historyRecords = new();
-    [SerializeField] HistoryRecord currentHistoryRecord = new();
+    private HistoryRecord newHistoryRecord = new();
 
     [SerializeField] int currentIndex = -1;
 
     public List<HistoryRecord> HistoryRecords { get => historyRecords; }
-    public HistoryRecord CurrentHistoryRecord { set => currentHistoryRecord = value; }
+    public HistoryRecord NewHistoryRecord { set => newHistoryRecord = value; }
 
     private void Awake()
     {
@@ -28,9 +28,13 @@ public class HistoryManager : MonoBehaviour
     }
 
     // Called by every cube that moves
-    public void RecordNewEvent(Cube targetCube, ContainerCube previousParent, Vector2 previousRPos, Vector2 previousRScl)
+    public void RecordNewEvent(Cube targetCube, ContainerCube previousParent, Vector2 previousRPos, Vector2 previousRScl, bool isHorizFlipped, bool isPlayer)
     {
-        currentHistoryRecord.AddHistoryEvent(new HistoryEvent(targetCube, previousParent, previousRPos, previousRScl));
+        newHistoryRecord.AddHistoryEvent(targetCube, previousParent, previousRPos, previousRScl, isHorizFlipped, isPlayer);
+    }
+    public void RecordCameraInfo(bool isHorizFlipped)
+    {
+        newHistoryRecord.AddCameraEvent(new(isHorizFlipped));
     }
 
     // Player cube will archive the record after other cubes have finished recording its event
@@ -40,7 +44,7 @@ public class HistoryManager : MonoBehaviour
     }
     public void NormalArchiveHistoryRecord()
     {
-        if (currentHistoryRecord.Events.Count == 0) return;
+        if (newHistoryRecord.Events.Count == 0) return;
         ArchiveHistoryRecord();
     }
 
@@ -50,8 +54,13 @@ public class HistoryManager : MonoBehaviour
         {
             if (historyRecords.Count != 0) historyRecords.Clear();
             currentIndex = -1;
-            currentHistoryRecord = new();
+            newHistoryRecord = new();
             return;
+        }
+
+        if (MainCamera.Instance != null)
+        {
+            if (newHistoryRecord.CameraEvent == null) newHistoryRecord.CameraEvent = new(MainCamera.Instance.IsHorizFlipped);
         }
 
         if (currentIndex < 0) currentIndex = 0;
@@ -63,12 +72,12 @@ public class HistoryManager : MonoBehaviour
             {
                 historyRecords.RemoveAt(0);
             }
-            historyRecords.Add(currentHistoryRecord);
+            historyRecords.Add(newHistoryRecord);
             currentIndex = historyRecords.Count - 1;
         }
         else
         {
-            historyRecords[currentIndex] = currentHistoryRecord;
+            historyRecords[currentIndex] = newHistoryRecord;
             // Remove records from previous save
             if (currentIndex < historyRecords.Count - 1)
             {
@@ -76,7 +85,7 @@ public class HistoryManager : MonoBehaviour
             }
         }
 
-        currentHistoryRecord = new();
+        newHistoryRecord = new();
     }
 
     public HistoryRecord GetRecordAt(int index)
@@ -100,7 +109,6 @@ public class HistoryManager : MonoBehaviour
             currentIndex = historyRecords.Count - 1;
             return null;
         }
-
         return historyRecords[currentIndex];
     }
 
@@ -133,13 +141,34 @@ public class HistoryManager : MonoBehaviour
 [Serializable]
 public class HistoryRecord
 {
+    // Cubes
     [SerializeField] List<HistoryEvent> events = new();
+    // Camera
+    [SerializeField] CameraEvent cameraEvent = null;
 
     public List<HistoryEvent> Events { get => events; }
+    public CameraEvent CameraEvent { get => cameraEvent; set => cameraEvent = value; }
 
-    public void AddHistoryEvent(HistoryEvent newDetails)
+    public void AddHistoryEvent(Cube targetCube, ContainerCube previousParent, Vector2 previousRPos, Vector2 previousRScl, bool isHorizFlipped, bool isPlayer)
     {
-        events.Add(newDetails);
+        foreach(var evnt in events)
+        {
+            if (evnt == null) continue;
+            if (evnt.TargetCube == targetCube)
+            {
+                evnt.PreviousParent = previousParent;
+                evnt.PreviousRPos = previousRPos;
+                evnt.PreviousRScl = previousRScl;
+                evnt.IsHorizFlipped = isHorizFlipped;
+                evnt.IsPlayer = isPlayer;
+                return;
+            }
+        }
+        events.Add(new(targetCube, previousParent, previousRPos, previousRScl, isHorizFlipped, isPlayer));
+    }
+    public void AddCameraEvent(CameraEvent cameraEvent)
+    {
+        this.cameraEvent = cameraEvent;
     }
 }
 
@@ -150,17 +179,33 @@ public class HistoryEvent
     [SerializeField] ContainerCube previousParent;
     [SerializeField] Vector2 previousRPos = new();
     [SerializeField] Vector2 previousRScl = new();
+    [SerializeField] bool isHorizFlipped = false;
+    [SerializeField] bool isPlayer = false;
 
     public Cube TargetCube { get => targetCube; }
     public ContainerCube PreviousParent { get => previousParent; set => previousParent = value; }
     public Vector2 PreviousRPos { get => previousRPos; set => previousRPos = value; }
     public Vector2 PreviousRScl { get => previousRScl; set => previousRScl = value; }
+    public bool IsHorizFlipped { get => isHorizFlipped; set => isHorizFlipped = value; }
+    public bool IsPlayer { get => isPlayer; set => isPlayer = value; }
 
-    public HistoryEvent(Cube targetCube, ContainerCube previousParent, Vector2 previousRPos, Vector2 previousRScl)
+    public HistoryEvent(Cube targetCube, ContainerCube previousParent, Vector2 previousRPos, Vector2 previousRScl, bool isHorizFlipped, bool isPlayer)
     {
         this.targetCube = targetCube;
         this.previousParent = previousParent;
         this.previousRPos = previousRPos;
         this.previousRScl = previousRScl;
+        this.isHorizFlipped = isHorizFlipped;
+        this.isPlayer = isPlayer;
+    }
+}
+[Serializable]
+public class CameraEvent
+{
+    [SerializeField] bool isCamHorizFlipped = false;
+    public bool IsCamHorizFlipped { get => isCamHorizFlipped; set => isCamHorizFlipped = value; }
+    public CameraEvent(bool isCamHorizFlipped)
+    {
+        this.isCamHorizFlipped = isCamHorizFlipped;
     }
 }

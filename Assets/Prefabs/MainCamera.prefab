@@ -152,8 +152,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isRendering: 1
   renderMode: 0
+  exposure: 0
+  isHorizFlipped: 0
   targetCube: {fileID: 0}
-  renderPosition:
+  renderRect:
     serializedVersion: 2
     x: 0
     y: 0

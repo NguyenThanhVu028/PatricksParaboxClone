@@ -5,6 +5,9 @@ using UnityEngine.Events;
 [RequireComponent(typeof(Cube))]
 public class CubeMovement : MonoBehaviour
 {
+    public enum MovementDirections{ Up, Down, Left, Right, None }
+    public enum LayerDirections { In, Out }
+
     [Header("Movement Settings")]
     [SerializeField] float defaultMoveTime = 0.1f; // Used when player simply moving from one point to another
     [SerializeField] float defaultEnterTime = 0.5f; // Used when player enters a cube, transforms, . . .
@@ -23,7 +26,7 @@ public class CubeMovement : MonoBehaviour
     protected UnityEvent onMoveEnd = new();
     protected bool isExternal = false;
 
-    private bool debugMovement = true;
+    private bool debugMovement = false;
     private SaveAndLoadManager.GameData gameData;
 
     public bool Movable { get { return selfCube != null && selfCube.CubeType != Cube.CubeTypes.Static && selfCube.CubeType != Cube.CubeTypes.Empty; } }
@@ -65,20 +68,39 @@ public class CubeMovement : MonoBehaviour
             PlayerInputsManager.Instance != null &&
             !IsMoving && !IsCoolingDown)
         {
-            PlayerInputsManager.MovementInputs movementInput = PlayerInputsManager.Instance.GameplayInputs.GetLatestMovementInput();
-            if (movementInput != PlayerInputsManager.MovementInputs.None)
+            CubeMovement.MovementDirections movementInput = PlayerInputsManager.Instance.GameplayInputs.GetLatestMovementInput();
+            if (MainCamera.Instance != null && MainCamera.Instance.RenderMode == MainCamera.MainCameraRenderMode.SingleCube)
             {
-                Debug.Log($"{name} tries to move {movementInput}");
-                if (selfCube.Parent.RequestToMove(selfCube.RelativePosition, selfCube.RelativeScale, selfCube, movementInput) == 0)
+                if (MainCamera.Instance.TargetCubeRect.size.x < 0) movementInput = CubeMovement.FlipMovementInput(movementInput, true);
+            }
+            if (movementInput != CubeMovement.MovementDirections.None)
+            {
+                var targetTime = selfCube.Parent.RequestToMove(selfCube.RelativePosition, selfCube.RelativeScale, selfCube, movementInput);
+                Debug.Log(selfCube.name + " " + selfCube.PreviousParents.Count);
+                // Update camera trasition
+                if (targetTime > 0)
                 {
-                    // If fail to move
-                    coolDownTimer = coolDownTime;
+                    if (MainCamera.Instance != null)
+                    {
+                        MainCamera.Instance.PlayTransition(selfCube.PreviousParents, targetTime);
+                    }
                 }
-                if (selfCube.IsPlayer)
+                else if (selfCube.IsPossessing)
                 {
-                    HistoryManager historyManager = HistoryManager.Instance;
-                    if (historyManager != null) historyManager.NormalArchiveHistoryRecord(); // Player will archive the record
+                    Debug.Log(selfCube.name + " is possessing: " + selfCube.PreviousParents[selfCube.PreviousParents.Count - 1].Cube);
+                    if (MainCamera.Instance != null)
+                    {
+                        MainCamera.Instance.PlayTransition(selfCube.PreviousParents, selfCube.PossessingTime);
+                    }
+                    selfCube.PreviousParents.Clear();
+                    selfCube.PreviousParents.Add(new Cube.PreviousParentDetails(CubeMovement.LayerDirections.Out, selfCube.Parent));
                 }
+                else if (MainCamera.Instance != null) MainCamera.Instance.ClearTransition();
+
+                HistoryManager historyManager = HistoryManager.Instance;
+                if (historyManager != null) historyManager.NormalArchiveHistoryRecord(); // Player will archive the record
+                
+                coolDownTimer = coolDownTime;
             }
         }
         
@@ -92,7 +114,7 @@ public class CubeMovement : MonoBehaviour
     {
         if (IsMoving || (selfCube.IsPlayer && IsCoolingDown)) return 0;
 
-        // Modify the current record and store new record
+        // Update self cube status and history
         HistoryManager historyManager = HistoryManager.Instance;
         if (historyManager != null)
         {
@@ -100,24 +122,27 @@ public class CubeMovement : MonoBehaviour
             var currentRecord = historyManager.GetCurrentRecord();
             if (currentRecord != null)
             {
-                bool foundPreviousEvent = false;
-                foreach(var historyEvent in currentRecord.Events)
-                {
-                    if (historyEvent == null) continue;
-                    if (historyEvent.TargetCube == selfCube)
-                    {
-                        historyEvent.PreviousParent = selfCube.PreviousParent;
-                        historyEvent.PreviousRPos = selfCube.RelativePosition;
-                        historyEvent.PreviousRScl = selfCube.RelativeScale;
-                        foundPreviousEvent = true;
-                        break;
-                    }
-                }
-                if (!foundPreviousEvent) currentRecord.Events.Add(new HistoryEvent(selfCube, selfCube.PreviousParent, selfCube.RelativePosition, selfCube.RelativeScale));
+                currentRecord.AddHistoryEvent(selfCube, (selfCube.PreviousParents.Count > 0) ? selfCube.PreviousParents[0].Cube : null, selfCube.RelativePosition, selfCube.RelativeScale, selfCube.IsHorizFlipped, selfCube.IsPlayer);
             }
+        }
 
+        for (int i = 1; i < selfCube.PreviousParents.Count; i++)
+        {
+            if (selfCube.PreviousParents[i].Direction == CubeMovement.LayerDirections.In)
+            {
+                selfCube.PreviousParents[i].Cube.ModifyChildCubeEnter(selfCube);
+            }
+            else if (selfCube.PreviousParents[i].Direction == CubeMovement.LayerDirections.Out && i >= 1)
+            {
+                selfCube.PreviousParents[i - 1].Cube.ModifyChildCubeExit(selfCube);
+            }
+        }
+        if (selfCube.PreviousParents.Count > 0) selfCube.Parent = selfCube.PreviousParents[selfCube.PreviousParents.Count - 1].Cube;
+        
+        if (historyManager != null)
+        {
             // Add new record for its new details
-            historyManager.RecordNewEvent(selfCube, selfCube.Parent, endRPos, endRScl);
+            historyManager.RecordNewEvent(selfCube, selfCube.Parent, endRPos, endRScl, selfCube.IsHorizFlipped, selfCube.IsPlayer);
         }
 
         Vector2 cubeOldRPos = selfCube.RelativePosition;
@@ -164,6 +189,8 @@ public class CubeMovement : MonoBehaviour
         movingCoroutine = null;
 
         isExternal = false;
+        selfCube.PreviousParents.Clear();
+        selfCube.PreviousParents.Add(new(LayerDirections.Out, selfCube.Parent)); // Update current parent after moving
         if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.GameplayInputs.ContinueUsingMovementInputs();
         onMoveEnd.Invoke();
     }
@@ -193,7 +220,8 @@ public class CubeMovement : MonoBehaviour
         movingCoroutine = null;
         isExternal = false;
         coolDownTimer = coolDownTime;
-        selfCube.PreviousParent = selfCube.Parent; // Update current parent after moving
+        selfCube.PreviousParents.Clear();
+        selfCube.PreviousParents.Add(new(LayerDirections.Out, selfCube.Parent)); // Update current parent after moving
         selfCube.RelativePosition = endRPos;
         selfCube.RelativeScale = endRScl;
         if (selfCube.IsPlayer && MainCamera.Instance != null)
@@ -204,5 +232,63 @@ public class CubeMovement : MonoBehaviour
         }
         if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.GameplayInputs.ContinueUsingMovementInputs();
         onMoveEnd.Invoke();
+    }
+
+    // Helper functions
+    public static Vector2Int ConvertMovementInputToGridDirection(MovementDirections input)
+    {
+        switch (input)
+        {
+            case MovementDirections.Up:
+                return new Vector2Int(-1, 0);
+            case MovementDirections.Down:
+                return new Vector2Int(1, 0);
+            case MovementDirections.Left:
+                return new Vector2Int(0, -1);
+            case MovementDirections.Right:
+                return new Vector2Int(0, 1);
+            default:
+                return Vector2Int.zero;
+        }
+    }
+    public static MovementDirections FlipMovementInput(MovementDirections input, bool horizontal)
+    {
+        switch (input)
+        {
+            case MovementDirections.Up:
+                return (horizontal) ? MovementDirections.Up : MovementDirections.Down;
+            case MovementDirections.Down:
+                return (horizontal) ? MovementDirections.Down : MovementDirections.Up;
+            case MovementDirections.Left:
+                return (horizontal) ? MovementDirections.Right : MovementDirections.Left;
+            case MovementDirections.Right:
+                return (horizontal) ? MovementDirections.Left : MovementDirections.Right;
+            default:
+                return MovementDirections.None;
+        }
+    }
+    public static MovementDirections ReverseMovementInput(MovementDirections input)
+    {
+        switch (input)
+        {
+            case MovementDirections.Up:
+                return MovementDirections.Down;
+            case MovementDirections.Down:
+                return MovementDirections.Up;
+            case MovementDirections.Left:
+                return MovementDirections.Right;
+            case MovementDirections.Right:
+                return MovementDirections.Left;
+            default:
+                return MovementDirections.None;
+        }
+    }
+    public static bool CheckOppositeMovementInputs(MovementDirections input1, MovementDirections input2)
+    {
+        if (input1 == MovementDirections.None || input2 == MovementDirections.None) return false;
+        return (input1 == MovementDirections.Up && input2 == MovementDirections.Down) ||
+               (input1 == MovementDirections.Down && input2 == MovementDirections.Up) ||
+               (input1 == MovementDirections.Left && input2 == MovementDirections.Right) ||
+               (input1 == MovementDirections.Right && input2 == MovementDirections.Left);
     }
 }

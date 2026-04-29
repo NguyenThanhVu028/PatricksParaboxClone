@@ -12,7 +12,7 @@ public class WallCube : Cube
             GetComponent<CubeMovement>().OnMoveStart.AddListener(OnMoveStart);
         }
 
-        onParentChanged.AddListener(OnParentChanged);
+        onParentChanged += OnParentChanged;
     }
     private void OnDisable()
     {
@@ -21,7 +21,7 @@ public class WallCube : Cube
             GetComponent<CubeMovement>().OnMoveStart.RemoveListener(OnMoveStart);
         }
 
-        onParentChanged.RemoveListener(OnParentChanged);
+        onParentChanged -= OnParentChanged;
     }
 
     protected void OnMoveStart()
@@ -32,12 +32,17 @@ public class WallCube : Cube
         }
     }
 
-    protected void OnParentChanged()
+    protected void OnParentChanged(ContainerCube previousParent, ContainerCube newParent)
     {
-        cubeColor = parent.CubeColor;
+        if (previousParent != null) previousParent.CalculateStaticTextures();
+        if (newParent != null)
+        {
+            cubeColor = newParent.CubeColor;
+            newParent.CalculateStaticTextures();
+        }
     }
 
-    protected override void DrawCube(Rect position, float depth, float exposure, Rect? scissorRect)
+    public override void DrawCube(Rect position, float depth, float exposure, Rect? scissorRect)
     {
         Vector2 texSize = new((float)position.width / wallSubdivision, (float)position.height / wallSubdivision);
         Vector2 startingPos = new(position.x - position.width * 0.5f + texSize.x * 0.5f, position.y + position.height * 0.5f - texSize.y * 0.5f);

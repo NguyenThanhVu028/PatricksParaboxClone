@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public class CustomGrid <T> where T: Cube
+public class CustomGrid <T> where T: new()
 {
     [Min(1)]
     [SerializeField] Vector2Int tiling = new(9, 9);
@@ -17,51 +17,59 @@ public class CustomGrid <T> where T: Cube
     public void Init()
     {
         children = new T[tiling.x, tiling.y];
+        for(int row = 0; row < tiling.x; row++)
+        {
+            for (int column = 0; column < tiling.y; column++)
+            {
+                children[row, column] = new();
+            }
+        }
     }
-    public Vector2Int FindChild(T child)
+    public Vector2Int FindChild(Func<T, bool> condition)
     {
         for (int row = 0; row < children.GetLength(0); row++)
         {
             for (int column = 0; column < children.GetLength(1); column++)
             {
-                if (Children[row, column] == child) return new(row, column);
+                if (condition(children[row, column])) return new(row, column);
             }
         }
         return new(-1, -1);
     }
-    public void RemoveChild(T child)
+    public delegate void RemovalAction(ref T child);
+    public void RemoveChild(Func<T, bool> condition, RemovalAction removalAction)
     {
         for (int row = 0; row < children.GetLength(0); row++)
         {
             for (int column = 0; column < children.GetLength(1); column++)
             {
-                if (children[row, column] == child)
+                if (condition(children[row, column]))
                 {
-                    children[row, column] = null;
+                    removalAction(ref children[row, column]);
                 }
             }
         }
     }
 
     // This function is used when a child outside of the grid wants to enter from a specific direction
-    public Vector2Int GetEnterPosition(PlayerInputsManager.MovementInputs direction, Vector2 rPos)
+    public Vector2Int GetEnterPosition(CubeMovement.MovementDirections direction, Vector2 rPos)
     {
         int column = 0, row = 0;
         switch (direction)
         {
-            case PlayerInputsManager.MovementInputs.Up:
+            case CubeMovement.MovementDirections.Up:
                 column = Mathf.RoundToInt((tiling.y - 1) * (rPos.x + 1) * 0.5f);
                 row = tiling.x - 1;
                 break;
-            case PlayerInputsManager.MovementInputs.Down:
+            case CubeMovement.MovementDirections.Down:
                 column = Mathf.RoundToInt((tiling.y - 1) * (rPos.x + 1) * 0.5f);
                 row = 0;
                 break;
-            case PlayerInputsManager.MovementInputs.Right:
+            case CubeMovement.MovementDirections.Right:
                 row = Mathf.RoundToInt((tiling.x - 1) * (1 - rPos.y) * 0.5f);
                 column = 0;
                 break;
-            case PlayerInputsManager.MovementInputs.Left:
+            case CubeMovement.MovementDirections.Left:
                 row = Mathf.RoundToInt((tiling.x - 1) * (1 - rPos.y) * 0.5f);
                 column = tiling.y - 1;
                 break;

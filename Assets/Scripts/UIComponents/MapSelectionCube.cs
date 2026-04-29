@@ -14,6 +14,7 @@ public class MapSelectionCube : ContainerCube
     [SerializeField] float defaultDelayTime = 0.5f;
     [SerializeField] TextMeshPro mapIndexText;
     [SerializeField] float mapIndexTextPadding = 0.75f;
+    [SerializeField] string notFinishedEffect = "RegularShiny";
 
     private SaveAndLoadManager.GameData gameData;
     private bool hasFinished = false;
@@ -44,7 +45,7 @@ public class MapSelectionCube : ContainerCube
             triggerButton.RelativePosition = Relativity.RPosFromGridTile(childGrid.Tiling.y, childGrid.Tiling.x, 0, 0);
             triggerButton.Parent = this;
             emptyCubes.Add(triggerButton);
-            ModifyChildCube(triggerButton);
+            //ModifyChildCube(triggerButton);
             triggerButton.Init();
 
             triggerButton.OnButtonActivated.AddListener(OpenMap);
@@ -70,8 +71,7 @@ public class MapSelectionCube : ContainerCube
         // Init effects and announce all dependent cubes
         if (!hasFinished)
         {
-            if (surfaceEffectsAnimation == null)
-                SetSurfaceEffects("RegularShiny");
+            AddSurfaceEffect(notFinishedEffect);
             foreach(var dependentMap in dependentMapSelectionCubes)
             {
                 if (dependentMap == null) continue;
@@ -80,7 +80,6 @@ public class MapSelectionCube : ContainerCube
         }
         else if (hasFinished)
         {
-            surfaceEffectsAnimation = null;
             foreach (var dependentMap in dependentMapSelectionCubes)
             {
                 if (dependentMap == null) continue;
@@ -91,15 +90,16 @@ public class MapSelectionCube : ContainerCube
         onInit.Invoke();
     }
 
-    protected override void DrawSurfaceEffects(Rect position, float depth, float exposure, Rect? scissorRect)
+    public override void DrawCube(Rect position, float depth, float exposure, Rect? scissorRect)
     {
-        base.DrawSurfaceEffects(position, depth, exposure, scissorRect);
+        base.DrawCube(position, depth, exposure, scissorRect);
         if (mapIndexText != null)
         {
             mapIndexText.gameObject.SetActive(true);
-            mapIndexText.rectTransform.sizeDelta = position.size * mapIndexTextPadding;
+            Vector2 textSize = new(Mathf.Abs(position.size.x), Mathf.Abs(position.size.y));
+            mapIndexText.rectTransform.sizeDelta = textSize * mapIndexTextPadding;
             mapIndexText.text = mapIndex.ToString();
-            mapIndexText.transform.position = new(position.x, position.y, depth);
+            mapIndexText.transform.position = new(position.x, position.y, depth - 1f);
         }
     }
 
