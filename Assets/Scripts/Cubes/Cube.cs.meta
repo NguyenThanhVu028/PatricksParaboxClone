@@ -1,17 +1,2 @@
 fileFormatVersion: 2
 guid: 123094098758d944390bf2a0517e130c
-MonoImporter:
-  externalObjects: {}
-  serializedVersion: 2
-  defaultReferences:
-  - colorPalette: {fileID: 11400000, guid: 37ff109e4e0da694b8a3a4b1caa63d91, type: 2}
-  - cubeMat: {fileID: 2100000, guid: 78b9e2b83bf5d0643b88372fc8f8b336, type: 2}
-  - cubeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
-  - playerFaceTexture: {fileID: 2800000, guid: 5ec214a5235786740b324bded289b90a, type: 3}
-  - possessableFaceTexture: {fileID: 2800000, guid: 5d9d0117f7fa8704595bb3bdef390e93, type: 3}
-  - parent: {instanceID: 0}
-  executionOrder: 0
-  icon: {instanceID: 0}
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 

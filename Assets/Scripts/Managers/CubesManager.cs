@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using static Cube;
 
 public class CubesManager : MonoBehaviour
 {
@@ -24,9 +26,10 @@ public class CubesManager : MonoBehaviour
 
     private void Start()
     {
-        if (PlayerInputsManager.Instance != null)
+        PlayerInputsManager playerInputsManager = PlayerInputsManager.Instance;
+        if (playerInputsManager != null)
         {
-            PlayerInputsManager.Instance.OnUndoEvent.AddListener(OnUndo);
+            playerInputsManager.GameplayInputs.OnResetEvent.AddListener(OnReset);
         }
     }
 
@@ -38,7 +41,7 @@ public class CubesManager : MonoBehaviour
             if (cube.ID == id)
             {
                 if (cube.Cube == null) return null;
-                if (cube.Cube.NeedInstantiating)
+                if (cube.Cube.NeedInstantiating) 
                     return Instantiate(cube.Cube);
                 else return cube.Cube;
             }
@@ -46,53 +49,9 @@ public class CubesManager : MonoBehaviour
         return null;
     }
 
-    public void OnUndo()
+    public void OnReset()
     {
-        if (HistoryManager.Instance == null) return;
-        HistoryRecord lastestRecord = HistoryManager.Instance.GetLatestRecord();
-        if (lastestRecord == null) return;
-        Debug.Log("Begin undo");
-
-        foreach(var historyEvent in lastestRecord.Events)
-        {
-            if (historyEvent == null || historyEvent.TargetCube == null) continue;
-
-            // Stop moving coroutine
-            if (historyEvent.TargetCube.GetComponent<CubeMovement>() != null)
-                historyEvent.TargetCube.GetComponent<CubeMovement>().StopMoving();
-
-            // Let target cube leave its current parent
-            if (historyEvent.TargetCube.Parent != null)
-            {
-                Debug.Log($"{historyEvent.TargetCube.Parent} removes {historyEvent.TargetCube}");
-                historyEvent.TargetCube.Parent.RemoveChild(historyEvent.TargetCube);
-            }
-
-            // Let target cube return to its previous parent
-            if (historyEvent.PreviousParent == null)
-            {
-                historyEvent.TargetCube.Parent = null;
-                continue;
-            }
-
-            Vector2Int targetCubePrevPosInParent = Relativity.GridPosFromRPos(historyEvent.PreviousParent.Tiling, historyEvent.PreviousParent.Tiling, historyEvent.PreviousRPos);
-            if (!historyEvent.PreviousParent.CheckValidGridPosition(targetCubePrevPosInParent.x, targetCubePrevPosInParent.y)) return;
-            Debug.Log($"Reset {historyEvent.TargetCube} parent to {historyEvent.PreviousParent}");
-            historyEvent.PreviousParent.CubesGrid[targetCubePrevPosInParent.x, targetCubePrevPosInParent.y] = historyEvent.TargetCube;
-            historyEvent.TargetCube.Parent = historyEvent.PreviousParent;
-            historyEvent.TargetCube.PreviousParent = historyEvent.PreviousParent;
-            historyEvent.TargetCube.RelativePosition = historyEvent.PreviousRPos;
-            historyEvent.TargetCube.RelativeScale = historyEvent.PreviousRScl;
-            ResetCamera(historyEvent.TargetCube);
-        }
-    }
-
-    private void ResetCamera(Cube targetCube)
-    {
-        if (!targetCube.IsPlayer || MainCamera.Instance == null) return;
-        MainCamera.Instance.StopZooming();
-        MainCamera.Instance.SetNewTargetCube(targetCube.Parent);
-        MainCamera.Instance.FocusOnTargetCube();
+        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
     }
 }
 

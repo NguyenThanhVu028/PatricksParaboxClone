@@ -16,6 +16,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] float onLevelCompletedDelay = 1f;
     [SerializeField] string nextLevelSceneName = "";
 
+    [SerializeField] string mapSelectionSceneName = "MapSelection";
+
+    [SerializeField] string winnerAudioID = "Winner";
+
     private int activatedPlayerButtons = 0;
     private int activatedNormalButtons = 0;
 
@@ -26,6 +30,18 @@ public class GameManager : MonoBehaviour
     {
         if (instance != null && instance != this) Destroy(instance);
         instance = this;
+    }
+
+    private void Start()
+    {
+        if (SaveAndLoadManager.GeneralGameData != null)
+        {
+            SaveAndLoadManager.GameData gameData = SaveAndLoadManager.GeneralGameData;
+            if (gameData != null)
+            {
+                gameData.LastOpenedMapName = SceneManager.GetActiveScene().name;
+            }
+        }
     }
 
     private void Update()
@@ -42,6 +58,15 @@ public class GameManager : MonoBehaviour
                 levelCompletedCoroutine = null;
             }
         }
+    }
+
+    public void ReturnToMapSelection()
+    {
+        SceneManager.LoadSceneAsync(mapSelectionSceneName);
+    }
+    public void OnQuitGame()
+    {
+        Application.Quit();
     }
 
     public void AssignPlayerButton() { playerButtonCount++; }
@@ -73,7 +98,16 @@ public class GameManager : MonoBehaviour
 
     IEnumerator LevelCompletedCoroutine()
     {
+        if (SoundsManager.Instance != null) SoundsManager.Instance.PlaySFX(winnerAudioID);
         yield return new WaitForSeconds(onLevelCompletedDelay);
+        if (SaveAndLoadManager.GeneralGameData != null)
+        {
+            SaveAndLoadManager.GameData gameData = SaveAndLoadManager.GeneralGameData;
+            if (gameData != null)
+            {
+                gameData.AddFinishedMap(SceneManager.GetActiveScene().name);
+            }
+        }
         if (!string.IsNullOrEmpty(nextLevelSceneName))
             SceneManager.LoadSceneAsync(nextLevelSceneName);
     }

@@ -1,46 +1,51 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-public class PlayerButton : Cube
+public class PlayerButton : TriggerButton
 {
-    [SerializeField] Texture2D buttonTexture;
-    [SerializeField] UnityEvent onButtonActivated = new();
-    [SerializeField] UnityEvent onButtonDeactivated = new();
-
-    private Vector2Int positionInParent = Vector2Int.zero;
+    [SerializeField] string buttonActivatedAudioID = "Button Activated";
+    [SerializeField] string buttonDeactivatedAudioID = "Button Deactivated";
     private bool hasAssignedToGameManager = false;
-    private bool isActivated = false;
 
     private void Update()
     {
-        if (parent != null && parent.CubesGrid != null && parent.CheckValidGridPosition(positionInParent.x, positionInParent.y))
+        if (parent != null && parent.ChildGrid != null && parent.ChildGrid.CheckValidGridPosition(positionInParent.x, positionInParent.y))
         {
-            var targetCube = parent.CubesGrid[positionInParent.x, positionInParent.y];
-            if (targetCube != null)
+            var targetCube = parent.ChildCubes[positionInParent.x, positionInParent.y];
+            if (targetCube.Cube != null)
             {
-                if (targetCube.IsPlayer && !isActivated)
+                if (targetCube.Cube.IsPlayer && !isActivated)
                 {
-                    isActivated = true;
-                    GameManager.Instance.AnnouncePlayerButtonActivated();
-                    onButtonActivated.Invoke();
+                    OnActivated();
                 }
-                if (!targetCube.IsPlayer && isActivated)
+                if (!targetCube.Cube.IsPlayer && isActivated)
                 {
-                    isActivated = false;
-                    GameManager.Instance.AnnouncePlayerButtonDeactivated();
-                    onButtonDeactivated.Invoke();
+                    OnDeactivated();
                 }
             }
             else
             {
                 if (isActivated)
                 {
-                    isActivated = false;
-                    GameManager.Instance.AnnouncePlayerButtonDeactivated();
-                    onButtonDeactivated.Invoke();
+                    OnDeactivated();
                 }
             }
         }
+    }
+
+    protected override void OnActivated()
+    {
+
+        if (GameManager.Instance != null) GameManager.Instance.AnnouncePlayerButtonActivated();
+        if (SoundsManager.Instance != null) SoundsManager.Instance.PlaySFX(buttonActivatedAudioID);
+        base.OnActivated();
+    }
+
+    protected override void OnDeactivated()
+    {
+        if (GameManager.Instance != null) GameManager.Instance.AnnouncePlayerButtonDeactivated();
+        if (SoundsManager.Instance != null) SoundsManager.Instance.PlaySFX(buttonDeactivatedAudioID);
+        base.OnDeactivated();
     }
 
     public override void Init()
@@ -49,11 +54,6 @@ public class PlayerButton : Cube
         {
             GameManager.Instance.AssignPlayerButton();
             hasAssignedToGameManager = true;
-        }
-
-        if (parent != null)
-        {
-            positionInParent = Relativity.GridPosFromRPos(parent.Tiling, parent.Tiling, relativePosition);
         }
 
         base.Init();
@@ -66,11 +66,5 @@ public class PlayerButton : Cube
             GameManager.Instance.UnAssignPlayerButton();
             hasAssignedToGameManager = false;
         }
-    }
-
-    protected override void DrawCube(Rect position, float depth)
-    {
-        Color color = new Color(1, 1, 1, 0.5f);
-        CustomTextureRenderer2D.RenderMesh(cubeMesh, cubeMat, buttonTexture, color, position.position, position.size, depth);
     }
 }

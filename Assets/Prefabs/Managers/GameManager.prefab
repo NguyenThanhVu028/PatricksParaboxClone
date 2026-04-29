@@ -46,3 +46,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerButtonCount: 0
   normalButtonCount: 0
+  onPlayerButtonCountReached:
+    m_PersistentCalls:
+      m_Calls: []
+  onNormalButtonCountReached:
+    m_PersistentCalls:
+      m_Calls: []
+  onLevelCompletedDelay: 1
+  nextLevelSceneName: MapSelection

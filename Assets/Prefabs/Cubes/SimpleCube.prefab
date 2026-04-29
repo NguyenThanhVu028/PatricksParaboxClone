@@ -114,7 +114,7 @@ Transform:
   m_GameObject: {fileID: 2601011977459787844}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.2363218, y: -1.0916843, z: -9.969411}
+  m_LocalPosition: {x: 1.2363218, y: -1.0916843, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -139,16 +139,24 @@ MonoBehaviour:
   colorPalette: {fileID: 11400000, guid: 37ff109e4e0da694b8a3a4b1caa63d91, type: 2}
   cubeColor: 0
   needInstantiating: 1
+  defaultTexture: {fileID: 11400000, guid: 82b438aed21c8d541a9ac5bdc32b459f, type: 2}
   minPixelToRender: 2
-  cubeMat: {fileID: 2100000, guid: 78b9e2b83bf5d0643b88372fc8f8b336, type: 2}
+  normalMat: {fileID: 2100000, guid: 78b9e2b83bf5d0643b88372fc8f8b336, type: 2}
+  outlineMat: {fileID: 2100000, guid: 5f0c8b0400fd3074d84c1d22d0c58c68, type: 2}
   cubeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
-  playerFaceTexture: {fileID: 2800000, guid: 5ec214a5235786740b324bded289b90a, type: 3}
-  possessableFaceTexture: {fileID: 2800000, guid: 5d9d0117f7fa8704595bb3bdef390e93, type: 3}
+  possessableFaceTexture: {fileID: 11400000, guid: 478f5cbe753240a418d149fbab64e0cd, type: 2}
+  enableOcclusionCulling: 1
   parent: {fileID: 0}
+  previousParent: {fileID: 0}
   relativeScale: {x: 1, y: 1}
   relativePosition: {x: 0, y: 0}
   possessingTime: 0.5
-  cubeText: {fileID: 2800000, guid: 753d0c0b2358102429171bdb7fca0273, type: 3}
+  onInit:
+    m_PersistentCalls:
+      m_Calls: []
+  onFinishedDrawing:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &7585408643129711027
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -165,3 +173,4 @@ MonoBehaviour:
   specialMoveTime: 0.5
   coolDownTime: 0.075
   selfCube: {fileID: 0}
+  isExternal: 0

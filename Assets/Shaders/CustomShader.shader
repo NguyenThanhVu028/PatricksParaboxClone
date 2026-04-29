@@ -1,66 +1,18 @@
 Shader "Custom/CustomShader"
 {
-    // Properties
-    // {
-    //     _Color ("Color", Color) = (1,1,1,1)
-    //     _MainTex ("Albedo (RGB)", 2D) = "white" {}
-    //     _Glossiness ("Smoothness", Range(0,1)) = 0.5
-    //     _Metallic ("Metallic", Range(0,1)) = 0.0
-    // }
-    // SubShader
-    // {
-    //     Tags { "RenderType"="Opaque" }
-    //     LOD 200
-
-    //     CGPROGRAM
-    //     // Physically based Standard lighting model, and enable shadows on all light types
-    //     #pragma surface surf Standard fullforwardshadows
-
-    //     // Use shader model 3.0 target, to get nicer looking lighting
-    //     #pragma target 3.0
-
-    //     sampler2D _MainTex;
-
-    //     struct Input
-    //     {
-    //         float2 uv_MainTex;
-    //     };
-
-    //     half _Glossiness;
-    //     half _Metallic;
-    //     fixed4 _Color;
-
-    //     // Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
-    //     // See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
-    //     // #pragma instancing_options assumeuniformscaling
-    //     UNITY_INSTANCING_BUFFER_START(Props)
-    //         // put more per-instance properties here
-    //     UNITY_INSTANCING_BUFFER_END(Props)
-
-    //     void surf (Input IN, inout SurfaceOutputStandard o)
-    //     {
-    //         // Albedo comes from a texture tinted by color
-    //         fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
-    //         o.Albedo = c.rgb;
-    //         // Metallic and smoothness come from slider variables
-    //         o.Metallic = _Metallic;
-    //         o.Smoothness = _Glossiness;
-    //         o.Alpha = c.a;
-    //     }
-    //     ENDCG
-    // }
-    // FallBack "Diffuse"
     Properties
     {
         _MainTex ("Sprite Texture", 2D) = "white" {}
         _Color ("Tint", Color) = (1,1,1,1)
+        _Exposure ("Exposure", float) = 0
     }
 
     SubShader
     {
         Tags { "Queue"="Transparent" "RenderType"="Transparent" }
         Cull Off 
-        ZWrite Off
+        ZWrite On
+        ZTest LEqual
         Blend SrcAlpha OneMinusSrcAlpha
 
         Pass
@@ -88,6 +40,7 @@ Shader "Custom/CustomShader"
             // Define the property buffer
             UNITY_INSTANCING_BUFFER_START(Props)
                 UNITY_DEFINE_INSTANCED_PROP(fixed4, _Color)
+                UNITY_DEFINE_INSTANCED_PROP(float, _Exposure)
             UNITY_INSTANCING_BUFFER_END(Props)
 
             v2f vert (appdata v) {
@@ -104,6 +57,20 @@ Shader "Custom/CustomShader"
             fixed4 frag (v2f i) : SV_Target {
                 UNITY_SETUP_INSTANCE_ID(i);
                 fixed4 col = tex2D(_MainTex, i.uv) * UNITY_ACCESS_INSTANCED_PROP(Props, _Color);
+                float exposure = UNITY_ACCESS_INSTANCED_PROP(Props, _Exposure);
+
+                if (exposure > 0)
+                {
+                    if (exposure > 1) exposure = 1;
+                    col = lerp(col, fixed4(1, 1, 1, col.a), exposure);
+                }
+                else
+                {
+                    exposure = -exposure;
+                    if (exposure > 1) exposure = 1;
+                    col = lerp(col, fixed4(0, 0, 0, col.a), exposure);
+                }
+
                 return col;
             }
             ENDCG
