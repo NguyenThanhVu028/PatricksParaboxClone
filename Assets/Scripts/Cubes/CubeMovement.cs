@@ -122,7 +122,16 @@ public class CubeMovement : MonoBehaviour
             var currentRecord = historyManager.GetCurrentRecord();
             if (currentRecord != null)
             {
-                currentRecord.AddHistoryEvent(selfCube, (selfCube.PreviousParents.Count > 0) ? selfCube.PreviousParents[0].Cube : null, selfCube.RelativePosition, selfCube.RelativeScale, selfCube.IsHorizFlipped, selfCube.IsPlayer);
+                currentRecord.AddHistoryEvent(selfCube, 
+                    //(selfCube.PreviousParents.Count > 0) ? selfCube.PreviousParents[0].Cube : null, 
+                    selfCube.Parent,
+                    selfCube.RelativePosition, 
+                    selfCube.RelativeScale, 
+                    selfCube.IsHorizFlipped, 
+                    selfCube.IsPlayer,
+                    (selfCube is ContainerCube containerCube) ? containerCube.IsEnterable : true,
+                    (selfCube is ContainerCube containerCube2) ? containerCube2.IsLeavable : true
+                    );
             }
         }
 
@@ -142,7 +151,15 @@ public class CubeMovement : MonoBehaviour
         if (historyManager != null)
         {
             // Add new record for its new details
-            historyManager.RecordNewEvent(selfCube, selfCube.Parent, endRPos, endRScl, selfCube.IsHorizFlipped, selfCube.IsPlayer);
+            historyManager.RecordNewEvent(selfCube, 
+                selfCube.Parent, 
+                endRPos, 
+                endRScl, 
+                selfCube.IsHorizFlipped, 
+                selfCube.IsPlayer,
+                (selfCube is ContainerCube containerCube) ? containerCube.IsEnterable : true,
+                (selfCube is ContainerCube containerCube2) ? containerCube2.IsLeavable : true
+                );
         }
 
         Vector2 cubeOldRPos = selfCube.RelativePosition;

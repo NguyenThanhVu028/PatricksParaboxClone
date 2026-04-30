@@ -27,11 +27,20 @@ public class VoidCube : ContainerCube
     public override void Draw(Rect position, float depth = 0, float exposure = 0, Rect? scissorRect = null)
     {
         DrawCube(position, depth, exposure, scissorRect);
-        DrawChildCubes(position, depth, exposure, scissorRect);
+        DrawMainCube(position, depth, exposure, scissorRect);
     }
     public override void DrawCube(Rect position, float depth, float exposure, Rect? scissorRect)
     {
         DrawSurfaceEffects(position, depth + surfaceEffectsDepthOffset, exposure, scissorRect);
+        if (mainCube != null) cullingCubesAll.Add(mainCube);
+        DrawChildCubes(position, depth, exposure, scissorRect);
+        if (mainCube != null) cullingCubesAll.Remove(mainCube);
+    }
+    protected void DrawMainCube(Rect position, float depth, float exposure, Rect? scissorRect)
+    {
+        if (mainCube == null) return;
+        Rect mainCubeRect = Relativity.CRectFromPRect(position, mainCube.RelativePosition, mainCube.RelativeScale);
+        mainCube.Draw(mainCubeRect, depth, exposure, scissorRect);
     }
 
     public void SetCentralCube (ContainerCube cube)
