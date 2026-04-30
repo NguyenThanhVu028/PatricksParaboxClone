@@ -4,7 +4,7 @@ using UnityEngine.Rendering;
 
 public class CloneCube : ContainerCube
 {
-    [SerializeField] ContainerCube mainContainerCube;
+    [SerializeField] protected ContainerCube mainContainerCube;
 
     private Cube requestedCube;
 
@@ -33,16 +33,16 @@ public class CloneCube : ContainerCube
         }
     }
 
-    protected override void DrawFloor(Rect position, float depth, float exposure, Rect? scissorRect)
+    public override void DrawFloor(Rect position, float depth, float exposure, Rect? scissorRect)
     {
-        if (mainContainerCube == null || mainContainerCube.FloorTexture == null || mainContainerCube.FloorTexture.GetTexture() == null) return;
-        CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, mainContainerCube.FloorTexture.GetTexture(), mainContainerCube.RealCubeColor, exposure, position.position, position.size, depth, scissorRect);
+        if (mainContainerCube == null) return;
+        mainContainerCube.DrawFloor(position, depth + floorDepthOffset, exposure, scissorRect);
     }
 
-    protected override void DrawWalls(Rect position, float depth, float exposure, Rect? scissorRect)
+    public override void DrawWalls(Rect position, float depth, float exposure, Rect? scissorRect)
     {
-        if (mainContainerCube == null || mainContainerCube.StaticTexturesRT == null) return;
-        CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, mainContainerCube.StaticTexturesRT, mainContainerCube.RealCubeColor, exposure, position.position, position.size, depth, scissorRect);
+        if (mainContainerCube == null) return;
+        mainContainerCube.DrawWalls(position, depth + wallDepthOffset, exposure, scissorRect);
     }
 
     protected override void DrawChildCubes(Rect position, float depth, float exposure, Rect? scissorRect)
@@ -126,7 +126,7 @@ public class CloneCube : ContainerCube
 
     public override float RequestToMove(Vector2 cRPos, Vector2 cRScl, Cube requestedCube, CubeMovement.MovementDirections direction, bool external = false, bool specialMove = false)
     {
-        if (mainContainerCube == null) return 0;
+        if (mainContainerCube == null || !isEnterable) return 0;
 
         // Set up camera transition
         if (requestedCube.IsPlayer && MainCamera.Instance != null)

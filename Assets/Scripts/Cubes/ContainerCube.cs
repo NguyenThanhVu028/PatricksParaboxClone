@@ -37,6 +37,7 @@ public class ContainerCube : Cube
     protected Action<Cube> onFinishedDrawingChildCube;
 
     public bool IsEnterable { get => isEnterable; set => isEnterable = value; }
+    public bool IsLeavable { get => isLeavable; set => isLeavable = value; }
     public Vector2Int Tiling { get => childGrid.Tiling; }
     public CustomTexture FloorTexture { get => floorTexture; }
     public ChildCubeInitDetail[] ChildCubesInitDetails { get => childCubesInitDetails; }
@@ -240,12 +241,12 @@ public class ContainerCube : Cube
         DrawWalls(position, depth + wallDepthOffset, exposure, scissorRect);
         DrawChildCubes(position, depth + childCubesDepthOffset, exposure, scissorRect);
     }   
-    protected virtual void DrawFloor(Rect position, float depth, float exposure, Rect? scissorRect)
+    public virtual void DrawFloor(Rect position, float depth, float exposure, Rect? scissorRect)
     {
         if (floorTexture == null || floorTexture.GetTexture() == null) return;
         CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, floorTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect);
     }
-    protected virtual void DrawWalls(Rect position, float depth, float exposure, Rect? scissorRect)
+    public virtual void DrawWalls(Rect position, float depth, float exposure, Rect? scissorRect)
     {
         if (staticTexturesRT != null) CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, staticTexturesRT, RealCubeColor, exposure, position.position, position.size, depth, scissorRect);
     }

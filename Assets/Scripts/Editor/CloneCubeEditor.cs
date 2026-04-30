@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(CloneCube))]
+[CustomEditor(typeof(CloneCube), true)]
 public class CloneCubeEditor : Editor
 {
     #region SerializedProperties

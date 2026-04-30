@@ -1,16 +1,30 @@
 using UnityEngine;
 
-public class InfinityCube : MonoBehaviour
+public class InfinityCube : CloneCube
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [Min(1)]
+    [SerializeField] int level = 1;
+    [SerializeField] CustomTexture infinityTexture;
+
+    public ContainerCube MainContainerCube { get => mainContainerCube; set => mainContainerCube = value; }
+    public int Level { get => level; set => level = value; }
+
+    public override void Init()
     {
-        
+        if (hasInit) return;
+
+        isPlayer = false;
+        canBePlayer = false;
+        isEnterable = false;
+        isLeavable = false;
+
+        base.Init();
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void DrawSurfaceEffects(Rect position, float depth, float exposure, Rect? scissorRect)
     {
-        
+        base.DrawSurfaceEffects(position, depth, exposure, scissorRect);
+
+        // Draw the infinity texture
     }
 }

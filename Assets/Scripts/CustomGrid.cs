@@ -50,6 +50,11 @@ public class CustomGrid <T> where T: new()
             }
         }
     }
+    public void RemoveChild(int row, int column, RemovalAction removalAction)
+    {
+        if (!CheckValidGridPosition(row, column)) return;
+        removalAction(ref children[row, column]);
+    }
 
     // This function is used when a child outside of the grid wants to enter from a specific direction
     public Vector2Int GetEnterPosition(CubeMovement.MovementDirections direction, Vector2 rPos)

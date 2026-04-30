@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 
-[CustomEditor(typeof(ContainerCube))]
+[CustomEditor(typeof(ContainerCube), true)]
 public class ContainerCubeEditor : Editor
 {
     #region SerializedProperties

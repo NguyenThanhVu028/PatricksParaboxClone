@@ -1,16 +1,12 @@
 using UnityEngine;
 
-public class EpsilonCube : MonoBehaviour
+public class EpsilonCube : ContainerCube
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [SerializeField] ContainerCube mainContainerCube;
+    [Min(1)]
+    [SerializeField] int level = 1;
+    [SerializeField] CustomTexture epsilonTexture;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public ContainerCube MainContainerCube { get => mainContainerCube; set => mainContainerCube = value; }
+    public int Level { get => level; set => level = value; }
 }
