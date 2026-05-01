@@ -4,7 +4,6 @@ public class VoidCube : ContainerCube
 {
     public enum VoidType { Infinity, Epsilon }
     [Min(3)]
-    [SerializeField] Vector2Int tiling = new Vector2Int(5, 5);
 
     private ContainerCube mainCube;
 
@@ -16,25 +15,29 @@ public class VoidCube : ContainerCube
         canBePlayer = false;
         isLeavable = false;
 
-        childGrid.Tiling = new Vector2Int(tiling.x, tiling.y);
         childGrid.Init();
-
-        InitAnimations();
 
         onInit.Invoke();
     }
 
     public override void Draw(Rect position, float depth = 0, float exposure = 0, Rect? scissorRect = null)
     {
+        if (!CustomTextureRenderer2D.CheckVisibility(position.position, position.size) && enableOcclusionCulling) return;
+
+        Vector2 rectSizeInPixel = CustomTextureRenderer2D.ConvertScaleToPixel(position.size);
+        if (rectSizeInPixel.x < minPixelToRender || rectSizeInPixel.y < minPixelToRender) return; // Don't draw if the requested rectangle is too small (To avoid infinite rendering)
+
         DrawCube(position, depth, exposure, scissorRect);
         DrawMainCube(position, depth, exposure, scissorRect);
+
+        onFinishedDrawing.Invoke(position, depth, exposure, scissorRect);
     }
     public override void DrawCube(Rect position, float depth, float exposure, Rect? scissorRect)
     {
-        DrawSurfaceEffects(position, depth + surfaceEffectsDepthOffset, exposure, scissorRect);
         if (mainCube != null) cullingCubesAll.Add(mainCube);
         DrawChildCubes(position, depth, exposure, scissorRect);
         if (mainCube != null) cullingCubesAll.Remove(mainCube);
+        DrawSurfaceEffects(position, depth + surfaceEffectsDepthOffset, exposure, scissorRect);
     }
     protected void DrawMainCube(Rect position, float depth, float exposure, Rect? scissorRect)
     {
@@ -47,7 +50,7 @@ public class VoidCube : ContainerCube
     {
         if (cube == null) return;
 
-        Vector2Int center = new Vector2Int(tiling.x / 2, tiling.y / 2);
+        Vector2Int center = new Vector2Int(childGrid.Tiling.x / 2, childGrid.Tiling.y / 2);
         if (childGrid.Children[center.x, center.y].Cube != null)
         {
             childGrid.Children[center.x, center.y].Cube.Parent = null;

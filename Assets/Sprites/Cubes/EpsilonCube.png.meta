@@ -116,12 +116,12 @@ TextureImporter:
       name: EpsilonCube_0
       rect:
         serializedVersion: 2
-        x: 8
-        y: 5
-        width: 16
-        height: 22
+        x: 0
+        y: 0
+        width: 32
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -138,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 092d16d7165e3814081a6686b2f37b16
     internalID: 0
     vertices: []
     indices: 
@@ -149,6 +149,7 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       EpsilonCube_0: -1240952674416048427
+      EpsilonCube_1: 1232313569
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

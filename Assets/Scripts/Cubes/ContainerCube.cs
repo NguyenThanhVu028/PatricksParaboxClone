@@ -29,7 +29,7 @@ public class ContainerCube : Cube
     protected List<Cube> emptyCubes = new(); // Seperate empty cubes from other cubes, empty cubes are only be rendered but ignore checking for interactions by other cubes
     protected List<Cube> cullingCubesAll = new(); // These cubes wont be rendered if they are children of this cube, apply to all cube
     protected List<Cube> cullingCubesOne = new(); // Same as culling cubes all but only apply to one specific instance of a cube
-    protected bool useDebug = true;
+    protected bool useDebug = false;
 
     // Delegates and events
     public delegate void BeginDrawingChildCube(Cube childCube, Rect parentRect, ref Rect childRect, ref float depth, ref float exposure, ref Rect? scissorRect);
@@ -314,7 +314,7 @@ public class ContainerCube : Cube
     public override void DrawSurfaceEffects(Rect position, float depth, float exposure, Rect? scissorRect)
     {
         base.DrawSurfaceEffects(position, depth, exposure, scissorRect);
-        if (!isEnterable) CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, Texture2D.whiteTexture, unenterableColor, exposure, position.position, position.size, depth - 0.2f);
+        if (!isEnterable) CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, Texture2D.whiteTexture, unenterableColor, exposure, position.position, position.size, depth);
         if (!isLeavable)
         {
             if (materialPropertyBlock == null) materialPropertyBlock = new();
@@ -324,7 +324,7 @@ public class ContainerCube : Cube
             materialPropertyBlock.SetTexture(CustomTextureRenderer2D.mainTexID, Texture2D.whiteTexture);
             materialPropertyBlock.SetFloat(CustomTextureRenderer2D.isHighlightedID, 1);
 
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, materialPropertyBlock, position.position, position.size, depth - 0.2f, scissorRect);
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, materialPropertyBlock, position.position, position.size, depth, scissorRect);
         }
     }
 

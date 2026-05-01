@@ -87,9 +87,9 @@ public class CloneCube : ContainerCube
                 Vector2 normalizedRPos = (movingCube.RelativePosition).normalized;
                 idealRPos = new(movingCube.RelativePosition.x - normalizedRPos.x * movingCube.RelativeScale.x + normalizedRPos.x * idealRScl.x,
                                 movingCube.RelativePosition.y - normalizedRPos.y * movingCube.RelativeScale.y + normalizedRPos.y * idealRScl.y);
-                movingCube.Draw(Relativity.CRectFromPRect(position, idealRScl, idealRPos), depth - 0.1f, exposure, CustomTextureRenderer2D.GetOverlapRect(scissorRect, position));
+                movingCube.Draw(Relativity.CRectFromPRect(position, idealRScl, idealRPos), depth + movingChildCubesDepthOffset, exposure, CustomTextureRenderer2D.GetOverlapRect(scissorRect, position));
             }
-            else movingCube.Draw(Relativity.CRectFromPRect(position, movingCube.RelativeScale, movingCube.RelativePosition), depth - 0.1f, exposure, scissorRect);
+            else movingCube.Draw(Relativity.CRectFromPRect(position, movingCube.RelativeScale, movingCube.RelativePosition), depth + movingChildCubesDepthOffset, exposure, scissorRect);
         }
 
         // Draw the requested cube

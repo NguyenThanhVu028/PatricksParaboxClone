@@ -134,7 +134,6 @@ public class Cube : MonoBehaviour
 
         Vector2 rectSizeInPixel = CustomTextureRenderer2D.ConvertScaleToPixel(position.size);
         if (rectSizeInPixel.x < minPixelToRender || rectSizeInPixel.y < minPixelToRender) return; // Don't draw if the requested rectangle is too small (To avoid infinite rendering)
-
         if (isHorizFlipped) position.width = - position.width;
         DrawCube(position, depth, exposure, scissorRect);
         DrawPlayerFace(position, depth + playerFaceDepthOffset, exposure, scissorRect);

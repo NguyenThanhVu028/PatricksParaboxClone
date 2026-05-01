@@ -189,12 +189,24 @@ PrefabInstance:
       value: YellowClone
       objectReference: {fileID: 0}
     - target: {fileID: 6943630721235301472, guid: 8a76e30f9d2d8004bba486c6199ab053, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6943630721235301472, guid: 8a76e30f9d2d8004bba486c6199ab053, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6943630721235301472, guid: 8a76e30f9d2d8004bba486c6199ab053, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6943630721235301472, guid: 8a76e30f9d2d8004bba486c6199ab053, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -2.57
       objectReference: {fileID: 0}
     - target: {fileID: 6943630721235301472, guid: 8a76e30f9d2d8004bba486c6199ab053, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -1.31
       objectReference: {fileID: 0}
     - target: {fileID: 6943630721235301472, guid: 8a76e30f9d2d8004bba486c6199ab053, type: 3}
       propertyPath: m_LocalPosition.z
@@ -227,6 +239,10 @@ PrefabInstance:
     - target: {fileID: 6943630721235301472, guid: 8a76e30f9d2d8004bba486c6199ab053, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6943630721235301472, guid: 8a76e30f9d2d8004bba486c6199ab053, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -397,6 +413,142 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &819554686
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 819554689}
+  - component: {fileID: 819554688}
+  - component: {fileID: 819554687}
+  m_Layer: 0
+  m_Name: EpsilonCube
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &819554687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 819554686}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c40dd76a8993a234ea82ff15f914c21e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultMoveTime: 0.1
+  defaultEnterTime: 0.5
+  coolDownTime: 0.075
+  selfCube: {fileID: 0}
+  movementAudioID: Movement
+  zoomInAudioID: ZoomIn
+  zoomOutAudioID: ZoomOut
+  noZoomAudioID: NoZoom
+--- !u!114 &819554688
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 819554686}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0f68c58d7297944aa81b73b78589723, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isPlayer: 0
+  canBePlayer: 0
+  cubeType: 0
+  colorPalette: {fileID: 11400000, guid: 37ff109e4e0da694b8a3a4b1caa63d91, type: 2}
+  cubeColor: 3
+  needInstantiating: 0
+  defaultTexture: {fileID: 0}
+  isHorizFlipped: 0
+  minPixelToRender: 2
+  normalMat: {fileID: 2100000, guid: 78b9e2b83bf5d0643b88372fc8f8b336, type: 2}
+  outlineMat: {fileID: 2100000, guid: 5f0c8b0400fd3074d84c1d22d0c58c68, type: 2}
+  cubeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+  possessableFaceTexture: {fileID: 11400000, guid: 478f5cbe753240a418d149fbab64e0cd, type: 2}
+  enableOcclusionCulling: 1
+  mirrorEffectID: Mirror
+  surfaceEffectsAnimationIDs: []
+  parent: {fileID: 0}
+  previousParents: []
+  relativeScale: {x: 1, y: 1}
+  relativePosition: {x: 0, y: 0}
+  possessingTime: 0.5
+  onInit:
+    m_PersistentCalls:
+      m_Calls: []
+  onFinishedDrawing:
+    m_PersistentCalls:
+      m_Calls: []
+  isEnterable: 1
+  isLeavable: 1
+  childGrid:
+    tiling: {x: 3, y: 3}
+  wallSubdivision: 2
+  wallRuleTile: {fileID: 11400000, guid: 2d82bc5300df33a458823857725fba15, type: 2}
+  floorTexture: {fileID: 11400000, guid: 13b529999ac7e5d4dbf97f043ba35021, type: 2}
+  tileTextureSize: 16
+  staticTilesRTDepth: 16
+  unenterableColor: {r: 0, g: 0, b: 0, a: 0.9}
+  unleavableColor: {r: 1, g: 0, b: 0, a: 0}
+  childCubesInitDetails:
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  staticTexturesRT: {fileID: 0}
+  mainContainerCube: {fileID: 0}
+  level: 1
+  epsilonTexture: {fileID: 11400000, guid: 005990ab9853ae347b3d6a1c2d20d89b, type: 2}
+  epsilonTextureHeightRatio: 0.75
+--- !u!4 &819554689
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 819554686}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.28153938, y: 0.08258091, z: -9.875425}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -797,7 +949,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6333287652591081063, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
       propertyPath: allCubes.Array.size
-      value: 8
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 6333287652591081063, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
       propertyPath: allCubes.Array.data[1].id
@@ -866,11 +1018,11 @@ PrefabInstance:
     - target: {fileID: 6333287652591081063, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
       propertyPath: allCubes.Array.data[8].cube
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1271528084}
     - target: {fileID: 6333287652591081063, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
       propertyPath: allCubes.Array.data[9].cube
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1640736516}
     - target: {fileID: 8169652284322544178, guid: 0dc4c53b6bc179b46a82b44481dedea9, type: 3}
       propertyPath: m_Name
       value: ---Managers---
@@ -1255,9 +1407,10 @@ MonoBehaviour:
     isPlayer: 0
     canBePlayer: 0
   staticTexturesRT: {fileID: 0}
-  mainContainerCube: {fileID: 60143641}
+  mainContainerCube: {fileID: 695063177}
   level: 1
-  infinityTexture: {fileID: 0}
+  infinityTexture: {fileID: 11400000, guid: e302711e2ec52744caab0ab89110e53f, type: 2}
+  infinityTextureHeightRatio: 0.75
 --- !u!4 &1271528085
 Transform:
   m_ObjectHideFlags: 0
@@ -1419,7 +1572,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[29].cubeID
-      value: 0
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[30].cubeID
@@ -1455,7 +1608,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[38].cubeID
-      value: 0
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 517780491569979803, guid: 7d4dd4a36ac4d6e428ac572fc8873eee, type: 3}
       propertyPath: childCubesInitDetails.Array.data[39].cubeID
@@ -1798,7 +1951,7 @@ MonoBehaviour:
   isEnterable: 1
   isLeavable: 1
   childGrid:
-    tiling: {x: 5, y: 5}
+    tiling: {x: 7, y: 7}
   wallSubdivision: 2
   wallRuleTile: {fileID: 0}
   floorTexture: {fileID: 0}
@@ -1883,7 +2036,6 @@ MonoBehaviour:
     isPlayer: 0
     canBePlayer: 0
   staticTexturesRT: {fileID: 0}
-  tiling: {x: 5, y: 5}
 --- !u!4 &1640736517
 Transform:
   m_ObjectHideFlags: 0
@@ -2158,3 +2310,4 @@ SceneRoots:
   - {fileID: 1702194837}
   - {fileID: 1640736517}
   - {fileID: 1271528085}
+  - {fileID: 819554689}

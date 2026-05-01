@@ -36,6 +36,7 @@ public class MainCamera : MonoBehaviour
     private CameraTransition currentTransition = null;
     private Coroutine transitionCoroutine = null;
     private float exposure = 0f;
+    private bool useDebug = false;
 
     public static MainCamera Instance { get => instance; }
 
@@ -194,7 +195,7 @@ public class MainCamera : MonoBehaviour
 
     public void SetTransition(CameraTransition newTransition)
     {
-        Debug.Log("Set transition: " + newTransition);
+        if (useDebug) Debug.Log("Set transition: " + newTransition);
         if (newTransition == null || newTransition == currentTransition) return;
         if (currentTransition == null)
         {
