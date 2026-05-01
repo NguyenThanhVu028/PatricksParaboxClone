@@ -37,7 +37,7 @@ public class VoidCube : ContainerCube
         if (mainCube != null) cullingCubesAll.Add(mainCube);
         DrawChildCubes(position, depth, exposure, scissorRect);
         if (mainCube != null) cullingCubesAll.Remove(mainCube);
-        DrawSurfaceEffects(position, depth + surfaceEffectsDepthOffset, exposure, scissorRect);
+        DrawSurfaceEffects(position, depth, exposure, scissorRect);
     }
     protected void DrawMainCube(Rect position, float depth, float exposure, Rect? scissorRect)
     {
@@ -72,7 +72,7 @@ public class VoidCube : ContainerCube
         base.ModifyChildCubeEnter(childCube);
         if (childCube is ContainerCube containerCube)
         {
-            containerCube.IsLeavable = false;
+            containerCube.IsEnterable = false;
         }
     }
 

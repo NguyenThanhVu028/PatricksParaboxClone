@@ -8,7 +8,7 @@ public class ContainerCube : Cube
     public const float floorDepthOffset = 0f;
     public const float wallDepthOffset = 0f;
     public const float childCubesDepthOffset = 0f;
-    public const float movingChildCubesDepthOffset = -0.14f;
+    public const float movingChildCubesDepthOffset = -0.1f;
 
     [SerializeField] protected bool isEnterable = true;
     [SerializeField] protected bool isLeavable = true;

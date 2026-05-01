@@ -10,7 +10,7 @@ public class Cube : MonoBehaviour
     // Static: cube that can't be pushed -> Try entering and possessing
     // Empty: cube that other cubes can go through -> Ignore
     public enum CubeTypes { Normal, Static, Empty }
-    public const float playerFaceDepthOffset = -0.11f;
+    public const float playerFaceDepthOffset = 0f;
     public const float surfaceEffectsDepthOffset = -0.12f;
 
     [Header("General Info")]
