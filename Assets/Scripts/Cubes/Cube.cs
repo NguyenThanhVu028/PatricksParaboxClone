@@ -11,7 +11,7 @@ public class Cube : MonoBehaviour
     // Empty: cube that other cubes can go through -> Ignore
     public enum CubeTypes { Normal, Static, Empty }
     public const float playerFaceDepthOffset = 0f;
-    public const float surfaceEffectsDepthOffset = -0.12f;
+    public const float surfaceEffectsDepthOffset = 0f;
 
     [Header("General Info")]
     [SerializeField] protected bool isPlayer = false;

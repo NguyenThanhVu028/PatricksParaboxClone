@@ -5,7 +5,7 @@ using UnityEngine.Events;
 [RequireComponent(typeof(Cube))]
 public class CubeMovement : MonoBehaviour
 {
-    public enum MovementDirections{ Up, Down, Left, Right, None }
+    public enum GridDirections{ Up, Down, Left, Right, None }
     public enum LayerDirections { In, Out }
 
     [Header("Movement Settings")]
@@ -68,12 +68,12 @@ public class CubeMovement : MonoBehaviour
             PlayerInputsManager.Instance != null &&
             !IsMoving && !IsCoolingDown)
         {
-            CubeMovement.MovementDirections movementInput = PlayerInputsManager.Instance.GameplayInputs.GetLatestMovementInput();
+            CubeMovement.GridDirections movementInput = PlayerInputsManager.Instance.GameplayInputs.GetLatestMovementInput();
             if (MainCamera.Instance != null && MainCamera.Instance.RenderMode == MainCamera.MainCameraRenderMode.SingleCube)
             {
                 if (MainCamera.Instance.TargetCubeRect.size.x < 0) movementInput = CubeMovement.FlipMovementInput(movementInput, true);
             }
-            if (movementInput != CubeMovement.MovementDirections.None)
+            if (movementInput != CubeMovement.GridDirections.None)
             {
                 var targetTime = selfCube.Parent.RequestToMove(selfCube.RelativePosition, selfCube.RelativeScale, selfCube, movementInput);
                 Debug.Log(selfCube.name + " " + selfCube.PreviousParents.Count);
@@ -147,7 +147,7 @@ public class CubeMovement : MonoBehaviour
             }
         }
         if (selfCube.PreviousParents.Count > 0) selfCube.Parent = selfCube.PreviousParents[selfCube.PreviousParents.Count - 1].Cube;
-        
+
         if (historyManager != null)
         {
             // Add new record for its new details
@@ -252,60 +252,60 @@ public class CubeMovement : MonoBehaviour
     }
 
     // Helper functions
-    public static Vector2Int ConvertMovementInputToGridDirection(MovementDirections input)
+    public static Vector2Int ConvertMovementInputToGridDirection(GridDirections input)
     {
         switch (input)
         {
-            case MovementDirections.Up:
+            case GridDirections.Up:
                 return new Vector2Int(-1, 0);
-            case MovementDirections.Down:
+            case GridDirections.Down:
                 return new Vector2Int(1, 0);
-            case MovementDirections.Left:
+            case GridDirections.Left:
                 return new Vector2Int(0, -1);
-            case MovementDirections.Right:
+            case GridDirections.Right:
                 return new Vector2Int(0, 1);
             default:
                 return Vector2Int.zero;
         }
     }
-    public static MovementDirections FlipMovementInput(MovementDirections input, bool horizontal)
+    public static GridDirections FlipMovementInput(GridDirections input, bool horizontal)
     {
         switch (input)
         {
-            case MovementDirections.Up:
-                return (horizontal) ? MovementDirections.Up : MovementDirections.Down;
-            case MovementDirections.Down:
-                return (horizontal) ? MovementDirections.Down : MovementDirections.Up;
-            case MovementDirections.Left:
-                return (horizontal) ? MovementDirections.Right : MovementDirections.Left;
-            case MovementDirections.Right:
-                return (horizontal) ? MovementDirections.Left : MovementDirections.Right;
+            case GridDirections.Up:
+                return (horizontal) ? GridDirections.Up : GridDirections.Down;
+            case GridDirections.Down:
+                return (horizontal) ? GridDirections.Down : GridDirections.Up;
+            case GridDirections.Left:
+                return (horizontal) ? GridDirections.Right : GridDirections.Left;
+            case GridDirections.Right:
+                return (horizontal) ? GridDirections.Left : GridDirections.Right;
             default:
-                return MovementDirections.None;
+                return GridDirections.None;
         }
     }
-    public static MovementDirections ReverseMovementInput(MovementDirections input)
+    public static GridDirections ReverseMovementInput(GridDirections input)
     {
         switch (input)
         {
-            case MovementDirections.Up:
-                return MovementDirections.Down;
-            case MovementDirections.Down:
-                return MovementDirections.Up;
-            case MovementDirections.Left:
-                return MovementDirections.Right;
-            case MovementDirections.Right:
-                return MovementDirections.Left;
+            case GridDirections.Up:
+                return GridDirections.Down;
+            case GridDirections.Down:
+                return GridDirections.Up;
+            case GridDirections.Left:
+                return GridDirections.Right;
+            case GridDirections.Right:
+                return GridDirections.Left;
             default:
-                return MovementDirections.None;
+                return GridDirections.None;
         }
     }
-    public static bool CheckOppositeMovementInputs(MovementDirections input1, MovementDirections input2)
+    public static bool CheckOppositeMovementInputs(GridDirections input1, GridDirections input2)
     {
-        if (input1 == MovementDirections.None || input2 == MovementDirections.None) return false;
-        return (input1 == MovementDirections.Up && input2 == MovementDirections.Down) ||
-               (input1 == MovementDirections.Down && input2 == MovementDirections.Up) ||
-               (input1 == MovementDirections.Left && input2 == MovementDirections.Right) ||
-               (input1 == MovementDirections.Right && input2 == MovementDirections.Left);
+        if (input1 == GridDirections.None || input2 == GridDirections.None) return false;
+        return (input1 == GridDirections.Up && input2 == GridDirections.Down) ||
+               (input1 == GridDirections.Down && input2 == GridDirections.Up) ||
+               (input1 == GridDirections.Left && input2 == GridDirections.Right) ||
+               (input1 == GridDirections.Right && input2 == GridDirections.Left);
     }
 }

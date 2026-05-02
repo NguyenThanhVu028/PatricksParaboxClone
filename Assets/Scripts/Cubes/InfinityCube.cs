@@ -12,14 +12,12 @@ public class InfinityCube : CloneCube
 
     public override void Init()
     {
-        if (hasInit) return;
+        base.Init();
 
         isPlayer = false;
         canBePlayer = false;
         isEnterable = false;
         isLeavable = false;
-
-        base.Init();
     }
 
     public override void Draw(Rect position, float depth = 0, float exposure = 0, Rect? scissorRect = null)

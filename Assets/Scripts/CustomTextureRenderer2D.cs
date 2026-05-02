@@ -168,6 +168,82 @@ public class CustomTextureRenderer2D
         }
     }
 
+    //public static Rect CombineRect(Rect? rect1, Rect? rect2)
+    //{
+    //    if (rect1 == null || rect2 == null)
+    //    {
+    //        if (rect1 != null) return rect1.Value;
+    //        if (rect2 != null) return rect2.Value;
+    //        return new();
+    //    }
+
+
+    //}
+
+    public static List<Rect> SubtractRect(Rect? mainRect, Rect? subtractRect)
+    {
+        List<Rect> result = new List<Rect>();
+        if (mainRect == null) return result;
+        if (subtractRect == null)
+        {
+            result.Add(mainRect.Value);
+            return result;
+        }
+
+        Rect cutMainRect = mainRect.Value;
+        Rect overlapRect = GetOverlapRect(cutMainRect, subtractRect.Value);
+
+        float overlapRectTop = overlapRect.y + Mathf.Abs(overlapRect.height) * 0.5f;
+        float overlapRectBot = overlapRectTop - Mathf.Abs(overlapRect.height);
+        float overlapRectRight = overlapRect.x + Mathf.Abs(overlapRect.width) * 0.5f;
+        float overlapRectLeft = overlapRectRight - Mathf.Abs(overlapRect.width);
+
+        float cutMainRectTop = cutMainRect.y + Mathf.Abs(cutMainRect.height) * 0.5f;
+        float cutMainRectBot = cutMainRectTop - Mathf.Abs(cutMainRect.height);
+        float cutMainRectRight = cutMainRect.x + Mathf.Abs(cutMainRect.width) * 0.5f;
+        float cutMainRectLeft = cutMainRectRight - Mathf.Abs(cutMainRect.width);
+
+        if (overlapRectTop < cutMainRectTop)
+        {
+            result.Add(CreateRect(cutMainRectTop, overlapRectTop, cutMainRectLeft, cutMainRectRight, (cutMainRect.width < 0)));
+            cutMainRectTop = overlapRectTop;
+        }
+        if (overlapRectRight < cutMainRectRight)
+        {
+            result.Add(CreateRect(cutMainRectTop, cutMainRectBot, overlapRectRight, cutMainRectRight, (cutMainRect.width < 0)));
+            cutMainRectRight = overlapRectRight;
+        }
+        if (overlapRectBot >  cutMainRectBot)
+        {
+            result.Add(CreateRect(overlapRectBot, cutMainRectBot, cutMainRectLeft, cutMainRectRight, (cutMainRect.width < 0)));
+            cutMainRectBot = overlapRectBot;
+        }
+        if (overlapRectLeft > cutMainRectLeft)
+        {
+            result.Add(CreateRect(cutMainRectTop, cutMainRectBot, cutMainRectLeft, overlapRectLeft, (cutMainRect.width < 0)));
+            cutMainRectLeft = overlapRectLeft;
+        }
+
+        return result;
+    }
+
+    //public static List<Rect?> SubtractRectAll(Rect? mainRect, Rect? subtractRect)
+    //{
+
+    //}
+
+    public static Rect CreateRect(float top, float bottom, float left, float right, bool isHorizFlipped)
+    {
+        Rect rect = new Rect();
+        rect.height = top - bottom;
+        rect.width = right - left;
+        rect.y = (top + bottom) * 0.5f;
+        rect.x = (right + left) * 0.5f;
+        if (isHorizFlipped) rect.width = -Mathf.Abs(rect.width);
+        else rect.width = Mathf.Abs(rect.width);
+        return rect;
+    }
+
     public static void ClearRenderTexture(RenderTexture renderTexture)
     {
         if (renderTexture == null) return;

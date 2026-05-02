@@ -28,15 +28,12 @@ public class VoidCube : ContainerCube
         if (rectSizeInPixel.x < minPixelToRender || rectSizeInPixel.y < minPixelToRender) return; // Don't draw if the requested rectangle is too small (To avoid infinite rendering)
 
         DrawCube(position, depth, exposure, scissorRect);
-        DrawMainCube(position, depth, exposure, scissorRect);
 
         onFinishedDrawing.Invoke(position, depth, exposure, scissorRect);
     }
     public override void DrawCube(Rect position, float depth, float exposure, Rect? scissorRect)
     {
-        if (mainCube != null) cullingCubesAll.Add(mainCube);
         DrawChildCubes(position, depth, exposure, scissorRect);
-        if (mainCube != null) cullingCubesAll.Remove(mainCube);
         DrawSurfaceEffects(position, depth, exposure, scissorRect);
     }
     protected void DrawMainCube(Rect position, float depth, float exposure, Rect? scissorRect)
@@ -54,7 +51,7 @@ public class VoidCube : ContainerCube
         if (childGrid.Children[center.x, center.y].Cube != null)
         {
             childGrid.Children[center.x, center.y].Cube.Parent = null;
-            childGrid.RemoveChild(center.x, center.y, (ref ChildCubeDetails cubeDetails) => { cubeDetails.Cube = null; cubeDetails.MovingDirection = CubeMovement.MovementDirections.None; });
+            childGrid.RemoveChild(center.x, center.y, (ref ChildCubeDetails cubeDetails) => { cubeDetails.Cube = null; cubeDetails.MovingDirection = CubeMovement.GridDirections.None; });
         }
 
         cube.Parent = this;
@@ -63,7 +60,7 @@ public class VoidCube : ContainerCube
         cube.IsLeavable = false;
         cube.Init();
         childGrid.Children[center.x, center.y].Cube = cube;
-        childGrid.Children[center.x, center.y].MovingDirection = CubeMovement.MovementDirections.None;
+        childGrid.Children[center.x, center.y].MovingDirection = CubeMovement.GridDirections.None;
         mainCube = cube;
     }
 

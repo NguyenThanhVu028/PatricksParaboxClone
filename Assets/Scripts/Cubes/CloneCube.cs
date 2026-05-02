@@ -10,13 +10,17 @@ public class CloneCube : ContainerCube
 
     public override void Init()
     {
+        base.Init();
+        InitCloneCube();
+    }
+    private void InitCloneCube()
+    {
         if (hasInit) return;
         //if (mainContainerCube != null) mainContainerCube.OnFinishedDrawing.AddListener(OnMainCubeDraw);
         if (mainContainerCube != null)
         {
             mainContainerCube.OnBeginDrawingChildCube += OnMainCubeDrawChildCube;
         }
-        base.Init();
         hasInit = true;
     }
 
@@ -124,7 +128,7 @@ public class CloneCube : ContainerCube
         scissorRect = CustomTextureRenderer2D.GetOverlapRect(scissorRect, position);
     }
 
-    public override float RequestToMove(Vector2 cRPos, Vector2 cRScl, Cube requestedCube, CubeMovement.MovementDirections direction, bool external = false, bool specialMove = false)
+    public override float RequestToMove(Vector2 cRPos, Vector2 cRScl, Cube requestedCube, CubeMovement.GridDirections direction, bool external = false, bool specialMove = false)
     {
         if (mainContainerCube == null || !isEnterable) return 0;
 
