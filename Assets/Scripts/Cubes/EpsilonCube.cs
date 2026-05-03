@@ -2,8 +2,9 @@ using UnityEngine;
 
 public class EpsilonCube : ContainerCube
 {
+    public const int minLevel = 1;
     [SerializeField] ContainerCube mainContainerCube;
-    [Min(1)]
+    [Min(minLevel)]
     [SerializeField] int level = 1;
     [SerializeField] CustomTexture epsilonTexture;
     [SerializeField] float epsilonTextureHeightRatio = 0.5f;

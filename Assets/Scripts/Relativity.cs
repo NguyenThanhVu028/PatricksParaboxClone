@@ -45,10 +45,10 @@ public static class Relativity
     // Get grid position of the tile in the parent cube based on the relative position of the child cube
     public static Vector2Int GridPosFromRPos(int gridWidth, int gridHeight, Vector2 rPos)
     {
-        Vector2 center = new Vector2(gridHeight * 0.5f - 0.5f, gridWidth * 0.5f - 0.5f);
+        Vector2 tileSize = new Vector2(2.0f / gridWidth, 2.0f / gridHeight);
         Vector2Int resPos = new();
-        resPos.x = Mathf.RoundToInt(center.x - rPos.y * gridHeight * 0.5f);
-        resPos.y = Mathf.RoundToInt(center.y + rPos.x * gridWidth * 0.5f);
+        resPos.x = Mathf.FloorToInt((1.0f - rPos.y) / tileSize.y);
+        resPos.y = Mathf.FloorToInt((rPos.x + 1.0f) / tileSize.x);
         return resPos;
     }
     // Get child's rectangle based on parent's rectangle and child's relative values

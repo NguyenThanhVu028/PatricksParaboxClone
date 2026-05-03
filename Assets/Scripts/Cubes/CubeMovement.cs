@@ -6,7 +6,7 @@ using UnityEngine.Events;
 public class CubeMovement : MonoBehaviour
 {
     public enum GridDirections{ Up, Down, Left, Right, None }
-    public enum LayerDirections { In, Out }
+    public enum LayerDirections { In, Out, None }
 
     [Header("Movement Settings")]
     [SerializeField] float defaultMoveTime = 0.1f; // Used when player simply moving from one point to another

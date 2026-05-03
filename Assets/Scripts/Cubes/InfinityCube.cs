@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class InfinityCube : CloneCube
 {
-    [Min(1)]
+    public const int minLevel = 1;
+    [Min(minLevel)]
     [SerializeField] int level = 1;
     [SerializeField] CustomTexture infinityTexture;
     [SerializeField] float infinityTextureHeightRatio = 0.5f;
@@ -55,5 +56,48 @@ public class InfinityCube : CloneCube
             Rect iconScissorRect = iconRect; iconScissorRect.height *= infinityTextureHeightRatio;
             CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, infinityTexture.GetTexture(), Color.white, exposure, iconRect.position, iconRect.size, depth, CustomTextureRenderer2D.GetOverlapRect(scissorRect, iconScissorRect));
         }
+    }
+
+    public float RequestToMove(Cube requestedCube, CubeMovement.GridDirections direction, bool external = false, bool specialMove = false)
+    {
+        if (parent == null || mainContainerCube == null) return 0;
+        var cRPos = requestedCube.RelativePosition;
+        var cRScl = requestedCube.RelativeScale;
+        requestedCube.PreviousParents.Add(new(CubeMovement.LayerDirections.None, this));
+
+        // Flip the requested cube if it is trying to move outside of a horizontally flipped cube
+        if (mainContainerCube.IsHorizFlipped)
+        {
+            cRPos.x = -cRPos.x;
+            direction = CubeMovement.FlipMovementInput(direction, true);
+        }
+
+        Vector2 outterCubeRPos = Relativity.PRPosToAChild(relativePosition, relativeScale);
+        Vector2 outterCubeRScl = Relativity.PRSclToAChild(relativeScale);
+
+        Vector2 childCubeRPosToOutterCube = Relativity.SRPosFromSameParent(outterCubeRPos, outterCubeRScl, cRPos);
+        Vector2 childCubeRSclToOutterCube = Relativity.SRSclFromSameParent(outterCubeRScl, cRScl);
+
+        float targetTime = parent.RequestToMove(childCubeRPosToOutterCube, childCubeRSclToOutterCube, requestedCube, direction, external, specialMove);
+        if (targetTime > 0)
+        {
+            // Correct the camera transition
+            Debug.Log(requestedCube.PreviousParents.Count);
+            for(int i = requestedCube.PreviousParents.Count - 1; i >= 0; i--)
+            {
+                if (requestedCube.PreviousParents[i].Cube is not InfinityCube) continue;
+                else
+                {
+                    if (requestedCube.PreviousParents[i].Cube != this) break;
+                    var finalCube = requestedCube.PreviousParents[requestedCube.PreviousParents.Count - 1];
+                    requestedCube.PreviousParents.Clear();
+                    requestedCube.PreviousParents.Add(new(CubeMovement.LayerDirections.Out, this));
+                    requestedCube.PreviousParents.Add(finalCube);
+                    break;
+                }
+            }
+        }
+
+        return targetTime;
     }
 }

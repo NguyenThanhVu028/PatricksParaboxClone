@@ -1,0 +1,233 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1292466597609929237
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5467110880739566940}
+  - component: {fileID: 2718965219767790214}
+  m_Layer: 0
+  m_Name: VoidCube
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5467110880739566940
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1292466597609929237}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.00197574, y: 0.48822016, z: -9.859905}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2718965219767790214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1292466597609929237}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ca58a3e96f4678459d6f9edda1af655, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isPlayer: 0
+  canBePlayer: 0
+  cubeType: 0
+  colorPalette: {fileID: 11400000, guid: 37ff109e4e0da694b8a3a4b1caa63d91, type: 2}
+  cubeColor: 0
+  needInstantiating: 0
+  defaultTexture: {fileID: 0}
+  isHorizFlipped: 0
+  minPixelToRender: 2
+  normalMat: {fileID: 2100000, guid: 78b9e2b83bf5d0643b88372fc8f8b336, type: 2}
+  outlineMat: {fileID: 2100000, guid: 5f0c8b0400fd3074d84c1d22d0c58c68, type: 2}
+  cubeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+  possessableFaceTexture: {fileID: 0}
+  enableOcclusionCulling: 1
+  mirrorEffectID: Mirror
+  surfaceEffectsAnimationIDs: []
+  parent: {fileID: 0}
+  previousParents: []
+  relativeScale: {x: 1, y: 1}
+  relativePosition: {x: 0, y: 0}
+  possessingTime: 0.5
+  onInit:
+    m_PersistentCalls:
+      m_Calls: []
+  onFinishedDrawing:
+    m_PersistentCalls:
+      m_Calls: []
+  isEnterable: 1
+  isLeavable: 1
+  childGrid:
+    tiling: {x: 7, y: 7}
+  wallSubdivision: 2
+  wallRuleTile: {fileID: 0}
+  floorTexture: {fileID: 0}
+  tileTextureSize: 16
+  staticTilesRTDepth: 16
+  unenterableColor: {r: 0, g: 0, b: 0, a: 0.9}
+  unleavableColor: {r: 1, g: 1, b: 0, a: 0}
+  childCubesInitDetails:
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  - cubeID: 0
+    isPlayer: 0
+    canBePlayer: 0
+  staticTexturesRT: {fileID: 0}

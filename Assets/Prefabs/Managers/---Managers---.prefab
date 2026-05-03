@@ -758,6 +758,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 851b49742b6212d41829f156560feea0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  voidCubePrefab: {fileID: 0}
+  infinityCubePrefab: {fileID: 2871299753081626699, guid: 0f4080a746eb03041a6edaec63af6c57, type: 3}
+  epsilonCubePrefab: {fileID: 4361943374926653292, guid: 43c12c05ed293094ea8824cdc6e1620a, type: 3}
   allCubes:
   - id: 1
     cube: {fileID: 3279298194327505553, guid: 8cd60fb214fed354989e3e3e443dd8d2, type: 3}

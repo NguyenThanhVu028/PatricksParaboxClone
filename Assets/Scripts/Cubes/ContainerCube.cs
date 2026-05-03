@@ -341,27 +341,50 @@ public class ContainerCube : Cube
         {
             int entriesLoopCount = 0;
             int exitsLoopCount = 0;
-            for (int i = 0; i < requestedCube.PreviousParents.Count; i++)
+            InfinityCube foundInfinityCube = null;
+            EpsilonCube foundEpsilonCube = null;
+            for (int i = requestedCube.PreviousParents.Count - 1; i >= 0 ; i--)
             {
+                if (requestedCube.PreviousParents[i].Cube == null) continue;
+                if (requestedCube.PreviousParents[i].Cube is InfinityCube)
+                {
+                    foundInfinityCube = (InfinityCube) requestedCube.PreviousParents[i].Cube;
+                    break;
+                }
+                if (requestedCube.PreviousParents[i].Cube is EpsilonCube)
+                {
+                    foundEpsilonCube = (EpsilonCube) requestedCube.PreviousParents[i].Cube;
+                    break;
+                }
+
                 if (requestedCube.PreviousParents[i].Cube == this)
                 {
                     if (requestedCube.PreviousParents[i].Direction == CubeMovement.LayerDirections.In) entriesLoopCount++;
                     else if (requestedCube.PreviousParents[i].Direction == CubeMovement.LayerDirections.Out) exitsLoopCount++;
                 }
-                // If the cube keep trying to exit for more than 3 times -> Teleport to infinity cube
-                if (exitsLoopCount >= 3)
-                {
-                    if (useDebug) Debug.Log($"{requestedCube.name} cant move out of {gameObject.name} because of infinite exits!");
-                    return 0;
-                }
-                // If the cube keep trying to enter for more than 3 times -> Teleport to epsilon cube
-                else if (entriesLoopCount >= 3)
-                {
-                    if (useDebug) Debug.Log($"{requestedCube.name} cant enter {gameObject.name} because of infinite entries!");
-                    return 0;
-                }
             }
             Debug.Log($"Exit count: {exitsLoopCount}, entry count: {entriesLoopCount}");
+            // If the cube keep trying to exit for more than 3 times -> Teleport to infinity cube
+            if (exitsLoopCount >= 3)
+            {
+                if (useDebug) Debug.Log($"{requestedCube.name} is in infinite exits!");
+                int infinityLevel = (foundInfinityCube != null)? foundInfinityCube.Level + 1 : InfinityCube.minLevel;
+                var infinityCube = CubesManager.Instance.GetInfinityCube(requestedCube.Parent, infinityLevel);
+                if (infinityCube != null)
+                {
+                    return infinityCube.RequestToMove(requestedCube, direction, true, specialMove);
+                }
+                return 0;
+            }
+            // If the cube keep trying to enter for more than 3 times -> Teleport to epsilon cube
+            else if (entriesLoopCount >= 3)
+            {
+                if (useDebug) Debug.Log($"{requestedCube.name} is in infinite entries!");
+                int epsilonLevel = (foundEpsilonCube != null) ? foundEpsilonCube.Level + 1 : 1;
+
+                return 0;
+            }
+
         }
 
         // Set up camera transition
@@ -373,6 +396,7 @@ public class ContainerCube : Cube
 
         // Flip the requested cube if it is trying to move into a horizontally flipped cube from the outside
         Vector2Int requestedCubePosition = Relativity.GridPosFromRPos(childGrid.Tiling.y, childGrid.Tiling.x, cRPos);
+        if (useDebug) Debug.Log($"Requested cube: {requestedCube.name} rPos: {cRPos}, grid pos: {requestedCubePosition}");
         if (isHorizFlipped)
         {
             if (external && !childGrid.CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y))
@@ -448,11 +472,6 @@ public class ContainerCube : Cube
         if (childGrid.Children[requestedPosition.x, requestedPosition.y].Cube != null)
         {
             float tempTargetTime = TryPushBlockageCubeAway(childGrid.Children[requestedPosition.x, requestedPosition.y].Cube, requestedPosition.x, requestedPosition.y, direction, specialMove);
-            //if (tempTargetTime < 0)
-            //{
-            //    HandleFailToMove(requestedCube, requestedCubePosition, external);
-            //    return 0;
-            //}
             if (tempTargetTime > 0) targetTime = tempTargetTime;
         }
 
