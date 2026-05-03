@@ -30,7 +30,8 @@ public class ColorPalette : ScriptableObject
         Player, 
         SilverBlue, 
         Orange,
-        Black
+        Black,
+        White
     }
 
     [Serializable]

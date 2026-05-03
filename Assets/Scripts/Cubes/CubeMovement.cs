@@ -68,7 +68,7 @@ public class CubeMovement : MonoBehaviour
             PlayerInputsManager.Instance != null &&
             !IsMoving && !IsCoolingDown)
         {
-            CubeMovement.GridDirections movementInput = PlayerInputsManager.Instance.GameplayInputs.GetLatestMovementInput();
+            GridDirections movementInput = PlayerInputsManager.Instance.GameplayInputs.GetLatestMovementInput();
             if (MainCamera.Instance != null && MainCamera.Instance.RenderMode == MainCamera.MainCameraRenderMode.SingleCube)
             {
                 if (MainCamera.Instance.TargetCubeRect.size.x < 0) movementInput = CubeMovement.FlipMovementInput(movementInput, true);
@@ -143,6 +143,7 @@ public class CubeMovement : MonoBehaviour
             }
             else if (selfCube.PreviousParents[i].Direction == CubeMovement.LayerDirections.Out && i >= 1)
             {
+                selfCube.PreviousParents[i].Cube.ModifyChildCubeInnerEnter(selfCube);
                 selfCube.PreviousParents[i - 1].Cube.ModifyChildCubeExit(selfCube);
             }
         }

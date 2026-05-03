@@ -75,9 +75,11 @@ public class CubesManager : MonoBehaviour
         if (infinityCubePrefab == null || voidCubePrefab == null) return null;
         var newInfinityCube = Instantiate(infinityCubePrefab);
         newInfinityCube.Level = level;
+        newInfinityCube.MainContainerCube = mainContainer;
         var newVoid = Instantiate(voidCubePrefab);
         newVoid.Init();
         newVoid.SetCentralCube(newInfinityCube);
+        infinityCubes.Add(newInfinityCube);
         return newInfinityCube;
     }
 

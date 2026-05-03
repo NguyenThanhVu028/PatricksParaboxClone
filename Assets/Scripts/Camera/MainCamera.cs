@@ -157,10 +157,11 @@ public class MainCamera : MonoBehaviour
                     exposedEdges = Relativity.CheckEdgeOfGrid(currentCube.Parent.Tiling.x, currentCube.Parent.Tiling.y, currentCube.RelativePosition);
                     if (exposedEdges[0] == CubeMovement.GridDirections.None) exposedEdges.Clear();
                 }
+                else exposedEdges.Clear();
             }
             else
             {
-                exposedEdges = Relativity.CheckEdgeOfGrid(1, 1, Vector2Int.zero); // No parent -> all 4 edges is exposed
+                if (currentCube is not VoidCube) exposedEdges = Relativity.CheckEdgeOfGrid(1, 1, Vector2Int.zero); // No parent -> all 4 edges is exposed
             }
 
             // Traverse through all regular parents

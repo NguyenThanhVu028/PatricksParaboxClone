@@ -11,6 +11,8 @@ public class VoidCube : ContainerCube
 
     public override void Init()
     {
+        if (hasInit) return;
+
         isPlayer = false;
         canBePlayer = false;
         isLeavable = false;
@@ -18,6 +20,8 @@ public class VoidCube : ContainerCube
         childGrid.Init();
 
         onInit.Invoke();
+
+        hasInit = true;
     }
 
     public override void Draw(Rect position, float depth = 0, float exposure = 0, Rect? scissorRect = null)
@@ -33,6 +37,7 @@ public class VoidCube : ContainerCube
     }
     public override void DrawCube(Rect position, float depth, float exposure, Rect? scissorRect)
     {
+        DrawFloor(position, depth + floorDepthOffset, exposure, scissorRect);
         DrawChildCubes(position, depth, exposure, scissorRect);
         DrawSurfaceEffects(position, depth, exposure, scissorRect);
     }
@@ -64,13 +69,19 @@ public class VoidCube : ContainerCube
         mainCube = cube;
     }
 
-    public override void ModifyChildCubeEnter(Cube childCube)
+    public override void ModifyChildCubeInnerEnter(Cube childCube)
     {
         base.ModifyChildCubeEnter(childCube);
         if (childCube is ContainerCube containerCube)
         {
             containerCube.IsEnterable = false;
         }
+        Debug.Log("Modify: " + childCube.name);
+    }
+
+    public override void ModifyChildCubeEnter(Cube childCube)
+    {
+        base.ModifyChildCubeEnter(childCube);
     }
 
     public override void ModifyChildCubeExit(Cube childCube)

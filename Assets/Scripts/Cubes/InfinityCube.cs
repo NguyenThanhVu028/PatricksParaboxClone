@@ -61,6 +61,7 @@ public class InfinityCube : CloneCube
     public float RequestToMove(Cube requestedCube, CubeMovement.GridDirections direction, bool external = false, bool specialMove = false)
     {
         if (parent == null || mainContainerCube == null) return 0;
+        Debug.Log($"Requested cube: {requestedCube.name} requests infinity cube: {name} level: {level}");
         var cRPos = requestedCube.RelativePosition;
         var cRScl = requestedCube.RelativeScale;
         requestedCube.PreviousParents.Add(new(CubeMovement.LayerDirections.None, this));
@@ -82,7 +83,6 @@ public class InfinityCube : CloneCube
         if (targetTime > 0)
         {
             // Correct the camera transition
-            Debug.Log(requestedCube.PreviousParents.Count);
             for(int i = requestedCube.PreviousParents.Count - 1; i >= 0; i--)
             {
                 if (requestedCube.PreviousParents[i].Cube is not InfinityCube) continue;
