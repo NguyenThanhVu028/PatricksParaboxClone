@@ -62,7 +62,6 @@ public class VoidCube : ContainerCube
         cube.Parent = this;
         cube.RelativePosition = Vector2.zero;
         cube.RelativeScale = new(1.0f / childGrid.Tiling.y, 1.0f / childGrid.Tiling.x);
-        cube.IsLeavable = false;
         cube.Init();
         childGrid.Children[center.x, center.y].Cube = cube;
         childGrid.Children[center.x, center.y].MovingDirection = CubeMovement.GridDirections.None;

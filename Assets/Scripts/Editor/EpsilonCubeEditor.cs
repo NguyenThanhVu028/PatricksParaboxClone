@@ -45,6 +45,7 @@ public class EpsilonCubeEditor : Editor
 
     // Epsilon settings
     SerializedProperty level;
+    SerializedProperty mainContainerCube;
     SerializedProperty epsilonTexture;
     SerializedProperty epsilonTextureHeightRatio;
 
@@ -94,6 +95,7 @@ public class EpsilonCubeEditor : Editor
 
         // Epsilon settings
         level = serializedObject.FindProperty("level");
+        mainContainerCube = serializedObject.FindProperty("mainContainerCube");
         epsilonTexture = serializedObject.FindProperty("epsilonTexture");
         epsilonTextureHeightRatio = serializedObject.FindProperty("epsilonTextureHeightRatio");
 
@@ -175,6 +177,7 @@ public class EpsilonCubeEditor : Editor
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Epsilon Settings", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(level);
+        EditorGUILayout.PropertyField(mainContainerCube);
         EditorGUILayout.PropertyField(epsilonTexture);
         EditorGUILayout.PropertyField(epsilonTextureHeightRatio);
 

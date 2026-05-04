@@ -74,7 +74,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   isEnterable: 1
-  isLeavable: 1
+  isLeavable: 0
   childGrid:
     tiling: {x: 9, y: 9}
   wallSubdivision: 2

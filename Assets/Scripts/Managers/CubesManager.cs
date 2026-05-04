@@ -83,6 +83,28 @@ public class CubesManager : MonoBehaviour
         return newInfinityCube;
     }
 
+    public EpsilonCube GetEpsilonCube(ContainerCube mainContainer, int level)
+    {
+        foreach (var cube in epsilonCubes)
+        {
+            if (cube == null) continue;
+            if (cube.MainContainerCube == mainContainer && cube.Level == level)
+            {
+                return cube;
+            }
+        }
+        if (epsilonCubePrefab == null || voidCubePrefab == null) return null;
+        var newEpsilonCube = Instantiate(epsilonCubePrefab);
+        newEpsilonCube.Level = level;
+        newEpsilonCube.MainContainerCube = mainContainer;
+        newEpsilonCube.IsEnterable = false;
+        var newVoid = Instantiate(voidCubePrefab);
+        newVoid.Init();
+        newVoid.SetCentralCube(newEpsilonCube);
+        epsilonCubes.Add(newEpsilonCube);
+        return newEpsilonCube;
+    }
+
     public void OnReset()
     {
         SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);

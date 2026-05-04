@@ -337,6 +337,8 @@ public class ContainerCube : Cube
         var requestedCubeMovement = requestedCube.GetComponent<CubeMovement>();
         if (requestedCubeMovement == null) return 0;
 
+        if (useDebug) Debug.Log($"{requestedCube.name} requested {name}");
+
         // Check for infinite loop possibility
         if (requestedCube.PreviousParents.Count > 1)
         {
@@ -369,6 +371,7 @@ public class ContainerCube : Cube
             if (exitsLoopCount >= 3)
             {
                 if (useDebug) Debug.Log($"{requestedCube.name} is in infinite exits!");
+                if (CubesManager.Instance == null) return 0;
                 int infinityLevel = (foundInfinityCube != null)? foundInfinityCube.Level + 1 : InfinityCube.minLevel;
                 var infinityCube = CubesManager.Instance.GetInfinityCube(requestedCube.Parent, infinityLevel);
                 if (infinityCube != null)
@@ -381,8 +384,13 @@ public class ContainerCube : Cube
             else if (entriesLoopCount >= 3)
             {
                 if (useDebug) Debug.Log($"{requestedCube.name} is in infinite entries!");
-                int epsilonLevel = (foundEpsilonCube != null) ? foundEpsilonCube.Level + 1 : 1;
-
+                if (CubesManager.Instance == null || requestedCube.PreviousParents.Count < 2) return 0;
+                int epsilonLevel = (foundEpsilonCube != null) ? foundEpsilonCube.Level + 1 : EpsilonCube.minLevel;
+                var epsilonCube = CubesManager.Instance.GetEpsilonCube(this, epsilonLevel);
+                if (epsilonCube != null)
+                {
+                    return epsilonCube.RequestToMove(requestedCube, direction, true, specialMove);
+                }
                 return 0;
             }
 

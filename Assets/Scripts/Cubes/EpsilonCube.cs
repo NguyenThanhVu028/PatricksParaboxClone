@@ -42,4 +42,31 @@ public class EpsilonCube : ContainerCube
             CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, epsilonTexture.GetTexture(), Color.white, exposure, iconRect.position, iconRect.size, depth, CustomTextureRenderer2D.GetOverlapRect(scissorRect, iconScissorRect));
         }
     }
+
+    public float RequestToMove(Cube requestedCube, CubeMovement.GridDirections direction, bool external = false, bool specialMove = false)
+    {
+        // Assume the epsilon cube main container is at the same level as the requested cube
+        //if (mainContainerCube == null) return 0;
+        //Debug.Log($"Main container : {mainContainerCube.name}, main RPos: {mainContainerCube.RelativePosition}, requestedCube RPos: {requestedCube.RelativePosition}");
+        if (requestedCube.PreviousParents.Count < 2) return 0;
+        if (requestedCube.PreviousParents[1].Cube == null) return 0;
+        Vector2 requestedCubeRPos = Relativity.SRPosFromSameParent(requestedCube.PreviousParents[1].Cube.RelativePosition, requestedCube.PreviousParents[1].Cube.RelativeScale, requestedCube.RelativePosition);
+        Vector2 requestedCubeRScl = new Vector2(1.0f / childGrid.Tiling.y, 1.0f / childGrid.Tiling.x);
+        bool tempIsEnterable = isEnterable;
+        isEnterable = true;
+        float targetTime = base.RequestToMove(requestedCubeRPos, requestedCubeRScl, requestedCube, direction, external, specialMove);
+        if (targetTime > 0)
+        {
+            // Correct the camera transition
+            var mainCube = requestedCube.PreviousParents[1].Cube;
+            if (requestedCube.PreviousParents.Count > 1)
+            {
+                requestedCube.PreviousParents.RemoveRange(1, (requestedCube.PreviousParents.Count - 1));
+            }
+            requestedCube.PreviousParents.Add(new(CubeMovement.LayerDirections.In, this, mainCube.RelativePosition, mainCube.RelativeScale, mainCube.IsHorizFlipped));
+            if (MainCamera.Instance != null) MainCamera.Instance.SetTransition(new FadeTransition());
+        }
+        isEnterable = tempIsEnterable;
+        return targetTime;
+    }
 }
