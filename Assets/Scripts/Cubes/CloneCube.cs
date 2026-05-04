@@ -151,6 +151,7 @@ public class CloneCube : ContainerCube
 
         if (finalTargetTime <= 0)
         {
+            requestedCube.RemovePreviousParent(this);
             return 0;
         }
 
