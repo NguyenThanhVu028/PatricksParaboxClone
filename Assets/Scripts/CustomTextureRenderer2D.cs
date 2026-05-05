@@ -8,6 +8,7 @@ public class CustomTextureRenderer2D
     public static readonly int mainTexID = Shader.PropertyToID("_MainTex");
     public static readonly int colorID = Shader.PropertyToID("_Color");
     public static readonly int isHighlightedID = Shader.PropertyToID("_IsHighlighted");
+    public static readonly int isHorizedFlippedID = Shader.PropertyToID("_IsHorizFlipped");
     public static readonly int borderHightlightColorID = Shader.PropertyToID("_BorderHighlightColor");
     public static readonly int exposureID = Shader.PropertyToID("_Exposure");
 
@@ -28,8 +29,10 @@ public class CustomTextureRenderer2D
         matProps.SetTexture(mainTexID, texture);
         matProps.SetColor(colorID, color);
         matProps.SetFloat(exposureID, exposure);
+        if (size.x < 0) matProps.SetFloat(isHorizedFlippedID, 1);
+        else matProps.SetFloat(isHorizedFlippedID, 0);
 
-        RenderMesh(mesh, material, matProps, position, size, z, worldSpaceScissorRect);
+            RenderMesh(mesh, material, matProps, position, size, z, worldSpaceScissorRect);
     }
 
     public static void RenderMesh(Mesh mesh,

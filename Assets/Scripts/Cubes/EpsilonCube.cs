@@ -18,6 +18,7 @@ public class EpsilonCube : ContainerCube
 
         if (level <= 0 || epsilonTexture == null) return;
         // Draw the epsilon texture
+        position.width  = Mathf.Abs(position.width);
         Vector2 iconNormalRScl = new Vector2(1.0f / level, 1.0f / level);
         Vector2 iconAdjustedRScl = iconNormalRScl;
         iconAdjustedRScl.x *= 1.0f / epsilonTextureHeightRatio;
