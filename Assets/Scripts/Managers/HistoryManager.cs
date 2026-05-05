@@ -28,9 +28,9 @@ public class HistoryManager : MonoBehaviour
     }
 
     // Called by every cube that moves
-    public void RecordNewEvent(Cube targetCube, ContainerCube previousParent, Vector2 previousRPos, Vector2 previousRScl, bool isHorizFlipped, bool isPlayer)
+    public void RecordNewEvent(Cube targetCube, ContainerCube previousParent, Vector2 previousRPos, Vector2 previousRScl, bool isHorizFlipped, bool isPlayer, bool isEnterable, bool isLeavable)
     {
-        newHistoryRecord.AddHistoryEvent(targetCube, previousParent, previousRPos, previousRScl, isHorizFlipped, isPlayer);
+        newHistoryRecord.AddHistoryEvent(targetCube, previousParent, previousRPos, previousRScl, isHorizFlipped, isPlayer, isEnterable, isLeavable);
     }
     public void RecordCameraInfo(bool isHorizFlipped)
     {
@@ -149,7 +149,7 @@ public class HistoryRecord
     public List<HistoryEvent> Events { get => events; }
     public CameraEvent CameraEvent { get => cameraEvent; set => cameraEvent = value; }
 
-    public void AddHistoryEvent(Cube targetCube, ContainerCube previousParent, Vector2 previousRPos, Vector2 previousRScl, bool isHorizFlipped, bool isPlayer)
+    public void AddHistoryEvent(Cube targetCube, ContainerCube previousParent, Vector2 previousRPos, Vector2 previousRScl, bool isHorizFlipped, bool isPlayer, bool isEnterable, bool isLeavable)
     {
         foreach(var evnt in events)
         {
@@ -161,10 +161,12 @@ public class HistoryRecord
                 evnt.PreviousRScl = previousRScl;
                 evnt.IsHorizFlipped = isHorizFlipped;
                 evnt.IsPlayer = isPlayer;
+                evnt.IsEnterable = isEnterable;
+                evnt.IsLeavable = isLeavable;
                 return;
             }
         }
-        events.Add(new(targetCube, previousParent, previousRPos, previousRScl, isHorizFlipped, isPlayer));
+        events.Add(new(targetCube, previousParent, previousRPos, previousRScl, isHorizFlipped, isPlayer, isEnterable, isLeavable));
     }
     public void AddCameraEvent(CameraEvent cameraEvent)
     {
@@ -181,6 +183,8 @@ public class HistoryEvent
     [SerializeField] Vector2 previousRScl = new();
     [SerializeField] bool isHorizFlipped = false;
     [SerializeField] bool isPlayer = false;
+    [SerializeField] bool isEnterable = true;
+    [SerializeField] bool isLeavable = true;
 
     public Cube TargetCube { get => targetCube; }
     public ContainerCube PreviousParent { get => previousParent; set => previousParent = value; }
@@ -188,8 +192,10 @@ public class HistoryEvent
     public Vector2 PreviousRScl { get => previousRScl; set => previousRScl = value; }
     public bool IsHorizFlipped { get => isHorizFlipped; set => isHorizFlipped = value; }
     public bool IsPlayer { get => isPlayer; set => isPlayer = value; }
+    public bool IsEnterable { get => isEnterable; set => isEnterable = value; }
+    public bool IsLeavable { get => isLeavable; set => isLeavable = value; }
 
-    public HistoryEvent(Cube targetCube, ContainerCube previousParent, Vector2 previousRPos, Vector2 previousRScl, bool isHorizFlipped, bool isPlayer)
+    public HistoryEvent(Cube targetCube, ContainerCube previousParent, Vector2 previousRPos, Vector2 previousRScl, bool isHorizFlipped, bool isPlayer, bool isEnterable, bool isLeavable)
     {
         this.targetCube = targetCube;
         this.previousParent = previousParent;
@@ -197,6 +203,8 @@ public class HistoryEvent
         this.previousRScl = previousRScl;
         this.isHorizFlipped = isHorizFlipped;
         this.isPlayer = isPlayer;
+        this.isEnterable = isEnterable;
+        this.isLeavable = isLeavable;
     }
 }
 [Serializable]

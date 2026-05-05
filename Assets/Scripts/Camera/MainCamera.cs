@@ -8,6 +8,7 @@ public class MainCamera : MonoBehaviour
 {
     public enum MainCameraRenderMode { SingleCube, MultipleCubes };
     public enum CameraMovements { ZoomIn, ZoomOut }
+    public const float infinityBackgroundDepthOffset = 0.5f;
 
     private static MainCamera instance;
 
@@ -36,6 +37,7 @@ public class MainCamera : MonoBehaviour
     private CameraTransition currentTransition = null;
     private Coroutine transitionCoroutine = null;
     private float exposure = 0f;
+    private bool useDebug = false;
 
     public static MainCamera Instance { get => instance; }
 
@@ -135,34 +137,117 @@ public class MainCamera : MonoBehaviour
         previousTargetCube = targetCube;
         isRenderFlipped = TargetCubeRect.size.x < 0;
 
-        List<ParentDetails> parents = new();
         if (renderParents)
         {
             // Traverse through the target cube's parents
-            ContainerCube newTargetCube = targetCube;
-            Rect renderPos = TargetCubeRect;
+
+            List<KeyValuePair<ContainerCube, Rect>> parentAndRects = new(); // This lists store all the parents and their rect
+
+            ContainerCube currentCube = targetCube;
+            Rect currentRect = TargetCubeRect;
             int parentCount = 0;
-            parents.Add(new(newTargetCube, renderPos));
-            while(parentCount < numberOfParentsToTraverse)
+            parentAndRects.Add(new(currentCube, currentRect));
+
+            // If there are exposed adges -> draw infinity background
+            List<CubeMovement.GridDirections> exposedEdges = new();
+            if (currentCube.Parent != null)
             {
-                if (newTargetCube.Parent == null) break;
-                Vector3 oldRenderPos = renderPos.position;
-                renderPos = Relativity.PRectFromCRect(renderPos, newTargetCube.RelativeScale, newTargetCube.RelativePosition);
-                if (newTargetCube.IsHorizFlipped)
+                if (currentCube.Parent is not VoidCube)
                 {
-                    renderPos.width = - renderPos.width;
-                    renderPos.x = oldRenderPos.x - (renderPos.x - oldRenderPos.x);
+                    exposedEdges = Relativity.CheckEdgeOfGrid(currentCube.Parent.Tiling.x, currentCube.Parent.Tiling.y, currentCube.RelativePosition);
+                    if (exposedEdges[0] == CubeMovement.GridDirections.None) exposedEdges.Clear();
                 }
-                newTargetCube = newTargetCube.Parent;
-                parentCount++;
-                parents.Add(new(newTargetCube, renderPos));
+                else exposedEdges.Clear();
             }
-            for(int i = parents.Count - 1; i >= 0; i--)
+            else
             {
-                if (i > 0) parents[i].Cube.CullingCubesOne.Add(parents[i - 1].Cube);
-                var renderRect = parents[i].RenderRect;
-                parents[i].Cube.DrawCube(renderRect, depth, exposure, GetScreenRect());
-                if (i > 0) parents[i].Cube.CullingCubesOne.Remove(parents[i - 1].Cube);
+                if (currentCube is not VoidCube) exposedEdges = Relativity.CheckEdgeOfGrid(1, 1, Vector2Int.zero); // No parent -> all 4 edges is exposed
+            }
+
+            // Traverse through all regular parents
+            while (parentCount < numberOfParentsToTraverse)
+            {
+                if (currentCube.Parent == null) break;
+                Vector3 oldRenderPos = currentRect.position;
+                currentRect = Relativity.PRectFromCRect(currentRect, currentCube.RelativeScale, currentCube.RelativePosition);
+                if (currentCube.IsHorizFlipped)
+                {
+                    currentRect.width = -currentRect.width;
+                    currentRect.x = oldRenderPos.x - (currentRect.x - oldRenderPos.x);
+                }
+
+                currentCube = currentCube.Parent;
+                parentCount++;
+                parentAndRects.Add(new(currentCube, currentRect));
+
+                List<CubeMovement.GridDirections> parentExposedEdges = new();
+                if (currentCube.Parent != null)
+                {
+                    if (currentCube.Parent is VoidCube) exposedEdges.Clear();
+                    else
+                    {
+                        parentExposedEdges = Relativity.CheckEdgeOfGrid(currentCube.Parent.Tiling.x, currentCube.Parent.Tiling.y, currentCube.RelativePosition);
+                        if (parentExposedEdges[0] == CubeMovement.GridDirections.None) parentExposedEdges.Clear();
+                        exposedEdges.RemoveAll(edge => !parentExposedEdges.Contains(edge));
+                    }
+                }
+            }
+
+            // Check if there are exposed edge -> render infinity background
+            List<KeyValuePair<InfinityCube, Rect>> infinityCubes = new(); // This cube stores infinity cubes with there background recy\t
+            if (CubesManager.Instance != null &&
+                exposedEdges.Count > 0)
+            {
+                int infinityLevel = 1;
+                Rect targetCubeRect = parentAndRects[0].Value;
+                while (exposedEdges.Count > 0)
+                {
+                    var infinityCube = CubesManager.Instance.GetInfinityCube(parentAndRects[0].Key, infinityLevel);
+                    if (infinityCube == null || infinityCube.Parent == null) break;
+
+                    Vector3 oldRenderPos = targetCubeRect.position;
+                    var infinityCubeRect = Relativity.PRectFromCRect(targetCubeRect, infinityCube.RelativeScale, infinityCube.RelativePosition);
+
+                    if (currentCube.IsHorizFlipped)
+                    {
+                        infinityCubeRect.width = -infinityCubeRect.width;
+                        infinityCubeRect.x = oldRenderPos.x - (infinityCubeRect.x - oldRenderPos.x);
+                    }
+                    infinityCubes.Add(new(infinityCube, infinityCubeRect));
+
+                    if (infinityCube.Parent is VoidCube) exposedEdges.Clear();
+                    else
+                    {
+                        var infinityCubeExposedEdges = Relativity.CheckEdgeOfGrid(infinityCube.Parent.Tiling.x, infinityCube.Parent.Tiling.y, infinityCube.RelativePosition);
+                        exposedEdges.RemoveAll(edge => !infinityCubeExposedEdges.Contains(edge));
+                    }
+                    //if (exposedEdges.Count == 0) break; // No more exposed edge -> stop rendering infinity cubes
+                    //if (infinityCube.Parent is VoidCube ||
+                    //    Relativity.CheckEdgeOfGrid(infinityCube.Parent.Tiling.x, infinityCube.Parent.Tiling.y, infinityCube.RelativePosition)[0] == CubeMovement.GridDirections.None) break;
+
+                    infinityLevel++;
+                }
+            }
+
+            // Draw infinity backgrounds
+            float infinityBackgroundDepth = infinityBackgroundDepthOffset * infinityCubes.Count;
+            for (int i = infinityCubes.Count - 1; i >= 0; i--)
+            {
+                var infinityCube = infinityCubes[i].Key;
+                var infinityRect = infinityCubes[i].Value;
+                infinityCube.Parent.CullingCubesOne.Add(infinityCube);
+                infinityCube.Parent.DrawCube(infinityRect, depth + infinityBackgroundDepth, exposure, GetScreenRect());
+                infinityBackgroundDepth -= infinityBackgroundDepthOffset;
+                infinityCube.Parent.CullingCubesOne.Remove(infinityCube);
+            }
+
+            // Draw regular cubes
+            for (int i = parentAndRects.Count - 1; i >= 0; i--)
+            {
+                if (i > 0) parentAndRects[i].Key.CullingCubesOne.Add(parentAndRects[i - 1].Key);
+                var renderRect = parentAndRects[i].Value;
+                parentAndRects[i].Key.DrawCube(renderRect, depth, exposure, GetScreenRect());
+                if (i > 0) parentAndRects[i].Key.CullingCubesOne.Remove(parentAndRects[i - 1].Key);
             }
         }
         else
@@ -194,7 +279,7 @@ public class MainCamera : MonoBehaviour
 
     public void SetTransition(CameraTransition newTransition)
     {
-        Debug.Log("Set transition: " + newTransition);
+        if (useDebug) Debug.Log("Set transition: " + newTransition);
         if (newTransition == null || newTransition == currentTransition) return;
         if (currentTransition == null)
         {
@@ -288,15 +373,15 @@ public class MainCamera : MonoBehaviour
         public Rect RenderPosition { get => renderPosition; }
     }
 
-    struct ParentDetails
-    {
-        public ContainerCube Cube;
-        public Rect RenderRect;
+    //struct ParentDetails
+    //{
+    //    public ContainerCube Cube;
+    //    public Rect RenderRect;
 
-        public ParentDetails(ContainerCube cube, Rect renderRect)
-        {
-            this.Cube = cube;
-            this.RenderRect = renderRect;
-        }
-    }
+    //    public ParentDetails(ContainerCube cube, Rect renderRect)
+    //    {
+    //        this.Cube = cube;
+    //        this.RenderRect = renderRect;
+    //    }
+    //}
 }

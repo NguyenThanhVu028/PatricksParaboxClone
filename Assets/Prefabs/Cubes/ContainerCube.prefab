@@ -148,6 +148,7 @@ MonoBehaviour:
   possessableFaceTexture: {fileID: 11400000, guid: 478f5cbe753240a418d149fbab64e0cd, type: 2}
   enableOcclusionCulling: 1
   mirrorEffectID: Mirror
+  surfaceEffectsAnimationIDs: []
   parent: {fileID: 0}
   previousParents: []
   relativeScale: {x: 1, y: 1}
@@ -169,7 +170,7 @@ MonoBehaviour:
   tileTextureSize: 16
   staticTilesRTDepth: 16
   unenterableColor: {r: 0, g: 0, b: 0, a: 0.9}
-  unleavableColor: {r: 1, g: 0, b: 0, a: 0}
+  unleavableColor: {r: 1, g: 1, b: 0, a: 0}
   childCubesInitDetails:
   - cubeID: 1
     isPlayer: 0

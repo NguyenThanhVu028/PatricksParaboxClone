@@ -10,8 +10,8 @@ public class Cube : MonoBehaviour
     // Static: cube that can't be pushed -> Try entering and possessing
     // Empty: cube that other cubes can go through -> Ignore
     public enum CubeTypes { Normal, Static, Empty }
-    public const float playerFaceDepthOffset = -0.11f;
-    public const float surfaceEffectsDepthOffset = -0.12f;
+    public const float playerFaceDepthOffset = 0f;
+    public const float surfaceEffectsDepthOffset = 0f;
 
     [Header("General Info")]
     [SerializeField] protected bool isPlayer = false;
@@ -134,7 +134,6 @@ public class Cube : MonoBehaviour
 
         Vector2 rectSizeInPixel = CustomTextureRenderer2D.ConvertScaleToPixel(position.size);
         if (rectSizeInPixel.x < minPixelToRender || rectSizeInPixel.y < minPixelToRender) return; // Don't draw if the requested rectangle is too small (To avoid infinite rendering)
-
         if (isHorizFlipped) position.width = - position.width;
         DrawCube(position, depth, exposure, scissorRect);
         DrawPlayerFace(position, depth + playerFaceDepthOffset, exposure, scissorRect);
@@ -222,11 +221,51 @@ public class Cube : MonoBehaviour
             var currentRecord = historyManager.GetCurrentRecord();
             if (currentRecord != null)
             {
-                currentRecord.AddHistoryEvent(this, (previousParents.Count > 0) ? previousParents[0].Cube : null, relativePosition, relativeScale, isHorizFlipped, true);
-                currentRecord.AddHistoryEvent(targetCube, (targetCube.PreviousParents.Count > 0) ? targetCube.PreviousParents[0].Cube : null, targetCube.RelativePosition, targetCube.RelativeScale, targetCube.IsHorizFlipped, false);
+                currentRecord.AddHistoryEvent(
+                    this, 
+                    //(previousParents.Count > 0) ? previousParents[0].Cube : null,
+                    parent,
+                    relativePosition, 
+                    relativeScale, 
+                    isHorizFlipped, 
+                    true,
+                    (this is ContainerCube oldContainer) ? oldContainer.IsEnterable : true,
+                    (this is ContainerCube oldContainer2) ? oldContainer2.IsLeavable : true
+                    );
+                currentRecord.AddHistoryEvent(
+                    targetCube, 
+                    //(targetCube.PreviousParents.Count > 0) ? targetCube.PreviousParents[0].Cube : null, 
+                    targetCube.Parent,
+                    targetCube.RelativePosition, 
+                    targetCube.RelativeScale, 
+                    targetCube.IsHorizFlipped, 
+                    false,
+                    (targetCube is ContainerCube oldTargetContainer) ? oldTargetContainer.IsEnterable : true,
+                    (targetCube is ContainerCube oldTargetContainer2) ? oldTargetContainer2.IsLeavable : true
+                    );
             }
-            historyManager.RecordNewEvent(this, (previousParents.Count > 0) ? previousParents[0].Cube : null, relativePosition, relativeScale, isHorizFlipped, false);
-            historyManager.RecordNewEvent(targetCube, (targetCube.PreviousParents.Count > 0) ? targetCube.PreviousParents[0].Cube : null, targetCube.RelativePosition, targetCube.RelativeScale, targetCube.IsHorizFlipped, true);
+            historyManager.RecordNewEvent(
+                this, 
+                //(previousParents.Count > 0) ? previousParents[0].Cube : null, 
+                parent,
+                relativePosition, 
+                relativeScale, 
+                isHorizFlipped, 
+                false,
+                (this is ContainerCube newContainer) ? newContainer.IsEnterable : true,
+                (this is ContainerCube newContainer2) ? newContainer2.IsLeavable : true
+                );
+            historyManager.RecordNewEvent(
+                targetCube, 
+                //(targetCube.PreviousParents.Count > 0) ? targetCube.PreviousParents[0].Cube : null, 
+                targetCube.Parent,
+                targetCube.RelativePosition, 
+                targetCube.RelativeScale, 
+                targetCube.IsHorizFlipped, 
+                true,
+                (targetCube is ContainerCube newTargetContainer) ? newTargetContainer.IsEnterable : true,
+                (targetCube is ContainerCube newTargetContainer2) ? newTargetContainer2.IsLeavable : true
+                );
         }
         if (historyManager != null) historyManager.NormalArchiveHistoryRecord();
         Debug.Log("Start possessing!");

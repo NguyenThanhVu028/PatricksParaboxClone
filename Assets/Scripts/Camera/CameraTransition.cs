@@ -36,7 +36,7 @@ public class ZoomingTransition : CameraTransition
     {
         if (mainCamera == null || mainCamera.RenderMode != MainCamera.MainCameraRenderMode.SingleCube) return null;
 
-        if (cubesToTraverse == null || cubesToTraverse.Count <= 1 || cubesToTraverse[cubesToTraverse.Count - 1].Cube == null || cubesToTraverse[cubesToTraverse.Count - 1].Cube == cubesToTraverse[0].Cube) return null;
+        if (cubesToTraverse == null || cubesToTraverse.Count <= 1 || cubesToTraverse[cubesToTraverse.Count - 1].Cube == null || cubesToTraverse[cubesToTraverse.Count - 1].Cube == mainCamera.TargetCube) return null;
 
         // Traverse the previous parents list to calculate new target cube rect
         targetCubeRect = mainCamera.TargetCubeRect;
@@ -201,7 +201,7 @@ public class FadeTransition : CameraTransition
         if (targetTime <= 0) yield break;
 
         if (mainCamera == null || mainCamera.RenderMode != MainCamera.MainCameraRenderMode.SingleCube) yield break;
-        if (cubesToTraverse == null || cubesToTraverse.Count <= 1 || cubesToTraverse[cubesToTraverse.Count - 1].Cube == null || cubesToTraverse[cubesToTraverse.Count - 1].Cube == cubesToTraverse[0].Cube) yield break;
+        if (cubesToTraverse == null || cubesToTraverse.Count <= 1 || cubesToTraverse[cubesToTraverse.Count - 1].Cube == null || cubesToTraverse[cubesToTraverse.Count - 1].Cube == mainCamera.TargetCube) yield break;
 
         // Traverse the previous parents list to check for isHorizFlipped status
         bool isNegative = mainCamera.TargetCubeRect.size.x < 0;

@@ -1,8 +1,7 @@
 using UnityEditor;
-using UnityEngine;
 
-[CustomEditor(typeof(CloneCube), true)]
-public class CloneCubeEditor : Editor
+[CustomEditor(typeof(InfinityCube))]
+public class InfinityCubeEditor : Editor
 {
     #region SerializedProperties
     // General Infos
@@ -13,12 +12,10 @@ public class CloneCubeEditor : Editor
     SerializedProperty isLeavable;
 
     // Rendering
-    SerializedProperty isHorizFlipped;
     SerializedProperty minPixelToRender;
     SerializedProperty normalMat;
     SerializedProperty outlineMat;
     SerializedProperty cubeMesh;
-    SerializedProperty possessableFaceTexture;
     SerializedProperty unenterableColor;
     SerializedProperty unleavableColor;
     SerializedProperty enableOcclusionCulling;
@@ -31,8 +28,12 @@ public class CloneCubeEditor : Editor
     SerializedProperty relativePosition;
 
     // Other settings
-    SerializedProperty possessingTime;
     SerializedProperty onInit;
+
+    // Infinity settings
+    SerializedProperty level;
+    SerializedProperty infinityTexture;
+    SerializedProperty infinityTextureHeightRatio;
 
     #endregion
 
@@ -48,12 +49,10 @@ public class CloneCubeEditor : Editor
         isLeavable = serializedObject.FindProperty("isLeavable");
 
         // Rendering
-        isHorizFlipped = serializedObject.FindProperty("isHorizFlipped");
         minPixelToRender = serializedObject.FindProperty("minPixelToRender");
         normalMat = serializedObject.FindProperty("normalMat");
         outlineMat = serializedObject.FindProperty("outlineMat");
         cubeMesh = serializedObject.FindProperty("cubeMesh");
-        possessableFaceTexture = serializedObject.FindProperty("possessableFaceTexture");
         unenterableColor = serializedObject.FindProperty("unenterableColor");
         unleavableColor = serializedObject.FindProperty("unleavableColor");
         enableOcclusionCulling = serializedObject.FindProperty("enableOcclusionCulling");
@@ -66,8 +65,12 @@ public class CloneCubeEditor : Editor
         relativePosition = serializedObject.FindProperty("relativePosition");
 
         // Other settings
-        possessingTime = serializedObject.FindProperty("possessingTime");
         onInit = serializedObject.FindProperty("onInit");
+
+        // Infinity settings
+        level = serializedObject.FindProperty("level");
+        infinityTexture = serializedObject.FindProperty("infinityTexture");
+        infinityTextureHeightRatio = serializedObject.FindProperty("infinityTextureHeightRatio");
 
     }
     public override void OnInspectorGUI()
@@ -84,12 +87,10 @@ public class CloneCubeEditor : Editor
         EditorGUILayout.Space();
 
         EditorGUILayout.LabelField("Rendering", EditorStyles.boldLabel);
-        EditorGUILayout.PropertyField(isHorizFlipped);
         EditorGUILayout.PropertyField(minPixelToRender);
         EditorGUILayout.PropertyField(normalMat);
         EditorGUILayout.PropertyField(outlineMat);
         EditorGUILayout.PropertyField(cubeMesh);
-        EditorGUILayout.PropertyField(possessableFaceTexture);
         EditorGUILayout.PropertyField(unenterableColor);
         EditorGUILayout.PropertyField(unleavableColor);
         EditorGUILayout.PropertyField(enableOcclusionCulling);
@@ -103,8 +104,13 @@ public class CloneCubeEditor : Editor
         EditorGUILayout.PropertyField(relativePosition);
 
         EditorGUILayout.Space();
+        EditorGUILayout.LabelField("Infinity Settings", EditorStyles.boldLabel);
+        EditorGUILayout.PropertyField(level);
+        EditorGUILayout.PropertyField(infinityTexture);
+        EditorGUILayout.PropertyField(infinityTextureHeightRatio);
 
-        EditorGUILayout.PropertyField(possessingTime);
+        EditorGUILayout.Space();
+
         EditorGUILayout.PropertyField(onInit);
 
         if (EditorGUI.EndChangeCheck())

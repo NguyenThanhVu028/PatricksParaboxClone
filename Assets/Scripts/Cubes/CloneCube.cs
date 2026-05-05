@@ -4,11 +4,16 @@ using UnityEngine.Rendering;
 
 public class CloneCube : ContainerCube
 {
-    [SerializeField] ContainerCube mainContainerCube;
+    [SerializeField] protected ContainerCube mainContainerCube;
 
     private Cube requestedCube;
 
     public override void Init()
+    {
+        base.Init();
+        InitCloneCube();
+    }
+    private void InitCloneCube()
     {
         if (hasInit) return;
         //if (mainContainerCube != null) mainContainerCube.OnFinishedDrawing.AddListener(OnMainCubeDraw);
@@ -16,7 +21,6 @@ public class CloneCube : ContainerCube
         {
             mainContainerCube.OnBeginDrawingChildCube += OnMainCubeDrawChildCube;
         }
-        base.Init();
         hasInit = true;
     }
 
@@ -33,16 +37,16 @@ public class CloneCube : ContainerCube
         }
     }
 
-    protected override void DrawFloor(Rect position, float depth, float exposure, Rect? scissorRect)
+    public override void DrawFloor(Rect position, float depth, float exposure, Rect? scissorRect)
     {
-        if (mainContainerCube == null || mainContainerCube.FloorTexture == null || mainContainerCube.FloorTexture.GetTexture() == null) return;
-        CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, mainContainerCube.FloorTexture.GetTexture(), mainContainerCube.RealCubeColor, exposure, position.position, position.size, depth, scissorRect);
+        if (mainContainerCube == null) return;
+        mainContainerCube.DrawFloor(position, depth + floorDepthOffset, exposure, scissorRect);
     }
 
-    protected override void DrawWalls(Rect position, float depth, float exposure, Rect? scissorRect)
+    public override void DrawWalls(Rect position, float depth, float exposure, Rect? scissorRect)
     {
-        if (mainContainerCube == null || mainContainerCube.StaticTexturesRT == null) return;
-        CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, mainContainerCube.StaticTexturesRT, mainContainerCube.RealCubeColor, exposure, position.position, position.size, depth, scissorRect);
+        if (mainContainerCube == null) return;
+        mainContainerCube.DrawWalls(position, depth + wallDepthOffset, exposure, scissorRect);
     }
 
     protected override void DrawChildCubes(Rect position, float depth, float exposure, Rect? scissorRect)
@@ -87,9 +91,9 @@ public class CloneCube : ContainerCube
                 Vector2 normalizedRPos = (movingCube.RelativePosition).normalized;
                 idealRPos = new(movingCube.RelativePosition.x - normalizedRPos.x * movingCube.RelativeScale.x + normalizedRPos.x * idealRScl.x,
                                 movingCube.RelativePosition.y - normalizedRPos.y * movingCube.RelativeScale.y + normalizedRPos.y * idealRScl.y);
-                movingCube.Draw(Relativity.CRectFromPRect(position, idealRScl, idealRPos), depth - 0.1f, exposure, CustomTextureRenderer2D.GetOverlapRect(scissorRect, position));
+                movingCube.Draw(Relativity.CRectFromPRect(position, idealRScl, idealRPos), depth + movingChildCubesDepthOffset, exposure, CustomTextureRenderer2D.GetOverlapRect(scissorRect, position));
             }
-            else movingCube.Draw(Relativity.CRectFromPRect(position, movingCube.RelativeScale, movingCube.RelativePosition), depth - 0.1f, exposure, scissorRect);
+            else movingCube.Draw(Relativity.CRectFromPRect(position, movingCube.RelativeScale, movingCube.RelativePosition), depth + movingChildCubesDepthOffset, exposure, scissorRect);
         }
 
         // Draw the requested cube
@@ -124,9 +128,9 @@ public class CloneCube : ContainerCube
         scissorRect = CustomTextureRenderer2D.GetOverlapRect(scissorRect, position);
     }
 
-    public override float RequestToMove(Vector2 cRPos, Vector2 cRScl, Cube requestedCube, CubeMovement.MovementDirections direction, bool external = false, bool specialMove = false)
+    public override float RequestToMove(Vector2 cRPos, Vector2 cRScl, Cube requestedCube, CubeMovement.GridDirections direction, bool external = false, bool specialMove = false)
     {
-        if (mainContainerCube == null) return 0;
+        if (mainContainerCube == null || !isEnterable) return 0;
 
         // Set up camera transition
         if (requestedCube.IsPlayer && MainCamera.Instance != null)
@@ -147,6 +151,7 @@ public class CloneCube : ContainerCube
 
         if (finalTargetTime <= 0)
         {
+            requestedCube.RemovePreviousParent(this);
             return 0;
         }
 

@@ -55,7 +55,7 @@ public class HistoryTranslator : MonoBehaviour
                 Debug.Log($"{historyEvent.TargetCube.Parent} removes {historyEvent.TargetCube}");
                 historyEvent.TargetCube.Parent.ChildGrid.RemoveChild(
                     (child) => child.Cube == historyEvent.TargetCube,
-                    (ref ContainerCube.ChildCubeDetails child) => { child.Cube = null; child.MovingDirection = CubeMovement.MovementDirections.None; }
+                    (ref ContainerCube.ChildCubeDetails child) => { child.Cube = null; child.MovingDirection = CubeMovement.GridDirections.None; }
                     );
             }
 
@@ -70,7 +70,7 @@ public class HistoryTranslator : MonoBehaviour
             if (!historyEvent.PreviousParent.ChildGrid.CheckValidGridPosition(targetCubePrevPosInParent.x, targetCubePrevPosInParent.y)) return;
             // Return target cube back to its previous parent cube
             historyEvent.PreviousParent.ChildCubes[targetCubePrevPosInParent.x, targetCubePrevPosInParent.y].Cube = historyEvent.TargetCube;
-            historyEvent.PreviousParent.ChildCubes[targetCubePrevPosInParent.x, targetCubePrevPosInParent.y].MovingDirection = CubeMovement.MovementDirections.None;
+            historyEvent.PreviousParent.ChildCubes[targetCubePrevPosInParent.x, targetCubePrevPosInParent.y].MovingDirection = CubeMovement.GridDirections.None;
             historyEvent.TargetCube.Parent = historyEvent.PreviousParent;
             historyEvent.TargetCube.PreviousParents.Clear();
             historyEvent.TargetCube.PreviousParents.Add(new(CubeMovement.LayerDirections.In, historyEvent.PreviousParent));
@@ -79,6 +79,11 @@ public class HistoryTranslator : MonoBehaviour
             historyEvent.TargetCube.RelativeScale = historyEvent.PreviousRScl;
             historyEvent.TargetCube.IsHorizFlipped = historyEvent.IsHorizFlipped;
             historyEvent.TargetCube.IsPlayer = historyEvent.IsPlayer;
+            if (historyEvent.TargetCube is ContainerCube containerCube)
+            {
+                containerCube.IsEnterable = historyEvent.IsEnterable;
+                containerCube.IsLeavable = historyEvent.IsLeavable;
+            }
             ResetCameraTarget(historyEvent);
         }
         ResetCameraStatus(historyRecord);

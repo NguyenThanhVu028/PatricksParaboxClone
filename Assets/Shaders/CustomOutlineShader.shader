@@ -6,6 +6,7 @@ Shader "Custom/CustomOutlineShader"
         _Color ("Tint", Color) = (1,1,1,1)
         _Exposure ("Exposure", float) = 0
         [Toggle] _IsHighlighted ("Is Highlighted", float) = 0
+        [Toggle] _IsHorizFlipped ("Is Horizontally Flipped", float) = 0
         _BorderHighlightColor ("Highlight Color", Color) = (1, 1, 1, 1)
         _BorderThickness ("Border Thickness", float) = 5
         _BorderMaxPercentThickness ("Border Max Percent Thickness", float) = 0.02
@@ -47,6 +48,7 @@ Shader "Custom/CustomOutlineShader"
             UNITY_INSTANCING_BUFFER_START(Props)
                 UNITY_DEFINE_INSTANCED_PROP(fixed4, _Color)
                 UNITY_DEFINE_INSTANCED_PROP(float, _IsHighlighted)
+                UNITY_DEFINE_INSTANCED_PROP(float, _IsHorizFlipped)
                 UNITY_DEFINE_INSTANCED_PROP(fixed4, _BorderHighlightColor)
                 UNITY_DEFINE_INSTANCED_PROP(float, _Exposure)
             UNITY_INSTANCING_BUFFER_END(Props)
@@ -79,16 +81,26 @@ Shader "Custom/CustomOutlineShader"
                 // Calculate border and border darkness
                 float border = 0;
                 float borderDarkness = _BorderDarkness;
-                // The border is brighter if it's either the top or left edge -> Create a 3D illusion
+                // The border is brighter if it's either the top or left edge and not horiz flipped -> Create a 3D illusion
 
-                border =    step(1.0 - borderThickness, i.uv.x) + 
-                            step(i.uv.y, borderThickness);
+                // Check right edge
+                border =    step(1.0 - borderThickness, i.uv.x);
+                if (border && UNITY_ACCESS_INSTANCED_PROP(Props, _IsHorizFlipped) >= 1) borderDarkness = borderDarkness + _BorderShininessOffset;
+                // Check bottom edge
+                border = border + step(i.uv.y, borderThickness);
                 
-                if (!(border > 0))
+                if (!(border > 0)) // This pixel is at the top or left edge
                 {
-                    border =    step(1.0 - borderThickness, i.uv.y) + 
-                                step(i.uv.x, borderThickness);
-                    borderDarkness = borderDarkness + _BorderShininessOffset;
+                    border =    step(i.uv.x, borderThickness);
+                    if (border > 0)
+                    {
+                        if (UNITY_ACCESS_INSTANCED_PROP(Props, _IsHorizFlipped) < 1) borderDarkness = borderDarkness + _BorderShininessOffset;
+                    }
+                    else
+                    {
+                        border = border + step(1.0 - borderThickness, i.uv.y);
+                        borderDarkness = borderDarkness + _BorderShininessOffset;
+                    }
                 }
 
                 float mask = saturate(border); // Clamp the border value between 0 and 1
