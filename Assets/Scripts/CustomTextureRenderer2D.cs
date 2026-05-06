@@ -53,7 +53,7 @@ public class CustomTextureRenderer2D
         rp.matProps = matProps;
 
         //CommandBuffer cmd = new();
-        CommandBuffer cmd = CustomRendererFeature.CustomRenderPass.CommandBuffer;
+        RasterCommandBuffer cmd = CustomRendererFeature.CustomRenderPass.CommandBuffer;
         if (worldSpaceScissorRect != null)
         {
             cmd.EnableScissorRect(ScreenspaceRectFromWorldspace(worldSpaceScissorRect.Value));

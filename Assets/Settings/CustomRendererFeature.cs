@@ -2,20 +2,55 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.RenderGraphModule;
 using UnityEngine.Rendering.Universal;
 
 public class CustomRendererFeature : ScriptableRendererFeature
 {
     public class CustomRenderPass : ScriptableRenderPass
     {
-        public static CommandBuffer CommandBuffer;
+        //public static CommandBuffer CommandBuffer;
         public static UnityEvent OnExecuteCmd = new();
-        public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
+
+        public static RasterCommandBuffer CommandBuffer;
+        //public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
+        //{
+        //    CommandBuffer = CommandBufferPool.Get("Custom Render Pass");
+        //    OnExecuteCmd.Invoke();
+        //    context.ExecuteCommandBuffer(CommandBuffer);
+        //    CommandBufferPool.Release(CommandBuffer); // Always release it back to the pool
+        //}
+
+        public class PassData { }
+
+        public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)
         {
-            CommandBuffer = CommandBufferPool.Get("Custom Render Pass");
-            OnExecuteCmd.Invoke();
-            context.ExecuteCommandBuffer(CommandBuffer);
-            CommandBufferPool.Release(CommandBuffer); // Always release it back to the pool
+            using (var builder = renderGraph.AddRasterRenderPass<PassData>("Custom Render Pass", out var passData))
+            {
+                builder.AllowPassCulling(false);
+
+                UniversalResourceData resourceData = frameData.Get<UniversalResourceData>();
+
+                if (resourceData.activeColorTexture.IsValid())
+                {
+                    builder.SetRenderAttachment(resourceData.activeColorTexture, 0);
+                }
+
+                if (resourceData.activeDepthTexture.IsValid())
+                {
+                    builder.SetRenderAttachmentDepth(resourceData.activeDepthTexture, AccessFlags.Write);
+                }
+
+                builder.SetRenderFunc((PassData data, RasterGraphContext context) =>
+                {
+                    if (OnExecuteCmd != null)
+                    {
+                        CommandBuffer = context.cmd;
+                        OnExecuteCmd.Invoke();
+
+                    }
+                });
+            }
         }
     }
 
