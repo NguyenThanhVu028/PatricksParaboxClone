@@ -10,6 +10,7 @@ public class CustomRendererFeature : ScriptableRendererFeature
     public class CustomRenderPass : ScriptableRenderPass
     {
         //public static CommandBuffer CommandBuffer;
+        public static UnityEvent OnPrepareExecuteCmd = new();
         public static UnityEvent OnExecuteCmd = new();
 
         public static RasterCommandBuffer CommandBuffer;
@@ -46,8 +47,8 @@ public class CustomRendererFeature : ScriptableRendererFeature
                     if (OnExecuteCmd != null)
                     {
                         CommandBuffer = context.cmd;
+                        OnPrepareExecuteCmd.Invoke();
                         OnExecuteCmd.Invoke();
-
                     }
                 });
             }

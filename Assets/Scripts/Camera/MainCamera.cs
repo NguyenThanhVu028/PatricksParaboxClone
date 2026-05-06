@@ -77,12 +77,14 @@ public class MainCamera : MonoBehaviour
     private void OnEnable()
     {
         exposure = defaultExposure;
-        CustomRendererFeature.CustomRenderPass.OnExecuteCmd.AddListener(OnRender);
+        CustomRendererFeature.CustomRenderPass.OnPrepareExecuteCmd.AddListener(OnRender);
+        CustomRendererFeature.CustomRenderPass.OnExecuteCmd.AddListener(OnFinishRender);
     }
 
     private void OnDisable()
     {
-        CustomRendererFeature.CustomRenderPass.OnExecuteCmd.RemoveListener(OnRender);
+        CustomRendererFeature.CustomRenderPass.OnPrepareExecuteCmd.RemoveListener(OnRender);
+        CustomRendererFeature.CustomRenderPass.OnExecuteCmd.RemoveListener(OnFinishRender);
     }
     private void OnRender()
     {
@@ -256,6 +258,11 @@ public class MainCamera : MonoBehaviour
             if (isHorizFlipped) renderPos.size = new(-renderPos.size.x, renderPos.size.y);
             targetCube.Draw(renderPos, depth, exposure, GetScreenRect());
         }
+    }
+
+    private void OnFinishRender()
+    {
+        CustomTextureRenderer2D.OnRenderOnScreen();
     }
 
     public void SetNewTargetCube(ContainerCube newTarget)
