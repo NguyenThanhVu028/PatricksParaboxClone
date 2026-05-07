@@ -11,6 +11,7 @@ public class CustomTextureRenderer2D
     public static readonly int isHorizedFlippedID = Shader.PropertyToID("_IsHorizFlipped");
     public static readonly int borderHightlightColorID = Shader.PropertyToID("_BorderHighlightColor");
     public static readonly int exposureID = Shader.PropertyToID("_Exposure");
+    public static readonly int defaultPriority = 0;
 
     private static List<RenderMeshCall> renderMeshCalls = new();
 

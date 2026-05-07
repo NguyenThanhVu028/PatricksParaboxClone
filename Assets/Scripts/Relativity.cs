@@ -81,8 +81,8 @@ public static class Relativity
     public static Vector2 CRealPosFromCRPos(Rect pRect, Vector2 cRPos)
     {
         Vector2 cRealPos = new();
-        cRealPos.x = pRect.x + cRPos.x * pRect.width;
-        cRealPos.y = pRect.y + cRPos.y * pRect.height;
+        cRealPos.x = pRect.x + cRPos.x * pRect.width * 0.5f;
+        cRealPos.y = pRect.y + cRPos.y * pRect.height * 0.5f;
         return cRealPos;
     }
     // Get relative position to a parent to its child cube
@@ -127,5 +127,14 @@ public static class Relativity
 
         if (edges.Count == 0) edges.Add(CubeMovement.GridDirections.None);
         return edges;
+    }
+
+    public static Vector2 RPosBySample(Vector2 sampleRPosFrom, Vector2 sampleRPosTo, Vector2 sampleRScl, Vector2 rPosFrom, Vector2 rScl)
+    {
+        Vector2 result = new();
+        Vector2 rSclRatio = new Vector2(sampleRScl.x / rScl.x, sampleRScl.y / rScl.y);
+        result.x = rPosFrom.x + (sampleRPosTo.x - sampleRPosFrom.x) * rSclRatio.x;
+        result.y = rPosFrom.y + (sampleRPosTo.y - sampleRPosFrom.y) * rSclRatio.y;
+        return result;
     }
 }

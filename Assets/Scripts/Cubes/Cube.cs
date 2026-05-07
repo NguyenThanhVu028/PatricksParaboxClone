@@ -128,47 +128,46 @@ public class Cube : MonoBehaviour
         IsHorizFlipped = isHorizFlipped; // To add mirror effect if needed
     }
 
-    public virtual void Draw(Rect position, float depth = 0, float exposure = 0, Rect? scissorRect = null)
+    public virtual void Draw(Rect position, int priority, float depth = 0, float exposure = 0, Rect? scissorRect = null)
     {
         if (!CustomTextureRenderer2D.CheckVisibility(position.position, position.size) && enableOcclusionCulling) return;
 
         Vector2 rectSizeInPixel = CustomTextureRenderer2D.ConvertScaleToPixel(position.size);
         if (rectSizeInPixel.x < minPixelToRender || rectSizeInPixel.y < minPixelToRender) return; // Don't draw if the requested rectangle is too small (To avoid infinite rendering)
         if (isHorizFlipped) position.width = - position.width;
-        DrawCube(position, depth, exposure, scissorRect);
-        DrawPlayerFace(position, depth + playerFaceDepthOffset, exposure, scissorRect);
-        DrawSurfaceEffects(position, depth + surfaceEffectsDepthOffset, exposure, scissorRect);
+        DrawCube(position, priority, depth, exposure, scissorRect);
+        DrawPlayerFace(position, priority, depth + playerFaceDepthOffset, exposure, scissorRect);
+        DrawSurfaceEffects(position, priority, depth + surfaceEffectsDepthOffset, exposure, scissorRect);
 
         onFinishedDrawing.Invoke(position, depth, exposure, scissorRect);
     }
-    public virtual void DrawCube(Rect position, float depth, float exposure, Rect? scissorRect)
+    public virtual void DrawCube(Rect position, int priority, float depth, float exposure, Rect? scissorRect)
     {
         if (defaultTexture != null && defaultTexture.GetTexture() != null)
         {
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, defaultTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect);
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, defaultTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
         }
     }
-    public virtual void DrawPlayerFace(Rect position, float depth, float exposure, Rect? scissorRect)
+    public virtual void DrawPlayerFace(Rect position, int priority, float depth, float exposure, Rect? scissorRect)
     {
         // Get player face texture
         if (IsPlayer && faceTexture != null)
         {
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, faceTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect);
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, faceTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
         }
         else if (!IsPlayer && canBePlayer && possessableFaceTexture != null)
         {
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, possessableFaceTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect);
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, possessableFaceTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
         }
     }
-    public virtual void DrawSurfaceEffects(Rect position, float depth, float exposure, Rect? scissorRect)
+    public virtual void DrawSurfaceEffects(Rect position, int priority, float depth, float exposure, Rect? scissorRect)
     {
         var cubeColor = Color.white;
-        //if (colorPalette != null) cubeColor = colorPalette.GetColor(this.cubeColor);
         foreach( var surfaceEffect in surfaceEffects)
         {
             if (surfaceEffect != null)
             {
-                CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, surfaceEffect.GetTexture(), cubeColor, exposure, position.position, position.size, depth, scissorRect);
+                CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, surfaceEffect.GetTexture(), cubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
             }
         }
     }

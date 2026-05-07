@@ -118,7 +118,7 @@ public class MainCamera : MonoBehaviour
                 renderPos.position = new(-renderPos.position.x, renderPos.position.y);
             }
             if (cubeRenderDetail.TargetCube.IsHorizFlipped) renderPos.size = new(-renderPos.size.x, renderPos.size.y);
-            cubeRenderDetail.TargetCube.Draw(renderPos, depth, exposure, GetScreenRect());
+            cubeRenderDetail.TargetCube.Draw(renderPos, CustomTextureRenderer2D.defaultPriority, depth, exposure, GetScreenRect());
         }
     }
 
@@ -238,7 +238,7 @@ public class MainCamera : MonoBehaviour
                 var infinityCube = infinityCubes[i].Key;
                 var infinityRect = infinityCubes[i].Value;
                 infinityCube.Parent.CullingCubesOne.Add(infinityCube);
-                infinityCube.Parent.DrawCube(infinityRect, depth + infinityBackgroundDepth, exposure, GetScreenRect());
+                infinityCube.Parent.DrawCube(infinityRect, CustomTextureRenderer2D.defaultPriority, depth + infinityBackgroundDepth, exposure, GetScreenRect());
                 infinityBackgroundDepth -= infinityBackgroundDepthOffset;
                 infinityCube.Parent.CullingCubesOne.Remove(infinityCube);
             }
@@ -248,7 +248,7 @@ public class MainCamera : MonoBehaviour
             {
                 if (i > 0) parentAndRects[i].Key.CullingCubesOne.Add(parentAndRects[i - 1].Key);
                 var renderRect = parentAndRects[i].Value;
-                parentAndRects[i].Key.DrawCube(renderRect, depth, exposure, GetScreenRect());
+                parentAndRects[i].Key.DrawCube(renderRect, CustomTextureRenderer2D.defaultPriority, depth, exposure, GetScreenRect());
                 if (i > 0) parentAndRects[i].Key.CullingCubesOne.Remove(parentAndRects[i - 1].Key);
             }
         }
@@ -256,7 +256,7 @@ public class MainCamera : MonoBehaviour
         {
             Rect renderPos = renderRect;
             if (isHorizFlipped) renderPos.size = new(-renderPos.size.x, renderPos.size.y);
-            targetCube.Draw(renderPos, depth, exposure, GetScreenRect());
+            targetCube.Draw(renderPos, CustomTextureRenderer2D.defaultPriority, depth, exposure, GetScreenRect());
         }
     }
 

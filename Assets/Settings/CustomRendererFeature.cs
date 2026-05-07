@@ -14,13 +14,6 @@ public class CustomRendererFeature : ScriptableRendererFeature
         public static UnityEvent OnExecuteCmd = new();
 
         public static RasterCommandBuffer CommandBuffer;
-        //public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
-        //{
-        //    CommandBuffer = CommandBufferPool.Get("Custom Render Pass");
-        //    OnExecuteCmd.Invoke();
-        //    context.ExecuteCommandBuffer(CommandBuffer);
-        //    CommandBufferPool.Release(CommandBuffer); // Always release it back to the pool
-        //}
 
         public class PassData { }
 

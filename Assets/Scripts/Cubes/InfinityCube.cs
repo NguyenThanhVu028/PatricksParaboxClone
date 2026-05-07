@@ -21,15 +21,15 @@ public class InfinityCube : CloneCube
         isLeavable = false;
     }
 
-    public override void Draw(Rect position, float depth = 0, float exposure = 0, Rect? scissorRect = null)
+    public override void Draw(Rect position, int priority, float depth = 0, float exposure = 0, Rect? scissorRect = null)
     {
         if (mainContainerCube != null) isHorizFlipped = mainContainerCube.IsHorizFlipped;
-        base.Draw(position, depth, exposure, scissorRect);
+        base.Draw(position, priority, depth, exposure, scissorRect);
     }
 
-    public override void DrawSurfaceEffects(Rect position, float depth, float exposure, Rect? scissorRect)
+    public override void DrawSurfaceEffects(Rect position, int priority, float depth, float exposure, Rect? scissorRect)
     {
-        base.DrawSurfaceEffects(position, depth, exposure, scissorRect);
+        base.DrawSurfaceEffects(position, priority, depth, exposure, scissorRect);
 
         if (level <= 0 || infinityTexture == null) return;
         // Draw the infinity texture
@@ -55,7 +55,7 @@ public class InfinityCube : CloneCube
         {
             Rect iconRect = Relativity.CRectFromPRect(position, iconAdjustedRScl, iconStartingPointRPos + Vector2.down * i * iconAdjustedRScl.y * 2.0f * infinityTextureHeightRatio);
             Rect iconScissorRect = iconRect; iconScissorRect.height *= infinityTextureHeightRatio;
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, infinityTexture.GetTexture(), Color.white, exposure, iconRect.position, iconRect.size, depth, CustomTextureRenderer2D.GetOverlapRect(scissorRect, iconScissorRect));
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, infinityTexture.GetTexture(), Color.white, exposure, iconRect.position, iconRect.size, depth, CustomTextureRenderer2D.GetOverlapRect(scissorRect, iconScissorRect), priority);
         }
     }
 

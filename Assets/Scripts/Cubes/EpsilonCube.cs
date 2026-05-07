@@ -12,9 +12,9 @@ public class EpsilonCube : ContainerCube
     public ContainerCube MainContainerCube { get => mainContainerCube; set => mainContainerCube = value; }
     public int Level { get => level; set => level = value; }
 
-    public override void DrawSurfaceEffects(Rect position, float depth, float exposure, Rect? scissorRect)
+    public override void DrawSurfaceEffects(Rect position, int priority, float depth, float exposure, Rect? scissorRect)
     {
-        base.DrawSurfaceEffects(position, depth, exposure, scissorRect);
+        base.DrawSurfaceEffects(position, priority, depth, exposure, scissorRect);
 
         if (level <= 0 || epsilonTexture == null) return;
         // Draw the epsilon texture
@@ -40,7 +40,7 @@ public class EpsilonCube : ContainerCube
         {
             Rect iconRect = Relativity.CRectFromPRect(position, iconAdjustedRScl, iconStartingPointRPos + Vector2.down * i * iconAdjustedRScl.y * 2.0f * epsilonTextureHeightRatio);
             Rect iconScissorRect = iconRect; iconScissorRect.height *= epsilonTextureHeightRatio;
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, epsilonTexture.GetTexture(), Color.white, exposure, iconRect.position, iconRect.size, depth, CustomTextureRenderer2D.GetOverlapRect(scissorRect, iconScissorRect));
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, epsilonTexture.GetTexture(), Color.white, exposure, iconRect.position, iconRect.size, depth, CustomTextureRenderer2D.GetOverlapRect(scissorRect, iconScissorRect), priority);
         }
     }
 
