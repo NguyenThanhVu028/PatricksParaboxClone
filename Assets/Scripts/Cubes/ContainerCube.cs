@@ -233,18 +233,41 @@ public class ContainerCube : Cube
         return wallsGrid;
     }
 
+    public override CubeProperties GetEmptyProperties()
+    {
+        return new ContainerCubeProperties();
+    }
+
+    public override CubeProperties GetCubeProperties()
+    {
+        ContainerCubeProperties properties = new ContainerCubeProperties();
+        properties.CopyProperties(this);
+        return properties;
+    }
+
+    public override void ApplyNewProperties(CubeProperties newProperties)
+    {
+        base.ApplyNewProperties(newProperties);
+
+        if (newProperties is ContainerCubeProperties containerCubeProperties)
+        {
+            isEnterable = containerCubeProperties.IsEnterable;
+            isLeavable = containerCubeProperties.IsLeavable;
+        }
+    }
+
     // Modification functions
-    public virtual void ModifyChildCubeEnter(Cube childCube)
+    public virtual void ModifyChildCubeEnter(CubeProperties childCube)
     {
         if (childCube == null) return;
         if (isHorizFlipped) childCube.IsHorizFlipped = !childCube.IsHorizFlipped;
     }
-    public virtual void ModifyChildCubeExit(Cube childCube)
+    public virtual void ModifyChildCubeExit(CubeProperties childCube)
     {
         if (childCube == null) return;
         if (isHorizFlipped) childCube.IsHorizFlipped = !childCube.IsHorizFlipped;
     }
-    public virtual void ModifyChildCubeInnerEnter(Cube childCube) { }
+    public virtual void ModifyChildCubeInnerEnter(CubeProperties childCube) { }
 
     // Draw functions
     public override void DrawCube(Rect position, int priority, float depth, float exposure, Rect? scissorRect)
@@ -865,7 +888,36 @@ public class ContainerCube : Cube
 
         return finalTargetTime;
     }
-    
+
+
+    public class ContainerCubeProperties : CubeProperties
+    {
+        protected bool isEnterable = true;
+        protected bool isLeavable = true;
+
+        public bool IsEnterable { get => isEnterable; set => isEnterable = value; }
+        public bool IsLeavable { get => isLeavable; set => isLeavable = value; }
+
+        public override void CopyProperties(CubeProperties properties)
+        {
+            base.CopyProperties(properties);
+            if (properties is ContainerCubeProperties containerCubeProperties)
+            {
+                isEnterable = containerCubeProperties.IsEnterable;
+                isLeavable |= containerCubeProperties.IsLeavable;
+            }
+        }
+
+        public override void CopyProperties(Cube cubeToCopy)
+        {
+            base.CopyProperties(cubeToCopy);
+            if (cubeToCopy is ContainerCube containerCube)
+            {
+                isEnterable = containerCube.isEnterable;
+                isLeavable = containerCube.isLeavable;
+            }
+        }
+    }
     [Serializable]
     public class ChildCubeInitDetail
     {

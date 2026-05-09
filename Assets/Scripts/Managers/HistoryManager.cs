@@ -28,9 +28,9 @@ public class HistoryManager : MonoBehaviour
     }
 
     // Called by every cube that moves
-    public void RecordNewEvent(Cube targetCube, ContainerCube previousParent, Vector2 previousRPos, Vector2 previousRScl, bool isHorizFlipped, bool isPlayer, bool isEnterable, bool isLeavable)
+    public void RecordNewEvent(Cube targetCube, Cube.CubeProperties properties)
     {
-        newHistoryRecord.AddHistoryEvent(targetCube, previousParent, previousRPos, previousRScl, isHorizFlipped, isPlayer, isEnterable, isLeavable);
+        newHistoryRecord.AddHistoryEvent(targetCube, properties);
     }
     public void RecordCameraInfo(bool isHorizFlipped)
     {
@@ -149,24 +149,37 @@ public class HistoryRecord
     public List<HistoryEvent> Events { get => events; }
     public CameraEvent CameraEvent { get => cameraEvent; set => cameraEvent = value; }
 
-    public void AddHistoryEvent(Cube targetCube, ContainerCube previousParent, Vector2 previousRPos, Vector2 previousRScl, bool isHorizFlipped, bool isPlayer, bool isEnterable, bool isLeavable)
+    //public void AddHistoryEvent(Cube targetCube, ContainerCube previousParent, Vector2 previousRPos, Vector2 previousRScl, bool isHorizFlipped, bool isPlayer, bool isEnterable, bool isLeavable)
+    //{
+    //    foreach(var evnt in events)
+    //    {
+    //        if (evnt == null) continue;
+    //        if (evnt.TargetCube == targetCube)
+    //        {
+    //            evnt.PreviousParent = previousParent;
+    //            evnt.PreviousRPos = previousRPos;
+    //            evnt.PreviousRScl = previousRScl;
+    //            evnt.IsHorizFlipped = isHorizFlipped;
+    //            evnt.IsPlayer = isPlayer;
+    //            evnt.IsEnterable = isEnterable;
+    //            evnt.IsLeavable = isLeavable;
+    //            return;
+    //        }
+    //    }
+    //    events.Add(new(targetCube, previousParent, previousRPos, previousRScl, isHorizFlipped, isPlayer, isEnterable, isLeavable));
+    //}
+    public void AddHistoryEvent(Cube targetCube, Cube.CubeProperties properties)
     {
-        foreach(var evnt in events)
+        foreach (var evnt in events)
         {
             if (evnt == null) continue;
             if (evnt.TargetCube == targetCube)
             {
-                evnt.PreviousParent = previousParent;
-                evnt.PreviousRPos = previousRPos;
-                evnt.PreviousRScl = previousRScl;
-                evnt.IsHorizFlipped = isHorizFlipped;
-                evnt.IsPlayer = isPlayer;
-                evnt.IsEnterable = isEnterable;
-                evnt.IsLeavable = isLeavable;
+                evnt.Properties = properties;
                 return;
             }
         }
-        events.Add(new(targetCube, previousParent, previousRPos, previousRScl, isHorizFlipped, isPlayer, isEnterable, isLeavable));
+        events.Add(new(targetCube, properties));
     }
     public void AddCameraEvent(CameraEvent cameraEvent)
     {
@@ -178,33 +191,40 @@ public class HistoryRecord
 public class HistoryEvent
 {
     [SerializeField] Cube targetCube;
-    [SerializeField] ContainerCube previousParent;
-    [SerializeField] Vector2 previousRPos = new();
-    [SerializeField] Vector2 previousRScl = new();
-    [SerializeField] bool isHorizFlipped = false;
-    [SerializeField] bool isPlayer = false;
-    [SerializeField] bool isEnterable = true;
-    [SerializeField] bool isLeavable = true;
+    [SerializeField] Cube.CubeProperties properties;
+    //[SerializeField] ContainerCube previousParent;
+    //[SerializeField] Vector2 previousRPos = new();
+    //[SerializeField] Vector2 previousRScl = new();
+    //[SerializeField] bool isHorizFlipped = false;
+    //[SerializeField] bool isPlayer = false;
+    //[SerializeField] bool isEnterable = true;
+    //[SerializeField] bool isLeavable = true;
 
     public Cube TargetCube { get => targetCube; }
-    public ContainerCube PreviousParent { get => previousParent; set => previousParent = value; }
-    public Vector2 PreviousRPos { get => previousRPos; set => previousRPos = value; }
-    public Vector2 PreviousRScl { get => previousRScl; set => previousRScl = value; }
-    public bool IsHorizFlipped { get => isHorizFlipped; set => isHorizFlipped = value; }
-    public bool IsPlayer { get => isPlayer; set => isPlayer = value; }
-    public bool IsEnterable { get => isEnterable; set => isEnterable = value; }
-    public bool IsLeavable { get => isLeavable; set => isLeavable = value; }
+    public Cube.CubeProperties Properties { get => properties; set => properties = value; }
+    //public ContainerCube PreviousParent { get => previousParent; set => previousParent = value; }
+    //public Vector2 PreviousRPos { get => previousRPos; set => previousRPos = value; }
+    //public Vector2 PreviousRScl { get => previousRScl; set => previousRScl = value; }
+    //public bool IsHorizFlipped { get => isHorizFlipped; set => isHorizFlipped = value; }
+    //public bool IsPlayer { get => isPlayer; set => isPlayer = value; }
+    //public bool IsEnterable { get => isEnterable; set => isEnterable = value; }
+    //public bool IsLeavable { get => isLeavable; set => isLeavable = value; }
 
-    public HistoryEvent(Cube targetCube, ContainerCube previousParent, Vector2 previousRPos, Vector2 previousRScl, bool isHorizFlipped, bool isPlayer, bool isEnterable, bool isLeavable)
+    //public HistoryEvent(Cube targetCube, ContainerCube previousParent, Vector2 previousRPos, Vector2 previousRScl, bool isHorizFlipped, bool isPlayer, bool isEnterable, bool isLeavable)
+    //{
+    //    this.targetCube = targetCube;
+    //    this.previousParent = previousParent;
+    //    this.previousRPos = previousRPos;
+    //    this.previousRScl = previousRScl;
+    //    this.isHorizFlipped = isHorizFlipped;
+    //    this.isPlayer = isPlayer;
+    //    this.isEnterable = isEnterable;
+    //    this.isLeavable = isLeavable;
+    //}
+    public HistoryEvent (Cube targetCube, Cube.CubeProperties properties)
     {
         this.targetCube = targetCube;
-        this.previousParent = previousParent;
-        this.previousRPos = previousRPos;
-        this.previousRScl = previousRScl;
-        this.isHorizFlipped = isHorizFlipped;
-        this.isPlayer = isPlayer;
-        this.isEnterable = isEnterable;
-        this.isLeavable = isLeavable;
+        this.properties = properties;
     }
 }
 [Serializable]

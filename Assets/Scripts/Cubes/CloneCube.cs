@@ -59,13 +59,13 @@ public class CloneCube : ContainerCube
 
     }
 
-    public override void ModifyChildCubeEnter(Cube childCube)
+    public override void ModifyChildCubeEnter(CubeProperties childCube)
     {
         if (childCube == null) return;
         if (isHorizFlipped != mainContainerCube.IsHorizFlipped) childCube.IsHorizFlipped = !childCube.IsHorizFlipped;
     }
 
-    public override void ModifyChildCubeExit(Cube childCube)
+    public override void ModifyChildCubeExit(CubeProperties childCube)
     {
         if (childCube == null) return;
         if (isHorizFlipped != mainContainerCube.IsHorizFlipped) childCube.IsHorizFlipped = !childCube.IsHorizFlipped;

@@ -121,49 +121,44 @@ public class CubeMovement : MonoBehaviour
         {
             // Modify current record to save its previous details
             var currentRecord = historyManager.GetCurrentRecord();
+            var currentProperties = selfCube.GetCubeProperties();
             if (currentRecord != null)
             {
-                currentRecord.AddHistoryEvent(selfCube, 
+                currentRecord.AddHistoryEvent(selfCube,
                     //(selfCube.PreviousParents.Count > 0) ? selfCube.PreviousParents[0].Cube : null, 
-                    selfCube.Parent,
-                    selfCube.RelativePosition, 
-                    selfCube.RelativeScale, 
-                    selfCube.IsHorizFlipped, 
-                    selfCube.IsPlayer,
-                    (selfCube is ContainerCube containerCube) ? containerCube.IsEnterable : true,
-                    (selfCube is ContainerCube containerCube2) ? containerCube2.IsLeavable : true
+                    currentProperties
                     );
             }
         }
 
-        for (int i = 1; i < selfCube.PreviousParents.Count; i++)
-        {
-            if (selfCube.PreviousParents[i].Cube == null) continue;
-            if (selfCube.PreviousParents[i].Direction == CubeMovement.LayerDirections.In)
-            {
-                selfCube.PreviousParents[i].Cube.ModifyChildCubeEnter(selfCube);
-            }
-            else if (selfCube.PreviousParents[i].Direction == CubeMovement.LayerDirections.Out && i >= 1)
-            {
-                selfCube.PreviousParents[i].Cube.ModifyChildCubeInnerEnter(selfCube);
-                selfCube.PreviousParents[i - 1].Cube.ModifyChildCubeExit(selfCube);
-            }
-        }
+        //for (int i = 1; i < selfCube.PreviousParents.Count; i++)
+        //{
+        //    if (selfCube.PreviousParents[i].Cube == null) continue;
+        //    if (selfCube.PreviousParents[i].Direction == CubeMovement.LayerDirections.In)
+        //    {
+        //        selfCube.PreviousParents[i].Cube.ModifyChildCubeEnter(selfCube);
+        //    }
+        //    else if (selfCube.PreviousParents[i].Direction == CubeMovement.LayerDirections.Out)
+        //    {
+        //        selfCube.PreviousParents[i].Cube.ModifyChildCubeInnerEnter(selfCube);
+        //        selfCube.PreviousParents[i - 1].Cube.ModifyChildCubeExit(selfCube);
+        //    }
+        //}
         if (selfCube.PreviousParents.Count > 0) selfCube.Parent = selfCube.PreviousParents[selfCube.PreviousParents.Count - 1].Cube;
 
-        if (historyManager != null)
-        {
-            // Add new record for its new details
-            historyManager.RecordNewEvent(selfCube, 
-                selfCube.Parent, 
-                endRPos, 
-                endRScl, 
-                selfCube.IsHorizFlipped, 
-                selfCube.IsPlayer,
-                (selfCube is ContainerCube containerCube) ? containerCube.IsEnterable : true,
-                (selfCube is ContainerCube containerCube2) ? containerCube2.IsLeavable : true
-                );
-        }
+        //if (historyManager != null)
+        //{
+        //    // Add new record for its new details
+        //    historyManager.RecordNewEvent(selfCube, 
+        //        selfCube.Parent, 
+        //        endRPos, 
+        //        endRScl, 
+        //        selfCube.IsHorizFlipped, 
+        //        selfCube.IsPlayer,
+        //        (selfCube is ContainerCube containerCube) ? containerCube.IsEnterable : true,
+        //        (selfCube is ContainerCube containerCube2) ? containerCube2.IsLeavable : true
+        //        );
+        //}
 
         Vector2 cubeOldRPos = selfCube.RelativePosition;
         Vector2 cubeOldRScl = selfCube.RelativeScale;
@@ -217,6 +212,8 @@ public class CubeMovement : MonoBehaviour
 
     protected IEnumerator MovingCoroutine(Vector2 startRPos, Vector2 startRScl, Vector2 endRPos, Vector2 endRScl, float time)
     {
+        Cube.CubeProperties applyProperties = selfCube.GetCubeProperties();
+        Cube.CubeProperties currentProperties = selfCube.GetCubeProperties();
         if (time > 0)
         {
             float elapsedTime = -1;
@@ -233,6 +230,68 @@ public class CubeMovement : MonoBehaviour
             var previousEndRPos = endRPos;
             var previousEndRScl = endRScl;
 
+            // Modify based on external parent
+            ContainerCube externalParent = null;
+
+            if (isExternal)
+            {
+                externalParent = selfCube.PreviousParents[0].Cube;
+                //applyProperties.CopyProperties(currentProperties);
+                Cube.PreviousParentDetails currentCube = selfCube.PreviousParents[0];
+                for (int i = 0; i < selfCube.PreviousParents.Count; i++)
+                {
+                    if (selfCube.PreviousParents[i].Cube == null) continue;
+
+                    // Find external parent
+                    if (selfCube.PreviousParents[i].Direction == LayerDirections.In)
+                    {
+                        if (externalParent == null && i > 0)
+                        {
+                            externalParent = selfCube.PreviousParents[i - 1].Cube;
+                            if (applyProperties == null) applyProperties = selfCube.GetEmptyProperties();
+                            applyProperties.CopyProperties(currentProperties);
+                        }
+                        if (i > 0)
+                        {
+                            selfCube.PreviousParents[i].Cube.ModifyChildCubeEnter(currentProperties);
+                        }
+                    }
+                    else
+                    {
+                        if (selfCube.PreviousParents[i].Direction == LayerDirections.Out && i > 0)
+                        {
+                            selfCube.PreviousParents[i - 1].Cube.ModifyChildCubeExit(currentProperties);
+                            selfCube.PreviousParents[i].Cube.ModifyChildCubeInnerEnter(currentProperties);
+                        }
+                        externalParent = null;
+                        //applyProperties = null;
+                    }
+                }
+            }
+            Debug.Log("External parent to apply to " + selfCube.name + " is " + externalParent);
+            if (externalParent != null)
+            {
+                Debug.Log("Apply property: " + applyProperties.IsHorizFlipped + " to " + selfCube.name);
+                selfCube.ApplyNewProperties(applyProperties);
+            }
+            else
+            {
+                selfCube.ApplyNewProperties(currentProperties);
+            }
+
+            var historyManager = HistoryManager.Instance;
+            if (historyManager != null)
+            {
+                // Add new record for its new details
+                var targetProperties = selfCube.GetEmptyProperties();
+                targetProperties.CopyProperties(currentProperties);
+                targetProperties.RelativePosition = endRPos;
+                targetProperties.RelativeScale = endRScl;
+                historyManager.RecordNewEvent(selfCube,
+                    targetProperties
+                    );
+            }
+
             while (elapsedTime < time)
             {
                 if (elapsedTime < 0) elapsedTime = 0;
@@ -243,7 +302,7 @@ public class CubeMovement : MonoBehaviour
                 // Select a parent to render it as external cube
                 if (isExternal)
                 {
-                    ContainerCube externalParent = selfCube.PreviousParents[0].Cube;
+                    externalParent = selfCube.PreviousParents[0].Cube;
                     Rect initParentRect = new(0, 0, 1, 1);
                     Rect externalParentRect = initParentRect;
                     Rect finalParentRect = initParentRect;
@@ -320,32 +379,11 @@ public class CubeMovement : MonoBehaviour
                         }
                     }
 
-                    //for (int i = 0; i < selfCube.PreviousParents.Count; i++)
-                    //{
-                    //    if (selfCube.PreviousParents[i].Cube == null) continue;
-
-                    //    if (selfCube.PreviousParents[i].Cube == ((externalParent != null) ? externalParent : selfCube.Parent))
-                    //    {
-                    //        if (i > 0 && selfCube.PreviousParents[i - 1].Cube != null && selfCube.PreviousParents[i - 1].Cube is CloneCube)
-                    //        {
-                    //            if (externalParent != null)
-                    //            {
-                    //                externalParent.HideAlterEnterCube = false;
-                    //                externalParent.HideExitCube = false;
-                    //            }
-                    //            else
-                    //            {
-                    //                selfCube.Parent.HideAlterEnterCube = false;
-                    //                selfCube.Parent.HideExitCube = false;
-                    //            }
-                    //        }
-                    //    }
-                    //}
 
                     if (externalParent != null)
                     {
                         // Calculate correct rPos, rScl, . . .
-                        var realStartPos = Relativity.CRealPosFromCRPos(new(0, 0, 1, 1), previousRPos);
+                        var realStartPos = Relativity.CRealPosFromCRPos(initParentRect, previousRPos);
                         startRPos = Relativity.CRPosFromCRealPos(externalParentRect, realStartPos);
                         var realEndPos = Relativity.CRealPosFromCRPos(finalParentRect, previousEndRPos);
                         endRPos = Relativity.CRPosFromCRealPos(externalParentRect, realEndPos);
@@ -356,20 +394,13 @@ public class CubeMovement : MonoBehaviour
                         startRScl = new(previousRScl.x * (initParentRect.width / externalParentRect.width), previousRScl.y * (initParentRect.width / externalParentRect.height));
                         endRScl = new(Mathf.Abs(previousEndRScl.x * (finalParentRect.width / externalParentRect.width)), Mathf.Abs(previousEndRScl.y * (finalParentRect.height / externalParentRect.height)));
 
-                        //Debug.Log($"Start rScl: {startRScl}, end rScl: {endRScl}");
-
-                        //if (!registeredExternal)
-                        //{
                         Debug.Log("External cube: " + externalParent.name + " with " + externalParent.ExternalCubes.Count);
                         if (!externalParent.ExternalCubes.Contains(selfCube)) externalParent.ExternalCubes.Add(selfCube);
-                        //registeredExternal = true;
-                        //}
                     }
-                    else /*if (!registeredExternal)*/
+                    else
                     {
                         Debug.Log("Final parent rect: " + finalParentRect + " of " + selfCube.Parent.name + " with " + selfCube.Parent.ExternalCubes.Count);
                         if (!selfCube.Parent.ExternalCubes.Contains(selfCube)) selfCube.Parent.ExternalCubes.Add(selfCube);
-                        //registeredExternal = true;
                     }
                 }
 
@@ -388,10 +419,9 @@ public class CubeMovement : MonoBehaviour
         selfCube.PreviousParents.Clear();
         selfCube.PreviousParents.Add(new(LayerDirections.In, selfCube.Parent)); // Update current parent after moving
         var selfCubePosition = selfCube.Parent.ChildGrid.FindChild((cubeDetail) => cubeDetail.Cube == selfCube);
+        selfCube.ApplyNewProperties(currentProperties);
         selfCube.RelativePosition = Relativity.RPosFromGridTile(selfCube.Parent.Tiling.y, selfCube.Parent.Tiling.x, selfCubePosition.x, selfCubePosition.y);
         selfCube.RelativeScale = new(1.0f / selfCube.Parent.Tiling.y, 1.0f / selfCube.Parent.Tiling.x);
-        //selfCube.RelativePosition = endRPos;
-        //selfCube.RelativeScale = endRScl;
         if (selfCube.IsPlayer && MainCamera.Instance != null)
         {
             MainCamera.Instance.SetNewTargetCube(selfCube.Parent);

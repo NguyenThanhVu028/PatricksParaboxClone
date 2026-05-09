@@ -62,23 +62,12 @@ public class VoidCube : ContainerCube
         mainCube = cube;
     }
 
-    public override void ModifyChildCubeInnerEnter(Cube childCube)
+    public override void ModifyChildCubeInnerEnter(CubeProperties childCube)
     {
         base.ModifyChildCubeEnter(childCube);
-        if (childCube is ContainerCube containerCube)
+        if (childCube is ContainerCubeProperties containerCube)
         {
             containerCube.IsEnterable = false;
         }
-        Debug.Log("Modify: " + childCube.name);
-    }
-
-    public override void ModifyChildCubeEnter(Cube childCube)
-    {
-        base.ModifyChildCubeEnter(childCube);
-    }
-
-    public override void ModifyChildCubeExit(Cube childCube)
-    {
-        base.ModifyChildCubeExit(childCube);
     }
 }
