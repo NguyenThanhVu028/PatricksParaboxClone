@@ -8,7 +8,7 @@ public class MainCamera : MonoBehaviour
 {
     public enum MainCameraRenderMode { SingleCube, MultipleCubes };
     public enum CameraMovements { ZoomIn, ZoomOut }
-    public const float infinityBackgroundDepthOffset = 0.5f;
+    public const float infinityBackgroundDepthOffset = 0.2f;
 
     private static MainCamera instance;
 
@@ -246,10 +246,10 @@ public class MainCamera : MonoBehaviour
             // Draw regular cubes
             for (int i = parentAndRects.Count - 1; i >= 0; i--)
             {
-                if (i > 0) parentAndRects[i].Key.CullingCubesOne.Add(parentAndRects[i - 1].Key);
+                if (i > 0 && parentAndRects[i].Key.CullingCubesOne != null) parentAndRects[i].Key.CullingCubesOne.Add(parentAndRects[i - 1].Key);
                 var renderRect = parentAndRects[i].Value;
                 parentAndRects[i].Key.DrawCube(renderRect, CustomTextureRenderer2D.defaultPriority, depth, exposure, GetScreenRect());
-                if (i > 0) parentAndRects[i].Key.CullingCubesOne.Remove(parentAndRects[i - 1].Key);
+                if (i > 0 && parentAndRects[i].Key.CullingCubesOne != null) parentAndRects[i].Key.CullingCubesOne.Remove(parentAndRects[i - 1].Key);
             }
         }
         else

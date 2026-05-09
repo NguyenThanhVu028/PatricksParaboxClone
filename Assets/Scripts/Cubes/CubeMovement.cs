@@ -78,7 +78,6 @@ public class CubeMovement : MonoBehaviour
             if (movementInput != CubeMovement.GridDirections.None)
             {
                 var targetTime = selfCube.Parent.RequestToMove(selfCube.RelativePosition, selfCube.RelativeScale, selfCube, movementInput);
-                Debug.Log(selfCube.name + " " + selfCube.PreviousParents.Count);
                 // Update camera trasition
                 if (targetTime > 0)
                 {
@@ -95,7 +94,7 @@ public class CubeMovement : MonoBehaviour
                         MainCamera.Instance.PlayTransition(selfCube.PreviousParents, selfCube.PossessingTime);
                     }
                     selfCube.PreviousParents.Clear();
-                    selfCube.PreviousParents.Add(new Cube.PreviousParentDetails(CubeMovement.LayerDirections.Out, selfCube.Parent));
+                    selfCube.PreviousParents.Add(new Cube.PreviousParentDetails(CubeMovement.LayerDirections.In, selfCube.Parent));
                 }
                 else if (MainCamera.Instance != null) MainCamera.Instance.ClearTransition();
 
@@ -139,6 +138,7 @@ public class CubeMovement : MonoBehaviour
 
         for (int i = 1; i < selfCube.PreviousParents.Count; i++)
         {
+            if (selfCube.PreviousParents[i].Cube == null) continue;
             if (selfCube.PreviousParents[i].Direction == CubeMovement.LayerDirections.In)
             {
                 selfCube.PreviousParents[i].Cube.ModifyChildCubeEnter(selfCube);
@@ -196,76 +196,6 @@ public class CubeMovement : MonoBehaviour
             else SoundsManager.Instance.PlayUniqueSFX(noZoomAudioID, -1);
         }
 
-        // Select a parent to render it as external cube
-        if (isExternal)
-        {
-            ContainerCube externalParent = selfCube.PreviousParents[0].Cube;
-            Rect externalParentRect = new(0, 0, 1, 1);
-            Rect finalParentRect = new(0, 0, 1, 1);
-            Cube.PreviousParentDetails currentCube = selfCube.PreviousParents[0];
-            for (int i = 0; i < selfCube.PreviousParents.Count; i++)
-            {
-                if (selfCube.PreviousParents[i].Cube == null) continue;
-
-                // Find external parent
-                if (selfCube.PreviousParents[i].Direction == LayerDirections.In)
-                {
-                    if (externalParent == null && i > 0)
-                    {
-                        externalParent = selfCube.PreviousParents[i - 1].Cube;
-                        externalParentRect = finalParentRect;
-                    }
-                }
-                else
-                {
-                    externalParent = null;
-                }
-
-                // Calculate final parent rect
-                if (i > 0)
-                {
-                    if (selfCube.PreviousParents[i].Direction == CubeMovement.LayerDirections.Out)
-                    {
-                        Vector2 oldTargetRectPos = finalParentRect.position;
-                        finalParentRect = Relativity.PRectFromCRect(finalParentRect, currentCube.RelativeScale, currentCube.RelativePosition);
-                        if (currentCube.IsHorizFlipped)
-                        {
-                            finalParentRect.width = -finalParentRect.width;
-                            finalParentRect.x = oldTargetRectPos.x - (finalParentRect.position.x - oldTargetRectPos.x);
-                        }
-                    }
-                    else
-                    {
-                        finalParentRect = Relativity.CRectFromPRect(finalParentRect, selfCube.PreviousParents[i].RelativeScale, selfCube.PreviousParents[i].RelativePosition);
-                        if (selfCube.PreviousParents[i].IsHorizFlipped)
-                        {
-                            finalParentRect.width = -finalParentRect.width;
-                        }
-                    }
-                    currentCube = selfCube.PreviousParents[i];
-                }
-
-            }
-
-            if (externalParent != null)
-            {
-                // Calculate correct rPos, rScl, . . .
-                var realStartPos = Relativity.CRealPosFromCRPos(new(0, 0, 1, 1), selfCube.RelativePosition);
-                startRPos = Relativity.CRPosFromCRealPos(externalParentRect, realStartPos);
-                Debug.Log($"Old rPos: {selfCube.RelativePosition}, exter Rect: {externalParentRect}, realStart: {realStartPos}, startPos: {startRPos}");
-                //Debug.Log(startRPos);
-                var realEndPos = Relativity.CRealPosFromCRPos(finalParentRect, endRPos);
-                endRPos = Relativity.CRPosFromCRealPos(externalParentRect, realEndPos);
-                //Debug.Log(externalParent.name);
-                //externalParent.ExternalCube = selfCube;
-            }
-            else
-            {
-                //selfCube.Parent.ExternalCube = selfCube;
-            }
-        }
-
-        Debug.Log(IsExternal);
         movingCoroutine = StartCoroutine(MovingCoroutine(startRPos, startRScl, endRPos, endRScl, targetTime));
 
         if (debugMovement) Debug.Log($"Cube {selfCube.name} moves {IsMoving}");
@@ -280,7 +210,7 @@ public class CubeMovement : MonoBehaviour
 
         isExternal = false;
         selfCube.PreviousParents.Clear();
-        selfCube.PreviousParents.Add(new(LayerDirections.Out, selfCube.Parent)); // Update current parent after moving
+        selfCube.PreviousParents.Add(new(LayerDirections.In, selfCube.Parent)); // Update current parent after moving
         if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.GameplayInputs.ContinueUsingMovementInputs();
         onMoveEnd.Invoke();
     }
@@ -290,18 +220,158 @@ public class CubeMovement : MonoBehaviour
         if (time > 0)
         {
             float elapsedTime = -1;
+            var previousRPos = selfCube.RelativePosition;
+            var previousRScl = selfCube.RelativeScale;
+
             selfCube.RelativePosition = startRPos;
             selfCube.RelativeScale = startRScl;
             if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.GameplayInputs.StopUsingMovementInputs();
 
             onMoveStart.Invoke();
             movingProgress = 0;
+
+            var previousEndRPos = endRPos;
+            var previousEndRScl = endRScl;
+
             while (elapsedTime < time)
             {
                 if (elapsedTime < 0) elapsedTime = 0;
                 else elapsedTime += Time.deltaTime;
 
                 if (elapsedTime > time) elapsedTime = time;
+
+                // Select a parent to render it as external cube
+                if (isExternal)
+                {
+                    ContainerCube externalParent = selfCube.PreviousParents[0].Cube;
+                    Rect initParentRect = new(0, 0, 1, 1);
+                    Rect externalParentRect = initParentRect;
+                    Rect finalParentRect = initParentRect;
+                    Cube.PreviousParentDetails currentCube = selfCube.PreviousParents[0];
+                    for (int i = 0; i < selfCube.PreviousParents.Count; i++)
+                    {
+                        if (selfCube.PreviousParents[i].Cube == null) continue;
+
+                        // Remove external cubes from all parent -> reassign to the correct parent later
+                        if (selfCube.PreviousParents[i].Cube.ExternalCubes.Contains(selfCube))
+                        {
+                            selfCube.PreviousParents[i].Cube.ExternalCubes.Remove(selfCube);
+                        }
+
+                        // Conditions to hide or unhide itself when it is either the enter / exit cube from a parent
+                        if (selfCube.PreviousParents[i].Cube.AlterEnterCube == selfCube || selfCube.PreviousParents[i].Cube.ExitCube == selfCube)
+                        {
+                            if (i > 0 && selfCube.PreviousParents[i - 1].Direction == LayerDirections.None)
+                            {
+                                selfCube.PreviousParents[i].Cube.HideAlterEnterCube = false;
+                                selfCube.PreviousParents[i].Cube.HideExitCube = false;
+                            }
+                            else
+                            {
+                                selfCube.PreviousParents[i].Cube.HideAlterEnterCube = true;
+                                selfCube.PreviousParents[i].Cube.HideExitCube = true;
+                            }
+                        }
+
+                        // Find external parent
+                        if (selfCube.PreviousParents[i].Direction == LayerDirections.In)
+                        {
+                            if (externalParent == null && i > 0)
+                            {
+                                externalParent = selfCube.PreviousParents[i - 1].Cube;
+                                externalParentRect = finalParentRect;
+                            }
+                        }
+                        else
+                        {
+                            externalParent = null;
+                        }
+
+                        // Calculate final parent rect
+                        if (i > 0)
+                        {
+                            if (selfCube.PreviousParents[i].Direction == CubeMovement.LayerDirections.Out)
+                            {
+                                Vector2 oldTargetRectPos = finalParentRect.position;
+                                var rScl = (currentCube.UseDefaultValues) ? currentCube.Cube.RelativeScale : currentCube.RelativeScale;
+                                var rPos = (currentCube.UseDefaultValues) ? currentCube.Cube.RelativePosition : currentCube.RelativePosition;
+                                var isHorizFlipped = (currentCube.UseDefaultValues) ? currentCube.Cube.IsHorizFlipped : currentCube.IsHorizFlipped;
+                                finalParentRect = Relativity.PRectFromCRect(finalParentRect, rScl, rPos);
+                                if (isHorizFlipped)
+                                {
+                                    finalParentRect.width = -finalParentRect.width;
+                                    finalParentRect.x = oldTargetRectPos.x - (finalParentRect.position.x - oldTargetRectPos.x);
+                                }
+                            }
+                            else
+                            {
+                                var rScl = (selfCube.PreviousParents[i].UseDefaultValues) ? selfCube.PreviousParents[i].Cube.RelativeScale : selfCube.PreviousParents[i].RelativeScale;
+                                var rPos = (selfCube.PreviousParents[i].UseDefaultValues) ? selfCube.PreviousParents[i].Cube.RelativePosition : selfCube.PreviousParents[i].RelativePosition;
+                                var isHorizFlipped = (selfCube.PreviousParents[i].UseDefaultValues) ? selfCube.PreviousParents[i].Cube.IsHorizFlipped : selfCube.PreviousParents[i].IsHorizFlipped;
+                                //Debug.Log("RScl: " + rScl);
+                                finalParentRect = Relativity.CRectFromPRect(finalParentRect, rScl, rPos);
+                                if (isHorizFlipped)
+                                {
+                                    finalParentRect.width = -finalParentRect.width;
+                                }
+                            }
+                            //Debug.Log($"Cube: {selfCube.PreviousParents[i].Cube} rect: {finalParentRect}");
+                            currentCube = selfCube.PreviousParents[i];
+                        }
+                    }
+
+                    //for (int i = 0; i < selfCube.PreviousParents.Count; i++)
+                    //{
+                    //    if (selfCube.PreviousParents[i].Cube == null) continue;
+
+                    //    if (selfCube.PreviousParents[i].Cube == ((externalParent != null) ? externalParent : selfCube.Parent))
+                    //    {
+                    //        if (i > 0 && selfCube.PreviousParents[i - 1].Cube != null && selfCube.PreviousParents[i - 1].Cube is CloneCube)
+                    //        {
+                    //            if (externalParent != null)
+                    //            {
+                    //                externalParent.HideAlterEnterCube = false;
+                    //                externalParent.HideExitCube = false;
+                    //            }
+                    //            else
+                    //            {
+                    //                selfCube.Parent.HideAlterEnterCube = false;
+                    //                selfCube.Parent.HideExitCube = false;
+                    //            }
+                    //        }
+                    //    }
+                    //}
+
+                    if (externalParent != null)
+                    {
+                        // Calculate correct rPos, rScl, . . .
+                        var realStartPos = Relativity.CRealPosFromCRPos(new(0, 0, 1, 1), previousRPos);
+                        startRPos = Relativity.CRPosFromCRealPos(externalParentRect, realStartPos);
+                        var realEndPos = Relativity.CRealPosFromCRPos(finalParentRect, previousEndRPos);
+                        endRPos = Relativity.CRPosFromCRealPos(externalParentRect, realEndPos);
+                        Debug.Log("Cube: " + selfCube.name);
+                        Debug.Log($"exter parent: {externalParent.name}, exter rect: {externalParentRect}, final rect: {finalParentRect}");
+                        Debug.Log($"real start: {realStartPos}, startPos: {startRPos}, real end: {realEndPos}, end pos: {endRPos}");
+
+                        startRScl = new(previousRScl.x * (initParentRect.width / externalParentRect.width), previousRScl.y * (initParentRect.width / externalParentRect.height));
+                        endRScl = new(Mathf.Abs(previousEndRScl.x * (finalParentRect.width / externalParentRect.width)), Mathf.Abs(previousEndRScl.y * (finalParentRect.height / externalParentRect.height)));
+
+                        //Debug.Log($"Start rScl: {startRScl}, end rScl: {endRScl}");
+
+                        //if (!registeredExternal)
+                        //{
+                        Debug.Log("External cube: " + externalParent.name + " with " + externalParent.ExternalCubes.Count);
+                        if (!externalParent.ExternalCubes.Contains(selfCube)) externalParent.ExternalCubes.Add(selfCube);
+                        //registeredExternal = true;
+                        //}
+                    }
+                    else /*if (!registeredExternal)*/
+                    {
+                        Debug.Log("Final parent rect: " + finalParentRect + " of " + selfCube.Parent.name + " with " + selfCube.Parent.ExternalCubes.Count);
+                        if (!selfCube.Parent.ExternalCubes.Contains(selfCube)) selfCube.Parent.ExternalCubes.Add(selfCube);
+                        //registeredExternal = true;
+                    }
+                }
 
                 movingProgress = elapsedTime / time;
 
@@ -316,7 +386,7 @@ public class CubeMovement : MonoBehaviour
         isExternal = false;
         coolDownTimer = coolDownTime;
         selfCube.PreviousParents.Clear();
-        selfCube.PreviousParents.Add(new(LayerDirections.Out, selfCube.Parent)); // Update current parent after moving
+        selfCube.PreviousParents.Add(new(LayerDirections.In, selfCube.Parent)); // Update current parent after moving
         var selfCubePosition = selfCube.Parent.ChildGrid.FindChild((cubeDetail) => cubeDetail.Cube == selfCube);
         selfCube.RelativePosition = Relativity.RPosFromGridTile(selfCube.Parent.Tiling.y, selfCube.Parent.Tiling.x, selfCubePosition.x, selfCubePosition.y);
         selfCube.RelativeScale = new(1.0f / selfCube.Parent.Tiling.y, 1.0f / selfCube.Parent.Tiling.x);

@@ -10,9 +10,9 @@ public class ContainerCube : Cube
     public const float childCubesDepthOffset = 0f;
     public const float movingChildCubesDepthOffset = -0.1f;
     public const float alterEnterExitDepthOffset = -0.11f;
-    public const float normalEnterDepthOffset = -0.12f;
+    public const float externalDepthOffset = -0.22f;
 
-    public const int normalEnterPriority = 1;
+    public const int externalPriority = 1;
     public const int alterEnterExitPriority = 2;
 
     [SerializeField] protected bool isEnterable = true;
@@ -34,22 +34,21 @@ public class ContainerCube : Cube
     protected List<Cube> emptyCubes = new(); // Seperate empty cubes from other cubes, empty cubes are only be rendered but ignore checking for interactions by other cubes
     protected List<Cube> cullingCubesAll = new(); // These cubes wont be rendered if they are children of this cube, apply to all cube
     protected List<Cube> cullingCubesOne = new(); // Same as culling cubes all but only apply to one specific instance of a cube
+
+    protected bool hideExitCube = false;
     protected Cube exitCube = null;
     protected Vector2 exitCubeOldRPos = new();
     protected CubeMovement.GridDirections exitDirection;
 
-    protected Cube externalCube = null;
+    protected List<Cube> externalCubes = new();
+    protected List<Cube> expiredExternalCubes = new();
 
+    protected bool hideAlterEnterCube = false;
     protected Cube alterEnterCube = null;
     protected Vector2 alterEnterOldRPos = new();
     protected CubeMovement.GridDirections alterEnterDirection;
 
     protected bool useDebug = false;
-
-    // Delegates and events
-    public delegate void BeginDrawingChildCube(Cube childCube, Rect parentRect, ref Rect childRect, ref float depth, ref float exposure, ref Rect? scissorRect);
-    protected event BeginDrawingChildCube onBeginDrawingChildCube;
-    protected Action<Cube> onFinishedDrawingChildCube;
 
     public bool IsEnterable { get => isEnterable; set => isEnterable = value; }
     public bool IsLeavable { get => isLeavable; set => isLeavable = value; }
@@ -68,22 +67,15 @@ public class ContainerCube : Cube
     public List<Cube> EmptyCubes { get => emptyCubes; }
     public List<Cube> CullingCubesAll { get => cullingCubesAll; }
     public List<Cube> CullingCubesOne { get => cullingCubesOne; }
+    public bool HideExitCube { get => hideExitCube; set => hideExitCube = value; }
     public Cube ExitCube { get => exitCube; set => exitCube = value; }
-    public Cube ExternalCube { get => externalCube; set => externalCube = value; }
+    public CubeMovement.GridDirections ExitDirection { get => exitDirection; }
+    public Vector2 ExitCubeOldRPos { get => exitCubeOldRPos; }
+    public List<Cube> ExternalCubes { get => externalCubes; set => externalCubes = value; }
+    public bool HideAlterEnterCube { get => hideAlterEnterCube; set => hideAlterEnterCube = value; }
     public Cube AlterEnterCube { get => alterEnterCube; set => alterEnterCube = value; }
-
-    public event BeginDrawingChildCube OnBeginDrawingChildCube
-    {
-        add
-        {
-            onBeginDrawingChildCube += value;
-        }
-        remove
-        {
-            onBeginDrawingChildCube -= value;
-        }
-    }
-    public Action<Cube> OnFinishedDrawingChildCUbe { get => onFinishedDrawingChildCube; }
+    public CubeMovement.GridDirections AlterEnterDirection { get => alterEnterDirection; }
+    public Vector2 AlterEnterOldRPos { get => alterEnterOldRPos; }
 
     // Used by the Editor
     public void SetChildCubeInitDetails(int row, int col, ChildCubeInitDetail details)
@@ -115,39 +107,6 @@ public class ContainerCube : Cube
         InitChildCubes();
         Init();
         CalculateStaticTextures();
-    }
-
-    protected virtual void Update()
-    {
-        if (exitCube != null)
-        {
-            var exitCubeMovement = exitCube.GetComponent<CubeMovement>();
-            if (exitCubeMovement == null)
-            {
-                exitCube = null; return;
-            }
-            if (!exitCubeMovement.IsMoving) exitCube = null;
-        }
-
-        if (externalCube != null)
-        {
-            var enterCubeMovement = externalCube.GetComponent<CubeMovement>();
-            if (enterCubeMovement == null)
-            {
-                externalCube = null; return;
-            }
-            if (!enterCubeMovement.IsMoving) externalCube = null;
-        }
-
-        if (alterEnterCube != null)
-        {
-            var alterEnterCubeMovement = alterEnterCube.GetComponent<CubeMovement>();
-            if (alterEnterCubeMovement == null)
-            {
-                alterEnterCube = null; return;
-            }
-            if (!alterEnterCubeMovement.IsMoving) alterEnterCube = null;
-        }
     }
 
     // Init functions
@@ -305,15 +264,72 @@ public class ContainerCube : Cube
     }
     protected virtual void DrawChildCubes(Rect position, int priority, float depth, float exposure, Rect? scissorRect, int minSize = -1)
     {
+        UpdateExternalCubes();
+
         DrawInnerCubes(position, priority, depth, exposure, scissorRect, minSize);
 
-        DrawEnterCube(position, priority + normalEnterPriority, depth + normalEnterDepthOffset, exposure, scissorRect, minSize);
+        DrawExternalCube(position, priority + externalPriority, depth + externalDepthOffset, exposure, scissorRect, minSize);
 
         DrawAlterEnterCube(position, priority + alterEnterExitPriority, depth + alterEnterExitDepthOffset, exposure, scissorRect, minSize);
 
         DrawExitCube(position, priority + alterEnterExitPriority, depth + alterEnterExitDepthOffset, exposure, scissorRect, minSize);
     }
 
+    protected virtual void UpdateExternalCubes()
+    {
+        if (exitCube != null)
+        {
+            var exitCubeMovement = exitCube.GetComponent<CubeMovement>();
+            if (exitCubeMovement == null)
+            {
+                exitCube = null;
+                hideExitCube = false;
+                return;
+            }
+            if (!exitCubeMovement.IsMoving)
+            {
+                exitCube = null;
+                hideExitCube = false;
+            }
+        }
+
+        expiredExternalCubes.Clear();
+        foreach (var externalCube in externalCubes)
+        {
+            if (externalCube != null)
+            {
+                var enterCubeMovement = externalCube.GetComponent<CubeMovement>();
+                if (enterCubeMovement == null)
+                {
+                    //externalCube = null; return;
+                    expiredExternalCubes.Add(externalCube);
+                }
+                if (!enterCubeMovement.IsMoving) expiredExternalCubes.Add(externalCube);
+                //externalCube = null;
+            }
+        }
+        foreach(var expiredExternalCube in expiredExternalCubes)
+        {
+            externalCubes.Remove(expiredExternalCube);
+        }
+
+        if (alterEnterCube != null)
+        {
+            var alterEnterCubeMovement = alterEnterCube.GetComponent<CubeMovement>();
+            if (alterEnterCubeMovement == null)
+            {
+                alterEnterCube = null; 
+                hideAlterEnterCube = false;
+                return;
+            }
+            if (!alterEnterCubeMovement.IsMoving)
+            {
+                alterEnterCube = null;
+                hideAlterEnterCube = false;
+            }
+        }
+    }
+    
     public virtual void DrawInnerCubes(Rect position, int priority, float depth, float exposure, Rect? scissorRect, float minSize = -1)
     {
         // Draw empty cubes first
@@ -325,9 +341,7 @@ public class ContainerCube : Cube
                 Vector2 size = CustomTextureRenderer2D.ConvertScaleToPixel(childRect.size);
                 if (size.x < minSize || size.y < minSize) continue;
             }
-            onBeginDrawingChildCube?.Invoke(emptyCube, position, ref childRect, ref depth, ref exposure, ref scissorRect);
             emptyCube.Draw(childRect, priority, depth, exposure, scissorRect);
-            onFinishedDrawingChildCube?.Invoke(emptyCube);
         }
 
         List<Cube> movingCubes = new();
@@ -335,7 +349,7 @@ public class ContainerCube : Cube
         // Draw static cubes
         foreach (var childCube in childGrid.Children)
         {
-            if (childCube.Cube == null || (cullingCubesOne != null && (cullingCubesOne.Contains(childCube.Cube) || cullingCubesAll.Contains(childCube.Cube)))) continue;
+            if (childCube.Cube == null || cullingCubesAll.Contains(childCube.Cube) || (cullingCubesOne != null && cullingCubesOne.Contains(childCube.Cube))) continue;
             if (childCube.Cube is WallCube) // Ignore walls that aren't or can't potentially be a player
             {
                 if (!(childCube.Cube.CanBePlayer || childCube.Cube.IsPlayer)) continue;
@@ -356,72 +370,62 @@ public class ContainerCube : Cube
                 if (size.x < minSize || size.y < minSize) continue;
             }
 
-            List<Cube> tempCullingCubeOne = null;
-            if (childCube.Cube == this)
-            {
-                tempCullingCubeOne = cullingCubesOne;
-                cullingCubesOne = null;
-            }
-            onBeginDrawingChildCube?.Invoke(childCube.Cube, position, ref childRect, ref depth, ref exposure, ref scissorRect);
+            List<Cube> tempCullingCubeOne = cullingCubesOne;
+            cullingCubesOne = null;
             childCube.Cube.Draw(childRect, priority, depth, exposure, scissorRect);
-            onFinishedDrawingChildCube?.Invoke(childCube.Cube);
-            if (childCube.Cube == this && tempCullingCubeOne != null)
-            {
-                cullingCubesOne = tempCullingCubeOne;
-            }
+            cullingCubesOne = tempCullingCubeOne;
         }
 
         // Drawing moving cubes on top of other cubes to avoid being covered
         foreach (var movingCube in movingCubes)
         {
-            List<Cube> tempCullingCubeOne = null;
-            if (movingCube == this)
-            {
-                tempCullingCubeOne = cullingCubesOne;
-                cullingCubesOne = null;
-            }
             Rect childRect = Relativity.CRectFromPRect(position, movingCube.RelativeScale, movingCube.RelativePosition);
             if (minSize > 0)
             {
                 Vector2 size = CustomTextureRenderer2D.ConvertScaleToPixel(childRect.size);
                 if (size.x < minSize || size.y < minSize) continue;
             }
-            onBeginDrawingChildCube?.Invoke(movingCube, position, ref childRect, ref depth, ref exposure, ref scissorRect);
+
+            List<Cube> tempCullingCubeOne = cullingCubesOne;
+            cullingCubesOne = null;
             movingCube.Draw(childRect, priority, depth + movingChildCubesDepthOffset, exposure, scissorRect);
-            onFinishedDrawingChildCube?.Invoke(movingCube);
-            if (movingCube == this && tempCullingCubeOne != null)
-            {
-                cullingCubesOne = tempCullingCubeOne;
-            }
+            cullingCubesOne = tempCullingCubeOne;
         }
     }
 
-    public virtual void DrawEnterCube(Rect position, int priority, float depth, float exposure, Rect? scissorRect, float minSize = -1)
+    public virtual void DrawExternalCube(Rect position, int priority, float depth, float exposure, Rect? scissorRect, float minSize = -1)
     {
-        if (externalCube == null) return;
-
-        var childRect = Relativity.CRectFromPRect(position, externalCube.RelativeScale, externalCube.RelativePosition);
-        if (minSize > 0)
+        for(int i = externalCubes.Count - 1; i >= 0; i--)
         {
-            Vector2 size = CustomTextureRenderer2D.ConvertScaleToPixel(childRect.size);
-            if (size.x < minSize || size.y < minSize) return;
+            var externalCube = externalCubes[i];
+            if (externalCube == null) continue;
+
+            //Debug.Log(name + " is drawing external cube: " + externalCube.name + " from " + position);
+
+            var childRect = Relativity.CRectFromPRect(position, externalCube.RelativeScale, externalCube.RelativePosition);
+            if (minSize > 0)
+            {
+                Vector2 size = CustomTextureRenderer2D.ConvertScaleToPixel(childRect.size);
+                if (size.x < minSize || size.y < minSize) return;
+            }
+
+            //Debug.Log(name + " is drawing external cube: " + externalCube.name + " at " + childRect);
+            externalCube.Draw(childRect, priority, depth, exposure, scissorRect);
         }
-        externalCube.Draw(childRect, priority, depth, exposure, scissorRect);
     }
 
     public virtual void DrawAlterEnterCube(Rect position, int priority, float depth, float exposure, Rect? scissorRect, float minSize = -1)
     {
-        if (alterEnterCube == null) return;
+        //Debug.Log($"{name} is drawing alter enter cube {AlterEnterCube} with condition {hideAlterEnterCube}");
+        if (alterEnterCube == null || hideAlterEnterCube) return;
 
         Vector2 idealRScl = new(1.0f / Tiling.y, 1.0f / Tiling.x);
-        //Vector2 normalizedRPos = (alterEnterCube.RelativePosition).normalized;
-        //Vector2 idealRPos = new(alterEnterCube.RelativePosition.x - normalizedRPos.x * alterEnterCube.RelativeScale.x + normalizedRPos.x * idealRScl.x,
-        //                        alterEnterCube.RelativePosition.y - normalizedRPos.y * alterEnterCube.RelativeScale.y + normalizedRPos.y * idealRScl.y);
         var alterEnterCubeMovement = alterEnterCube.GetComponent<CubeMovement>();
         var positionOffset = CubeMovement.ConvertGridDirectionToPositionOffset(alterEnterDirection);
         positionOffset.x *= idealRScl.x * 2.0f;
         positionOffset.y *= idealRScl.y * 2.0f;
         Vector2 idealRPos = alterEnterOldRPos + positionOffset * alterEnterCubeMovement.MovingProgress;
+        Debug.Log($"{name} is drawing alter cube {alterEnterCube.name} from {position}");
         var childRect = Relativity.CRectFromPRect(position, idealRScl, idealRPos);
         if (minSize > 0)
         {
@@ -430,11 +434,12 @@ public class ContainerCube : Cube
         }
         scissorRect = CustomTextureRenderer2D.GetOverlapRect(scissorRect, position);
         alterEnterCube.Draw(childRect, priority, depth, exposure, scissorRect);
+        Debug.Log($"{name} is drawing alter enter cube: {alterEnterCube.name} at {childRect} width scissor {scissorRect.Value}");
     }
 
     public virtual void DrawExitCube(Rect position, int priority, float depth, float exposure, Rect? scissorRect, float minSize = -1)
     {
-        if (exitCube == null) return;
+        if (exitCube == null || hideExitCube) return;
 
         Vector2 idealRScl = new(1.0f / Tiling.y, 1.0f / Tiling.x);
         var exitCubeMovement = exitCube.GetComponent<CubeMovement>();
@@ -450,6 +455,7 @@ public class ContainerCube : Cube
         }
         scissorRect = CustomTextureRenderer2D.GetOverlapRect(scissorRect, position);
         exitCube.Draw(childRect, priority, depth, exposure, scissorRect);
+        Debug.Log($"{name} is drawing exit cube {exitCube.name} at {childRect}");
     }
 
     public override void DrawSurfaceEffects(Rect position, int priority, float depth, float exposure, Rect? scissorRect)
@@ -510,15 +516,7 @@ public class ContainerCube : Cube
             // If the cube keep trying to exit for more than 3 times -> Teleport to infinity cube
             if (exitsLoopCount >= 3)
             {
-                if (useDebug) Debug.Log($"{requestedCube.name} is in infinite exits!");
-                if (CubesManager.Instance == null) return 0;
-                int infinityLevel = (foundInfinityCube != null)? foundInfinityCube.Level + 1 : InfinityCube.minLevel;
-                var infinityCube = CubesManager.Instance.GetInfinityCube(requestedCube.Parent, infinityLevel);
-                if (infinityCube != null)
-                {
-                    return infinityCube.RequestToMove(requestedCube, direction, true, specialMove);
-                }
-                return 0;
+                return TakeRequestedCubeToInfinityCube(requestedCube, foundInfinityCube, direction, true, specialMove);
             }
             // If the cube keep trying to enter for more than 3 times -> Teleport to epsilon cube
             else if (entriesLoopCount >= 3)
@@ -688,6 +686,19 @@ public class ContainerCube : Cube
         return 0;
     }
 
+    private float TakeRequestedCubeToInfinityCube(Cube requestedCube, InfinityCube previousInfinityCube, CubeMovement.GridDirections direction, bool external, bool specialMove)
+    {
+        if (useDebug) Debug.Log($"{requestedCube.name} is in infinite exits!");
+        if (CubesManager.Instance == null) return 0;
+        int infinityLevel = (previousInfinityCube != null) ? previousInfinityCube.Level + 1 : InfinityCube.minLevel;
+        var infinityCube = CubesManager.Instance.GetInfinityCube(requestedCube.Parent, infinityLevel);
+        if (infinityCube != null)
+        {
+            return infinityCube.RequestToMove(requestedCube, direction, true, specialMove);
+        }
+        return 0;
+    }
+
     private void HandleFailToMove(Cube requestedCube, Vector2Int requestedCubePosition, bool external)
     {
         if (!external)
@@ -700,7 +711,7 @@ public class ContainerCube : Cube
             if (!requestedCube.IsPossessing)
             {
                 requestedCube.PreviousParents.Clear();
-                requestedCube.PreviousParents.Add(new(CubeMovement.LayerDirections.Out, this));
+                requestedCube.PreviousParents.Add(new(CubeMovement.LayerDirections.In, this));
             }
         }
         else if (!requestedCube.IsPossessing) requestedCube.RemovePreviousParent(this);
@@ -710,48 +721,60 @@ public class ContainerCube : Cube
     private float TryPushRequestedCubeOutside(Vector2 cRPos, Vector2 cRScl, Cube requestedCube, CubeMovement.GridDirections direction, bool external)
     {
         if (!isLeavable) return 0;
+
+        float targetTime = 0;
+
+        if (!external)
+        {
+            exitCube = requestedCube;
+            var exitCubeGridPos = Relativity.GridPosFromRPos(childGrid.Tiling.y, childGrid.Tiling.x, cRPos);
+            cRPos = Relativity.RPosFromGridTile(childGrid.Tiling.y, childGrid.Tiling.x, exitCubeGridPos.x, exitCubeGridPos.y);
+            exitCubeOldRPos = cRPos;
+            exitDirection = direction;
+
+            //externalCubes.Add(requestedCube);
+        }
+
         if (Parent == null)
         {
             // Teleport to the infitive cube
-            if (useDebug) Debug.Log($"{requestedCube.name} cant move out of {gameObject.name} because there is no parent cube!");
-            return 0;
+            //if (useDebug) Debug.Log($"{requestedCube.name} cant move out of {gameObject.name} because there is no parent cube!");
+            //return 0;
+            targetTime = TakeRequestedCubeToInfinityCube(requestedCube, null, direction, true, true);
         }
-
-        /* Moving out logic:
-         * - Caculate target position in the outter cube
-         * - Calculate outter cube relative values to this cube
-         * - Calculate the requested cube relative values to the outter cube
-         * - Let the outter cube handle the movement of the requested cube
-         */
-
-        // Flip the requested cube if it is trying to move outside of a horizontally flipped cube
-        if (isHorizFlipped)
+        else
         {
-            cRPos.x = -cRPos.x;
-            direction = CubeMovement.FlipMovementInput(direction, true);
+            /* Moving out logic:
+             * - Caculate target position in the outter cube
+             * - Calculate outter cube relative values to this cube
+             * - Calculate the requested cube relative values to the outter cube
+             * - Let the outter cube handle the movement of the requested cube
+             */
+
+            // Flip the requested cube if it is trying to move outside of a horizontally flipped cube
+            if (isHorizFlipped)
+            {
+                cRPos.x = -cRPos.x;
+                direction = CubeMovement.FlipMovementInput(direction, true);
+            }
+
+            Vector2 outterCubeRPos = Relativity.PRPosToAChild(relativePosition, relativeScale);
+            Vector2 outterCubeRScl = Relativity.PRSclToAChild(relativeScale);
+
+            Vector2 childCubeRPosToOutterCube = Relativity.SRPosFromSameParent(outterCubeRPos, outterCubeRScl, cRPos);
+            Vector2 childCubeRSclToOutterCube = Relativity.SRSclFromSameParent(outterCubeRScl, cRScl);
+
+            targetTime = parent.RequestToMove(childCubeRPosToOutterCube, childCubeRSclToOutterCube, requestedCube, direction, true, true);
         }
 
-        Vector2 outterCubeRPos = Relativity.PRPosToAChild(relativePosition, relativeScale);
-        Vector2 outterCubeRScl = Relativity.PRSclToAChild(relativeScale);
-
-        Vector2 childCubeRPosToOutterCube = Relativity.SRPosFromSameParent(outterCubeRPos, outterCubeRScl, cRPos);
-        Vector2 childCubeRSclToOutterCube = Relativity.SRSclFromSameParent(outterCubeRScl, cRScl);
-
-        var targetTime = parent.RequestToMove(childCubeRPosToOutterCube, childCubeRSclToOutterCube, requestedCube, direction, true, true);
         if (targetTime > 0)
         {
-            if (!external)
-            {
-                exitCube = requestedCube;
-                var exitCubeGridPos = Relativity.GridPosFromRPos(childGrid.Tiling.y, childGrid.Tiling.x, cRPos);
-                cRPos = Relativity.RPosFromGridTile(childGrid.Tiling.y, childGrid.Tiling.x, exitCubeGridPos.x, exitCubeGridPos.y);
-                exitCubeOldRPos = cRPos;
-                exitDirection = direction;
-            }
             return targetTime;
         }
 
         if (useDebug) Debug.Log($"{requestedCube.name} cant move out of {gameObject.name} because its parent rejected!");
+        exitCube = null;
+        //externalCubes.Remove(requestedCube);
 
         return 0;
     }
@@ -828,6 +851,8 @@ public class ContainerCube : Cube
                 alterEnterOldRPos = cRPos;
                 alterEnterCube = requestedCube;
             }
+
+            //externalCubes.Add(requestedCube);
         }
 
         childGrid.Children[row, column].Cube = requestedCube;

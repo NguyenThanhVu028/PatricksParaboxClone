@@ -92,7 +92,7 @@ public class InfinityCube : CloneCube
                     if (requestedCube.PreviousParents[i].Cube != this) break;
                     var finalCube = requestedCube.PreviousParents[requestedCube.PreviousParents.Count - 1];
                     requestedCube.PreviousParents.Clear();
-                    requestedCube.PreviousParents.Add(new(CubeMovement.LayerDirections.Out, this));
+                    requestedCube.PreviousParents.Add(new(CubeMovement.LayerDirections.In, this));
                     requestedCube.PreviousParents.Add(finalCube);
                     break;
                 }

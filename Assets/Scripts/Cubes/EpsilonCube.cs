@@ -60,12 +60,15 @@ public class EpsilonCube : ContainerCube
         {
             // Correct the camera transition
             var mainCube = requestedCube.PreviousParents[1].Cube;
-            if (requestedCube.PreviousParents.Count > 1)
-            {
-                requestedCube.PreviousParents.RemoveRange(1, (requestedCube.PreviousParents.Count - 1));
-            }
+            //if (requestedCube.PreviousParents.Count > 1)
+            //{
+            //    requestedCube.PreviousParents.RemoveRange(1, (requestedCube.PreviousParents.Count - 1));
+            //}
+            requestedCube.PreviousParents.Add(new(CubeMovement.LayerDirections.None, null, mainCube.RelativePosition, mainCube.RelativeScale, mainCube.IsHorizFlipped));
             requestedCube.PreviousParents.Add(new(CubeMovement.LayerDirections.In, this, mainCube.RelativePosition, mainCube.RelativeScale, mainCube.IsHorizFlipped));
             if (MainCamera.Instance != null) MainCamera.Instance.SetTransition(new FadeTransition());
+            alterEnterCube = requestedCube;
+            hideAlterEnterCube = false;
         }
         isEnterable = tempIsEnterable;
         return targetTime;

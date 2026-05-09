@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class WorldCube : ContainerCube
 {
@@ -8,6 +9,10 @@ public class WorldCube : ContainerCube
     [SerializeField] List<WorldCube> dependentWorldCubes = new();
     [SerializeField] int requiredMapCount = 2;
     [SerializeField] TextMeshPro requiredMapCountText;
+    [SerializeField] GameObject requiredMapText;
+    [SerializeField] SpriteRenderer lockIconDisplayer;
+    [SerializeField] Sprite lockedIcon;
+    [SerializeField] Sprite unlockedIcon;
 
     public string WorldName { get => worldName; }
 
@@ -23,7 +28,8 @@ public class WorldCube : ContainerCube
             if ((childCube.Cube as MapSelectionCube).HasFinished) finishedCount++;
             if (finishedCount >= requiredMapCount)
             {
-                foreach(var depedentWorld in dependentWorldCubes)
+                if (lockIconDisplayer != null && unlockedIcon != null) lockIconDisplayer.sprite = unlockedIcon;
+                foreach (var depedentWorld in dependentWorldCubes)
                 {
                     if (depedentWorld == null) continue;
                     depedentWorld.OnRequiredWorldUnlocked(true);
@@ -34,6 +40,7 @@ public class WorldCube : ContainerCube
 
         if (finishedCount < requiredMapCount)
         {
+            if (lockIconDisplayer != null && lockedIcon != null) lockIconDisplayer.sprite = lockedIcon;
             foreach (var depedentWorld in dependentWorldCubes)
             {
                 if (depedentWorld == null) continue;
@@ -48,13 +55,13 @@ public class WorldCube : ContainerCube
     {
         base.DrawCube(position, priority, depth, exposure, scissorRect);
 
-        if (requiredMapCountText != null)
+        if (requiredMapText != null && requiredMapCountText != null)
         {
-            requiredMapCountText.gameObject.SetActive(true);
+            requiredMapText.gameObject.SetActive(true);
 
             Vector3 textPos = position.position + Vector2.down * (position.size.y * 0.5f + requiredMapCountText.rectTransform.sizeDelta.y * 0.5f);
             textPos.z = depth - 1f;
-            requiredMapCountText.rectTransform.position = textPos;
+            requiredMapText.transform.position = textPos;
         }
     }
 

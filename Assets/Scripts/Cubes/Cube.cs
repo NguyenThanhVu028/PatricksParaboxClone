@@ -128,6 +128,11 @@ public class Cube : MonoBehaviour
         IsHorizFlipped = isHorizFlipped; // To add mirror effect if needed
     }
 
+    public virtual void ApplyNewDetails(CubeDetail newDetails)
+    {
+
+    }
+
     public virtual void Draw(Rect position, int priority, float depth = 0, float exposure = 0, Rect? scissorRect = null)
     {
         if (!CustomTextureRenderer2D.CheckVisibility(position.position, position.size) && enableOcclusionCulling) return;
@@ -304,15 +309,42 @@ public class Cube : MonoBehaviour
             }
         }
     }
-    
+
+    [Serializable]
+    public class CubeDetail
+    {
+        [Header("General Info")]
+        [SerializeField] protected bool isPlayer = false;
+        [SerializeField] protected bool canBePlayer = false;
+        [SerializeField] protected CubeTypes cubeType;
+        [SerializeField] protected ColorPalette.ColorEnum cubeColor;
+        [Header("Rendering")]
+        [SerializeField] protected bool isHorizFlipped = false;
+        [SerializeField] protected int minPixelToRender = 2; // Don't render if the render rectangle size in pixel is smaller than this value
+        [Header("Cube stats")]
+        [SerializeField] protected ContainerCube parent;
+        [SerializeField] protected List<PreviousParentDetails> previousParents = new(); // Record self cube's previous parent to record history
+        [SerializeField] protected Vector2 relativeScale = new(1, 1);
+        [SerializeField] protected Vector2 relativePosition = new(0, 0);
+        [Header("Other cube settings")]
+        [SerializeField] protected float possessingTime = 0.5f;
+        [SerializeField] protected UnityEvent onInit = new();
+        [SerializeField] protected UnityEvent<Rect, float, float, Rect?> onFinishedDrawing = new();
+        public CubeDetail(Cube cubeToCopy)
+        {
+
+        }
+    }
+
     [Serializable]
     public struct PreviousParentDetails
     {
-        private CubeMovement.LayerDirections direction;
-        private ContainerCube cube;
-        private Vector2 relativePosition;
-        private Vector2 relativeScale;
-        private bool isHorizFlipped;
+        [SerializeField] private CubeMovement.LayerDirections direction;
+        [SerializeField] private ContainerCube cube;
+        [SerializeField] private Vector2 relativePosition;
+        [SerializeField] private Vector2 relativeScale;
+        [SerializeField] private bool isHorizFlipped;
+        [SerializeField] private bool useDefaultValues;
 
         public CubeMovement.LayerDirections Direction { get => direction; set => direction = value; }
         public ContainerCube Cube { get => cube; set => cube = value; }
@@ -339,15 +371,17 @@ public class Cube : MonoBehaviour
             get => isHorizFlipped;
             set => isHorizFlipped = value;
         }
+        public bool UseDefaultValues { get => useDefaultValues; set => useDefaultValues = value; }
         public PreviousParentDetails(CubeMovement.LayerDirections direction, ContainerCube cube)
         {
             this.cube = cube;
             this.direction = direction;
-            this.relativePosition = (cube != null) ? cube.RelativePosition : Vector2.zero;
-            this.relativeScale = (cube != null) ? cube.RelativeScale : Vector2.zero;
-            this.isHorizFlipped = (cube != null) ? cube.IsHorizFlipped : false;
+            relativePosition = (cube != null) ? cube.RelativePosition : Vector2.zero;
+            relativeScale = (cube != null) ? cube.RelativeScale : Vector2.zero;
+            isHorizFlipped = (cube != null) ? cube.IsHorizFlipped : false;
+            useDefaultValues = true;
         }
-
+        
         public PreviousParentDetails(CubeMovement.LayerDirections direction, ContainerCube cube, Vector2 relativePosition, Vector2 relativeScale, bool isHorizFlipped) 
         { 
             this.cube = cube;
@@ -355,6 +389,7 @@ public class Cube : MonoBehaviour
             this.relativePosition = relativePosition;
             this.relativeScale = relativeScale;
             this.isHorizFlipped = isHorizFlipped;
+            useDefaultValues = false;
         }
     }
 }
