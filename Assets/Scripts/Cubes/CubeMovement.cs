@@ -268,10 +268,10 @@ public class CubeMovement : MonoBehaviour
                     }
                 }
             }
-            Debug.Log("External parent to apply to " + selfCube.name + " is " + externalParent);
+            //Debug.Log("External parent to apply to " + selfCube.name + " is " + externalParent);
             if (externalParent != null)
             {
-                Debug.Log("Apply property: " + applyProperties.IsHorizFlipped + " to " + selfCube.name);
+                //Debug.Log("Apply property: " + applyProperties.IsHorizFlipped + " to " + selfCube.name);
                 selfCube.ApplyNewProperties(applyProperties);
             }
             else
@@ -387,19 +387,19 @@ public class CubeMovement : MonoBehaviour
                         startRPos = Relativity.CRPosFromCRealPos(externalParentRect, realStartPos);
                         var realEndPos = Relativity.CRealPosFromCRPos(finalParentRect, previousEndRPos);
                         endRPos = Relativity.CRPosFromCRealPos(externalParentRect, realEndPos);
-                        Debug.Log("Cube: " + selfCube.name);
-                        Debug.Log($"exter parent: {externalParent.name}, exter rect: {externalParentRect}, final rect: {finalParentRect}");
-                        Debug.Log($"real start: {realStartPos}, startPos: {startRPos}, real end: {realEndPos}, end pos: {endRPos}");
+                        //Debug.Log("Cube: " + selfCube.name);
+                        //Debug.Log($"exter parent: {externalParent.name}, exter rect: {externalParentRect}, final rect: {finalParentRect}");
+                        //Debug.Log($"real start: {realStartPos}, startPos: {startRPos}, real end: {realEndPos}, end pos: {endRPos}");
 
-                        startRScl = new(previousRScl.x * (initParentRect.width / externalParentRect.width), previousRScl.y * (initParentRect.width / externalParentRect.height));
+                        startRScl = new(Mathf.Abs(previousRScl.x * (initParentRect.width / externalParentRect.width)), Mathf.Abs(previousRScl.y * (initParentRect.width / externalParentRect.height)));
                         endRScl = new(Mathf.Abs(previousEndRScl.x * (finalParentRect.width / externalParentRect.width)), Mathf.Abs(previousEndRScl.y * (finalParentRect.height / externalParentRect.height)));
 
-                        Debug.Log("External cube: " + externalParent.name + " with " + externalParent.ExternalCubes.Count);
+                        //Debug.Log("External cube: " + externalParent.name + " with " + externalParent.ExternalCubes.Count);
                         if (!externalParent.ExternalCubes.Contains(selfCube)) externalParent.ExternalCubes.Add(selfCube);
                     }
                     else
                     {
-                        Debug.Log("Final parent rect: " + finalParentRect + " of " + selfCube.Parent.name + " with " + selfCube.Parent.ExternalCubes.Count);
+                        //Debug.Log("Final parent rect: " + finalParentRect + " of " + selfCube.Parent.name + " with " + selfCube.Parent.ExternalCubes.Count);
                         if (!selfCube.Parent.ExternalCubes.Contains(selfCube)) selfCube.Parent.ExternalCubes.Add(selfCube);
                     }
                 }

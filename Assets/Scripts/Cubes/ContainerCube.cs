@@ -448,7 +448,7 @@ public class ContainerCube : Cube
         positionOffset.x *= idealRScl.x * 2.0f;
         positionOffset.y *= idealRScl.y * 2.0f;
         Vector2 idealRPos = alterEnterOldRPos + positionOffset * alterEnterCubeMovement.MovingProgress;
-        Debug.Log($"{name} is drawing alter cube {alterEnterCube.name} from {position}");
+        //Debug.Log($"{name} is drawing alter cube {alterEnterCube.name} from {position}");
         var childRect = Relativity.CRectFromPRect(position, idealRScl, idealRPos);
         if (minSize > 0)
         {
@@ -457,7 +457,7 @@ public class ContainerCube : Cube
         }
         scissorRect = CustomTextureRenderer2D.GetOverlapRect(scissorRect, position);
         alterEnterCube.Draw(childRect, priority, depth, exposure, scissorRect);
-        Debug.Log($"{name} is drawing alter enter cube: {alterEnterCube.name} at {childRect} width scissor {scissorRect.Value}");
+        //Debug.Log($"{name} is drawing alter enter cube: {alterEnterCube.name} at {childRect} width scissor {scissorRect.Value}");
     }
 
     public virtual void DrawExitCube(Rect position, int priority, float depth, float exposure, Rect? scissorRect, float minSize = -1)
@@ -478,7 +478,7 @@ public class ContainerCube : Cube
         }
         scissorRect = CustomTextureRenderer2D.GetOverlapRect(scissorRect, position);
         exitCube.Draw(childRect, priority, depth, exposure, scissorRect);
-        Debug.Log($"{name} is drawing exit cube {exitCube.name} at {childRect}");
+        //Debug.Log($"{name} is drawing exit cube {exitCube.name} at {childRect}");
     }
 
     public override void DrawSurfaceEffects(Rect position, int priority, float depth, float exposure, Rect? scissorRect)

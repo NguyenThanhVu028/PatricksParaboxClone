@@ -335,9 +335,9 @@ MonoBehaviour:
   - audioID: Nice To Meet You
     audioClip: {fileID: 8300000, guid: 0205b73bfc273ca4bb3e45ef24576d78, type: 3}
   - audioID: Action
-    audioClip: {fileID: 8300000, guid: 08d40ab1174f01b498370693a77dc27d, type: 3}
+    audioClip: {fileID: 8300000, guid: ae8342658cf4d0d4b97c3d04793843ef, type: 3}
   - audioID: Farewell
-    audioClip: {fileID: 8300000, guid: 49439b37b5af6e047b8c35fa30b1ef28, type: 3}
+    audioClip: {fileID: 8300000, guid: ddb8b92e077ba9744be5cccf7c8d9862, type: 3}
   - audioID: Movement
     audioClip: {fileID: 8300000, guid: 582fc3747bf8dc545814b4d025e6ba26, type: 3}
   - audioID: ZoomIn

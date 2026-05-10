@@ -109,7 +109,7 @@ public class Cube : MonoBehaviour
     protected virtual void InitPreviousParents()
     {
         previousParents.Clear();
-        previousParents.Add(new(CubeMovement.LayerDirections.Out, parent));
+        previousParents.Add(new(CubeMovement.LayerDirections.In, parent));
     }
     protected virtual void InitAnimations()
     {
@@ -415,24 +415,40 @@ public class Cube : MonoBehaviour
         {
             get
             {
-                if (relativePosition == null) return cube.RelativePosition;
+                if (relativePosition == null || useDefaultValues) return cube.RelativePosition;
                 return relativePosition;
             }
-            set => relativePosition = value;
+            set
+            {
+                relativePosition = value;
+                useDefaultValues = false;
+            }
         }
         public Vector2 RelativeScale
         {
             get
             {
-                if (relativeScale == null) return cube.RelativeScale;
+                if (relativeScale == null || useDefaultValues) return cube.RelativeScale;
                 return relativeScale;
             }
-            set => relativeScale = value;
+            set
+            {
+                relativeScale = value;
+                useDefaultValues = false;
+            }
         }
         public bool IsHorizFlipped
         {
-            get => isHorizFlipped;
-            set => isHorizFlipped = value;
+            get
+            {
+                if (useDefaultValues) return cube.isHorizFlipped;
+                return isHorizFlipped;
+            }
+            set
+            {
+                isHorizFlipped = value;
+                useDefaultValues = false;
+            }
         }
         public bool UseDefaultValues { get => useDefaultValues; set => useDefaultValues = value; }
         public PreviousParentDetails(CubeMovement.LayerDirections direction, ContainerCube cube)

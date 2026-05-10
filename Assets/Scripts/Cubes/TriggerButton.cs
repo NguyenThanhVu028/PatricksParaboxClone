@@ -47,14 +47,12 @@ public class TriggerButton : Cube
 
     protected virtual void OnActivated()
     {
-        Debug.Log("On activated");
         isActivated = true;
         onButtonActivated.Invoke();
     }
 
     protected virtual void OnDeactivated()
     {
-        Debug.Log("On deactivated");
         isActivated = false;
         onButtonDeactivated.Invoke();
     }
