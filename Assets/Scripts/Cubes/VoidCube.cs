@@ -24,28 +24,22 @@ public class VoidCube : ContainerCube
         hasInit = true;
     }
 
-    public override void Draw(Rect position, float depth = 0, float exposure = 0, Rect? scissorRect = null)
+    public override void Draw(Rect position, int priority, float depth = 0, float exposure = 0, Rect? scissorRect = null)
     {
         if (!CustomTextureRenderer2D.CheckVisibility(position.position, position.size) && enableOcclusionCulling) return;
 
         Vector2 rectSizeInPixel = CustomTextureRenderer2D.ConvertScaleToPixel(position.size);
         if (rectSizeInPixel.x < minPixelToRender || rectSizeInPixel.y < minPixelToRender) return; // Don't draw if the requested rectangle is too small (To avoid infinite rendering)
 
-        DrawCube(position, depth, exposure, scissorRect);
+        DrawCube(position, priority, depth, exposure, scissorRect);
 
         onFinishedDrawing.Invoke(position, depth, exposure, scissorRect);
     }
-    public override void DrawCube(Rect position, float depth, float exposure, Rect? scissorRect)
+    public override void DrawCube(Rect position, int priority, float depth, float exposure, Rect? scissorRect)
     {
-        DrawFloor(position, depth + floorDepthOffset, exposure, scissorRect);
-        DrawChildCubes(position, depth, exposure, scissorRect);
-        DrawSurfaceEffects(position, depth, exposure, scissorRect);
-    }
-    protected void DrawMainCube(Rect position, float depth, float exposure, Rect? scissorRect)
-    {
-        if (mainCube == null) return;
-        Rect mainCubeRect = Relativity.CRectFromPRect(position, mainCube.RelativePosition, mainCube.RelativeScale);
-        mainCube.Draw(mainCubeRect, depth, exposure, scissorRect);
+        DrawFloor(position, priority, depth + floorDepthOffset, exposure, scissorRect);
+        DrawChildCubes(position, priority, depth, exposure, scissorRect);
+        DrawSurfaceEffects(position, priority, depth, exposure, scissorRect);
     }
 
     public void SetCentralCube (ContainerCube cube)
@@ -68,23 +62,12 @@ public class VoidCube : ContainerCube
         mainCube = cube;
     }
 
-    public override void ModifyChildCubeInnerEnter(Cube childCube)
+    public override void ModifyChildCubeInnerEnter(CubeProperties childCube)
     {
         base.ModifyChildCubeEnter(childCube);
-        if (childCube is ContainerCube containerCube)
+        if (childCube is ContainerCubeProperties containerCube)
         {
             containerCube.IsEnterable = false;
         }
-        Debug.Log("Modify: " + childCube.name);
-    }
-
-    public override void ModifyChildCubeEnter(Cube childCube)
-    {
-        base.ModifyChildCubeEnter(childCube);
-    }
-
-    public override void ModifyChildCubeExit(Cube childCube)
-    {
-        base.ModifyChildCubeExit(childCube);
     }
 }

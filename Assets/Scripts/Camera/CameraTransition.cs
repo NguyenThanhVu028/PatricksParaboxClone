@@ -41,7 +41,7 @@ public class ZoomingTransition : CameraTransition
         // Traverse the previous parents list to calculate new target cube rect
         targetCubeRect = mainCamera.TargetCubeRect;
         Cube.PreviousParentDetails currentCube = cubesToTraverse[0];
-        for(int i =1; i < cubesToTraverse.Count; i++)
+        for(int i = 1; i < cubesToTraverse.Count; i++)
         {
             if (cubesToTraverse[i].Cube == null) continue;
             if (cubesToTraverse[i].Direction == CubeMovement.LayerDirections.Out)

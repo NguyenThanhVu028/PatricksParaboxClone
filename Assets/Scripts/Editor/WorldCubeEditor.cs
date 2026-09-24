@@ -19,7 +19,11 @@ public class WorldCubeEditor : Editor
     SerializedProperty worldName;
     SerializedProperty dependentWorldCubes;
     SerializedProperty requiredMapCount;
+    SerializedProperty requiredMapText;
     SerializedProperty requiredMapCountText;
+    SerializedProperty lockIconDisplayer;
+    SerializedProperty lockedIcon;
+    SerializedProperty unlockedIcon;
 
     // Rendering
     SerializedProperty isHorizFlipped;
@@ -67,7 +71,11 @@ public class WorldCubeEditor : Editor
         worldName = serializedObject.FindProperty("worldName");
         dependentWorldCubes = serializedObject.FindProperty("dependentWorldCubes");
         requiredMapCount = serializedObject.FindProperty("requiredMapCount");
+        requiredMapText = serializedObject.FindProperty("requiredMapText");
         requiredMapCountText = serializedObject.FindProperty("requiredMapCountText");
+        lockIconDisplayer = serializedObject.FindProperty("lockIconDisplayer");
+        lockedIcon = serializedObject.FindProperty("lockedIcon");
+        unlockedIcon = serializedObject.FindProperty("unlockedIcon");
 
         // Rendering
         isHorizFlipped = serializedObject.FindProperty("isHorizFlipped");
@@ -114,7 +122,11 @@ public class WorldCubeEditor : Editor
         EditorGUILayout.PropertyField(worldName);
         EditorGUILayout.PropertyField(dependentWorldCubes);
         EditorGUILayout.PropertyField(requiredMapCount);
+        EditorGUILayout.PropertyField(requiredMapText);
         EditorGUILayout.PropertyField(requiredMapCountText);
+        EditorGUILayout.PropertyField(lockedIcon);
+        EditorGUILayout.PropertyField(unlockedIcon);
+        EditorGUILayout.PropertyField(lockIconDisplayer);
 
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Rendering", EditorStyles.boldLabel);

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using UnityEditor.U2D.Aseprite;
 using UnityEngine;
 using UnityEngine.Events;
 

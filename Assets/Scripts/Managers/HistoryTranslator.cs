@@ -60,30 +60,31 @@ public class HistoryTranslator : MonoBehaviour
             }
 
             // Let target cube return to its previous parent
-            if (historyEvent.PreviousParent == null)
+            if (historyEvent.Properties.Parent == null)
             {
                 historyEvent.TargetCube.Parent = null;
                 continue;
             }
 
-            Vector2Int targetCubePrevPosInParent = Relativity.GridPosFromRPos(historyEvent.PreviousParent.Tiling.y, historyEvent.PreviousParent.Tiling.x, historyEvent.PreviousRPos);
-            if (!historyEvent.PreviousParent.ChildGrid.CheckValidGridPosition(targetCubePrevPosInParent.x, targetCubePrevPosInParent.y)) return;
+            Vector2Int targetCubePrevPosInParent = Relativity.GridPosFromRPos(historyEvent.Properties.Parent.Tiling.y, historyEvent.Properties.Parent.Tiling.x, historyEvent.Properties.RelativePosition);
+            if (!historyEvent.Properties.Parent.ChildGrid.CheckValidGridPosition(targetCubePrevPosInParent.x, targetCubePrevPosInParent.y)) return;
             // Return target cube back to its previous parent cube
-            historyEvent.PreviousParent.ChildCubes[targetCubePrevPosInParent.x, targetCubePrevPosInParent.y].Cube = historyEvent.TargetCube;
-            historyEvent.PreviousParent.ChildCubes[targetCubePrevPosInParent.x, targetCubePrevPosInParent.y].MovingDirection = CubeMovement.GridDirections.None;
-            historyEvent.TargetCube.Parent = historyEvent.PreviousParent;
+            historyEvent.Properties.Parent.ChildCubes[targetCubePrevPosInParent.x, targetCubePrevPosInParent.y].Cube = historyEvent.TargetCube;
+            historyEvent.Properties.Parent.ChildCubes[targetCubePrevPosInParent.x, targetCubePrevPosInParent.y].MovingDirection = CubeMovement.GridDirections.None;
+            historyEvent.TargetCube.ApplyNewProperties(historyEvent.Properties);
+            //historyEvent.TargetCube.Parent = historyEvent.Properties.Parent;
             historyEvent.TargetCube.PreviousParents.Clear();
-            historyEvent.TargetCube.PreviousParents.Add(new(CubeMovement.LayerDirections.In, historyEvent.PreviousParent));
+            historyEvent.TargetCube.PreviousParents.Add(new(CubeMovement.LayerDirections.In, historyEvent.Properties.Parent));
             // Return target cube's relative position, relative scale and horizontal flip status back to previous values
-            historyEvent.TargetCube.RelativePosition = historyEvent.PreviousRPos;
-            historyEvent.TargetCube.RelativeScale = historyEvent.PreviousRScl;
-            historyEvent.TargetCube.IsHorizFlipped = historyEvent.IsHorizFlipped;
-            historyEvent.TargetCube.IsPlayer = historyEvent.IsPlayer;
-            if (historyEvent.TargetCube is ContainerCube containerCube)
-            {
-                containerCube.IsEnterable = historyEvent.IsEnterable;
-                containerCube.IsLeavable = historyEvent.IsLeavable;
-            }
+            //historyEvent.TargetCube.RelativePosition = historyEvent.Properties.RelativePosition;
+            //historyEvent.TargetCube.RelativeScale = historyEvent.Properties.RelativeScale;
+            //historyEvent.TargetCube.IsHorizFlipped = historyEvent.IsHorizFlipped;
+            //historyEvent.TargetCube.IsPlayer = historyEvent.IsPlayer;
+            //if (historyEvent.TargetCube is ContainerCube containerCube)
+            //{
+            //    containerCube.IsEnterable = historyEvent.IsEnterable;
+            //    containerCube.IsLeavable = historyEvent.IsLeavable;
+            //}
             ResetCameraTarget(historyEvent);
         }
         ResetCameraStatus(historyRecord);

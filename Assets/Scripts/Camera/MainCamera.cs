@@ -8,7 +8,7 @@ public class MainCamera : MonoBehaviour
 {
     public enum MainCameraRenderMode { SingleCube, MultipleCubes };
     public enum CameraMovements { ZoomIn, ZoomOut }
-    public const float infinityBackgroundDepthOffset = 0.5f;
+    public const float infinityBackgroundDepthOffset = 0.2f;
 
     private static MainCamera instance;
 
@@ -77,12 +77,14 @@ public class MainCamera : MonoBehaviour
     private void OnEnable()
     {
         exposure = defaultExposure;
-        CustomRendererFeature.CustomRenderPass.OnExecuteCmd.AddListener(OnRender);
+        CustomRendererFeature.CustomRenderPass.OnPrepareExecuteCmd.AddListener(OnRender);
+        CustomRendererFeature.CustomRenderPass.OnExecuteCmd.AddListener(OnFinishRender);
     }
 
     private void OnDisable()
     {
-        CustomRendererFeature.CustomRenderPass.OnExecuteCmd.RemoveListener(OnRender);
+        CustomRendererFeature.CustomRenderPass.OnPrepareExecuteCmd.RemoveListener(OnRender);
+        CustomRendererFeature.CustomRenderPass.OnExecuteCmd.RemoveListener(OnFinishRender);
     }
     private void OnRender()
     {
@@ -116,7 +118,7 @@ public class MainCamera : MonoBehaviour
                 renderPos.position = new(-renderPos.position.x, renderPos.position.y);
             }
             if (cubeRenderDetail.TargetCube.IsHorizFlipped) renderPos.size = new(-renderPos.size.x, renderPos.size.y);
-            cubeRenderDetail.TargetCube.Draw(renderPos, depth, exposure, GetScreenRect());
+            cubeRenderDetail.TargetCube.Draw(renderPos, CustomTextureRenderer2D.defaultPriority, depth, exposure, GetScreenRect());
         }
     }
 
@@ -236,7 +238,7 @@ public class MainCamera : MonoBehaviour
                 var infinityCube = infinityCubes[i].Key;
                 var infinityRect = infinityCubes[i].Value;
                 infinityCube.Parent.CullingCubesOne.Add(infinityCube);
-                infinityCube.Parent.DrawCube(infinityRect, depth + infinityBackgroundDepth, exposure, GetScreenRect());
+                infinityCube.Parent.DrawCube(infinityRect, CustomTextureRenderer2D.defaultPriority, depth + infinityBackgroundDepth, exposure, GetScreenRect());
                 infinityBackgroundDepth -= infinityBackgroundDepthOffset;
                 infinityCube.Parent.CullingCubesOne.Remove(infinityCube);
             }
@@ -244,18 +246,23 @@ public class MainCamera : MonoBehaviour
             // Draw regular cubes
             for (int i = parentAndRects.Count - 1; i >= 0; i--)
             {
-                if (i > 0) parentAndRects[i].Key.CullingCubesOne.Add(parentAndRects[i - 1].Key);
+                if (i > 0 && parentAndRects[i].Key.CullingCubesOne != null) parentAndRects[i].Key.CullingCubesOne.Add(parentAndRects[i - 1].Key);
                 var renderRect = parentAndRects[i].Value;
-                parentAndRects[i].Key.DrawCube(renderRect, depth, exposure, GetScreenRect());
-                if (i > 0) parentAndRects[i].Key.CullingCubesOne.Remove(parentAndRects[i - 1].Key);
+                parentAndRects[i].Key.DrawCube(renderRect, CustomTextureRenderer2D.defaultPriority, depth, exposure, GetScreenRect());
+                if (i > 0 && parentAndRects[i].Key.CullingCubesOne != null) parentAndRects[i].Key.CullingCubesOne.Remove(parentAndRects[i - 1].Key);
             }
         }
         else
         {
             Rect renderPos = renderRect;
             if (isHorizFlipped) renderPos.size = new(-renderPos.size.x, renderPos.size.y);
-            targetCube.Draw(renderPos, depth, exposure, GetScreenRect());
+            targetCube.Draw(renderPos, CustomTextureRenderer2D.defaultPriority, depth, exposure, GetScreenRect());
         }
+    }
+
+    private void OnFinishRender()
+    {
+        CustomTextureRenderer2D.OnRenderOnScreen();
     }
 
     public void SetNewTargetCube(ContainerCube newTarget)

@@ -119,7 +119,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7309944951731431654}
-  - {fileID: 9200029769451556004}
+  - {fileID: 9099497558541240705}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &984396540268988854
@@ -134,11 +134,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c40dd76a8993a234ea82ff15f914c21e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalMoveTime: 0.1
-  specialMoveTime: 0.5
+  defaultMoveTime: 0.1
+  defaultEnterTime: 0.5
   coolDownTime: 0.075
   selfCube: {fileID: 0}
-  isExternal: 0
+  movementAudioID: Movement
+  zoomInAudioID: ZoomIn
+  zoomOutAudioID: ZoomOut
+  noZoomAudioID: NoZoom
 --- !u!114 &5057256903072216264
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -158,14 +161,17 @@ MonoBehaviour:
   cubeColor: 7
   needInstantiating: 0
   defaultTexture: {fileID: 0}
+  isHorizFlipped: 0
   minPixelToRender: 2
   normalMat: {fileID: 2100000, guid: 78b9e2b83bf5d0643b88372fc8f8b336, type: 2}
   outlineMat: {fileID: 2100000, guid: 5f0c8b0400fd3074d84c1d22d0c58c68, type: 2}
   cubeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   possessableFaceTexture: {fileID: 0}
   enableOcclusionCulling: 0
+  mirrorEffectID: Mirror
+  surfaceEffectsAnimationIDs: []
   parent: {fileID: 0}
-  previousParent: {fileID: 0}
+  previousParents: []
   relativeScale: {x: 1, y: 1}
   relativePosition: {x: 0, y: 0}
   possessingTime: 0.5
@@ -339,6 +345,42 @@ MonoBehaviour:
   dependentWorldCubes: []
   requiredMapCount: 2
   requiredMapCountText: {fileID: 3363172558895694338}
+  requiredMapText: {fileID: 4541631626019509881}
+  lockIconDisplayer: {fileID: 0}
+  lockedIcon: {fileID: -8611341293911561696, guid: bc923be42c4c54f4caaecd659c1976e1, type: 3}
+  unlockedIcon: {fileID: 42211986195339374, guid: 353e2f171d673394e9698098232f5eb1, type: 3}
+--- !u!1 &4541631626019509881
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9099497558541240705}
+  m_Layer: 0
+  m_Name: RequiredMapText
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &9099497558541240705
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4541631626019509881}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
+  m_Children:
+  - {fileID: 9200029769451556004}
+  m_Father: {fileID: 8332820837208702817}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7643762355412774533
 GameObject:
   m_ObjectHideFlags: 0
@@ -350,13 +392,14 @@ GameObject:
   - component: {fileID: 9200029769451556004}
   - component: {fileID: 1241296320317417801}
   - component: {fileID: 3363172558895694338}
+  - component: {fileID: 7011804630408843271}
   m_Layer: 0
   m_Name: RequiredMapCount
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &9200029769451556004
 RectTransform:
   m_ObjectHideFlags: 0
@@ -364,17 +407,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7643762355412774533}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8332820837208702817}
+  m_Father: {fileID: 9099497558541240705}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0.75, y: 0.75}
+  m_SizeDelta: {x: 0.75, y: 0.7}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &1241296320317417801
 MeshRenderer:
@@ -469,7 +512,7 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4294967295
   m_fontSize: 3.55
-  m_fontSizeBase: 14
+  m_fontSizeBase: 2.65
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 1
@@ -515,3 +558,17 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 1241296320317417801}
   m_maskType: 0
+--- !u!114 &7011804630408843271
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7643762355412774533}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 0
+  m_VerticalFit: 0

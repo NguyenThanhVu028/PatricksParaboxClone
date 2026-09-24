@@ -109,7 +109,7 @@ public class Cube : MonoBehaviour
     protected virtual void InitPreviousParents()
     {
         previousParents.Clear();
-        previousParents.Add(new(CubeMovement.LayerDirections.Out, parent));
+        previousParents.Add(new(CubeMovement.LayerDirections.In, parent));
     }
     protected virtual void InitAnimations()
     {
@@ -128,47 +128,71 @@ public class Cube : MonoBehaviour
         IsHorizFlipped = isHorizFlipped; // To add mirror effect if needed
     }
 
-    public virtual void Draw(Rect position, float depth = 0, float exposure = 0, Rect? scissorRect = null)
+    public virtual CubeProperties GetEmptyProperties()
+    {
+        return new CubeProperties();
+    }
+    public virtual CubeProperties GetCubeProperties()
+    {
+        CubeProperties properties = new CubeProperties();
+        properties.CopyProperties(this);
+        return properties;
+    }
+    public virtual void ApplyNewProperties(CubeProperties newProperties)
+    {
+        if (newProperties == null) return;
+
+        isPlayer = newProperties.IsPlayer;
+        canBePlayer = newProperties.CanBePlayer;
+        cubeType = newProperties.CubeType;
+        cubeColor = newProperties.CubeColor;
+
+        isHorizFlipped = newProperties.IsHorizFlipped;
+        parent = newProperties.Parent;
+        relativePosition = newProperties.RelativePosition;
+        relativeScale = newProperties.RelativeScale;
+    }
+
+    public virtual void Draw(Rect position, int priority, float depth = 0, float exposure = 0, Rect? scissorRect = null)
     {
         if (!CustomTextureRenderer2D.CheckVisibility(position.position, position.size) && enableOcclusionCulling) return;
 
         Vector2 rectSizeInPixel = CustomTextureRenderer2D.ConvertScaleToPixel(position.size);
         if (rectSizeInPixel.x < minPixelToRender || rectSizeInPixel.y < minPixelToRender) return; // Don't draw if the requested rectangle is too small (To avoid infinite rendering)
         if (isHorizFlipped) position.width = - position.width;
-        DrawCube(position, depth, exposure, scissorRect);
-        DrawPlayerFace(position, depth + playerFaceDepthOffset, exposure, scissorRect);
-        DrawSurfaceEffects(position, depth + surfaceEffectsDepthOffset, exposure, scissorRect);
+        DrawCube(position, priority, depth, exposure, scissorRect);
+        DrawPlayerFace(position, priority, depth + playerFaceDepthOffset, exposure, scissorRect);
+        DrawSurfaceEffects(position, priority, depth + surfaceEffectsDepthOffset, exposure, scissorRect);
 
         onFinishedDrawing.Invoke(position, depth, exposure, scissorRect);
     }
-    public virtual void DrawCube(Rect position, float depth, float exposure, Rect? scissorRect)
+    public virtual void DrawCube(Rect position, int priority, float depth, float exposure, Rect? scissorRect)
     {
         if (defaultTexture != null && defaultTexture.GetTexture() != null)
         {
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, defaultTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect);
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, defaultTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
         }
     }
-    public virtual void DrawPlayerFace(Rect position, float depth, float exposure, Rect? scissorRect)
+    public virtual void DrawPlayerFace(Rect position, int priority, float depth, float exposure, Rect? scissorRect)
     {
         // Get player face texture
         if (IsPlayer && faceTexture != null)
         {
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, faceTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect);
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, faceTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
         }
         else if (!IsPlayer && canBePlayer && possessableFaceTexture != null)
         {
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, possessableFaceTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect);
+            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, possessableFaceTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
         }
     }
-    public virtual void DrawSurfaceEffects(Rect position, float depth, float exposure, Rect? scissorRect)
+    public virtual void DrawSurfaceEffects(Rect position, int priority, float depth, float exposure, Rect? scissorRect)
     {
         var cubeColor = Color.white;
-        //if (colorPalette != null) cubeColor = colorPalette.GetColor(this.cubeColor);
         foreach( var surfaceEffect in surfaceEffects)
         {
             if (surfaceEffect != null)
             {
-                CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, surfaceEffect.GetTexture(), cubeColor, exposure, position.position, position.size, depth, scissorRect);
+                CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, surfaceEffect.GetTexture(), cubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
             }
         }
     }
@@ -219,53 +243,63 @@ public class Cube : MonoBehaviour
         {
             // Modify current record to save its previous details
             var currentRecord = historyManager.GetCurrentRecord();
+            var currentProperties = GetCubeProperties();
+            currentProperties.IsPlayer = true;
+            var targetCubeProperties = targetCube.GetCubeProperties();
+            targetCubeProperties.IsPlayer = false;
             if (currentRecord != null)
             {
-                currentRecord.AddHistoryEvent(
-                    this, 
-                    //(previousParents.Count > 0) ? previousParents[0].Cube : null,
-                    parent,
-                    relativePosition, 
-                    relativeScale, 
-                    isHorizFlipped, 
-                    true,
-                    (this is ContainerCube oldContainer) ? oldContainer.IsEnterable : true,
-                    (this is ContainerCube oldContainer2) ? oldContainer2.IsLeavable : true
-                    );
-                currentRecord.AddHistoryEvent(
-                    targetCube, 
-                    //(targetCube.PreviousParents.Count > 0) ? targetCube.PreviousParents[0].Cube : null, 
-                    targetCube.Parent,
-                    targetCube.RelativePosition, 
-                    targetCube.RelativeScale, 
-                    targetCube.IsHorizFlipped, 
-                    false,
-                    (targetCube is ContainerCube oldTargetContainer) ? oldTargetContainer.IsEnterable : true,
-                    (targetCube is ContainerCube oldTargetContainer2) ? oldTargetContainer2.IsLeavable : true
-                    );
+                //currentRecord.AddHistoryEvent(
+                //    this, 
+                //    //(previousParents.Count > 0) ? previousParents[0].Cube : null,
+                //    parent,
+                //    relativePosition, 
+                //    relativeScale, 
+                //    isHorizFlipped, 
+                //    true,
+                //    (this is ContainerCube oldContainer) ? oldContainer.IsEnterable : true,
+                //    (this is ContainerCube oldContainer2) ? oldContainer2.IsLeavable : true
+                //    );
+                currentRecord.AddHistoryEvent(this, currentProperties);
+                //currentRecord.AddHistoryEvent(
+                //    targetCube, 
+                //    //(targetCube.PreviousParents.Count > 0) ? targetCube.PreviousParents[0].Cube : null, 
+                //    targetCube.Parent,
+                //    targetCube.RelativePosition, 
+                //    targetCube.RelativeScale, 
+                //    targetCube.IsHorizFlipped, 
+                //    false,
+                //    (targetCube is ContainerCube oldTargetContainer) ? oldTargetContainer.IsEnterable : true,
+                //    (targetCube is ContainerCube oldTargetContainer2) ? oldTargetContainer2.IsLeavable : true
+                //    );
+                currentRecord.AddHistoryEvent(targetCube, targetCubeProperties);
             }
-            historyManager.RecordNewEvent(
-                this, 
-                //(previousParents.Count > 0) ? previousParents[0].Cube : null, 
-                parent,
-                relativePosition, 
-                relativeScale, 
-                isHorizFlipped, 
-                false,
-                (this is ContainerCube newContainer) ? newContainer.IsEnterable : true,
-                (this is ContainerCube newContainer2) ? newContainer2.IsLeavable : true
-                );
-            historyManager.RecordNewEvent(
-                targetCube, 
-                //(targetCube.PreviousParents.Count > 0) ? targetCube.PreviousParents[0].Cube : null, 
-                targetCube.Parent,
-                targetCube.RelativePosition, 
-                targetCube.RelativeScale, 
-                targetCube.IsHorizFlipped, 
-                true,
-                (targetCube is ContainerCube newTargetContainer) ? newTargetContainer.IsEnterable : true,
-                (targetCube is ContainerCube newTargetContainer2) ? newTargetContainer2.IsLeavable : true
-                );
+            currentProperties.IsPlayer = false;
+            targetCubeProperties.IsPlayer = true;
+            //historyManager.RecordNewEvent(
+            //    this, 
+            //    //(previousParents.Count > 0) ? previousParents[0].Cube : null, 
+            //    parent,
+            //    relativePosition, 
+            //    relativeScale, 
+            //    isHorizFlipped, 
+            //    false,
+            //    (this is ContainerCube newContainer) ? newContainer.IsEnterable : true,
+            //    (this is ContainerCube newContainer2) ? newContainer2.IsLeavable : true
+            //    );
+            historyManager.RecordNewEvent(this, currentProperties);
+            //historyManager.RecordNewEvent(
+            //    targetCube, 
+            //    //(targetCube.PreviousParents.Count > 0) ? targetCube.PreviousParents[0].Cube : null, 
+            //    targetCube.Parent,
+            //    targetCube.RelativePosition, 
+            //    targetCube.RelativeScale, 
+            //    targetCube.IsHorizFlipped, 
+            //    true,
+            //    (targetCube is ContainerCube newTargetContainer) ? newTargetContainer.IsEnterable : true,
+            //    (targetCube is ContainerCube newTargetContainer2) ? newTargetContainer2.IsLeavable : true
+            //    );
+            historyManager.RecordNewEvent(this, targetCubeProperties);
         }
         if (historyManager != null) historyManager.NormalArchiveHistoryRecord();
         Debug.Log("Start possessing!");
@@ -305,15 +339,75 @@ public class Cube : MonoBehaviour
             }
         }
     }
-    
+
+    [Serializable]
+    public class CubeProperties
+    {
+        [Header("General Info")]
+        [SerializeField] protected bool isPlayer = false;
+        [SerializeField] protected bool canBePlayer = false;
+        [SerializeField] protected CubeTypes cubeType;
+        [SerializeField] protected ColorPalette.ColorEnum cubeColor;
+        [Header("Rendering")]
+        [SerializeField] protected bool isHorizFlipped = false;
+        [Header("Cube stats")]
+        [SerializeField] protected ContainerCube parent;
+        [SerializeField] protected Vector2 relativeScale = new(1, 1);
+        [SerializeField] protected Vector2 relativePosition = new(0, 0);
+
+        public bool IsPlayer { get => isPlayer; set => isPlayer = value; }
+        public bool CanBePlayer { get => canBePlayer; set => canBePlayer = value; }
+        public CubeTypes CubeType { get => cubeType; set => cubeType = value; }
+        public ColorPalette.ColorEnum CubeColor { get => cubeColor; set => cubeColor = value; }
+
+        public bool IsHorizFlipped { get => isHorizFlipped; set => isHorizFlipped = value; }
+
+        public ContainerCube Parent { get =>  parent; set => parent = value; }
+        public Vector2 RelativeScale { get => relativeScale; set => relativeScale = value; }
+        public Vector2 RelativePosition { get => relativePosition; set => relativePosition = value; }
+
+        public virtual void CopyProperties(CubeProperties properties)
+        {
+            if (properties == null) return;
+
+            isPlayer = properties.isPlayer;
+            canBePlayer = properties.canBePlayer;
+            cubeType = properties.cubeType;
+            cubeColor = properties.cubeColor;
+
+            isHorizFlipped = properties.isHorizFlipped;
+
+            parent = properties.parent;
+            relativePosition = properties.relativePosition;
+            relativeScale = properties.relativeScale;
+        }
+
+        public virtual void CopyProperties(Cube cubeToCopy)
+        {
+            if (cubeToCopy == null) return;
+
+            isPlayer = cubeToCopy.isPlayer;
+            canBePlayer = cubeToCopy.canBePlayer;
+            cubeType = cubeToCopy.cubeType;
+            cubeColor = cubeToCopy.cubeColor;
+
+            isHorizFlipped = cubeToCopy.isHorizFlipped;
+
+            parent = cubeToCopy.parent;
+            relativePosition = cubeToCopy.relativePosition;
+            relativeScale = cubeToCopy.relativeScale;
+        }
+    }
+
     [Serializable]
     public struct PreviousParentDetails
     {
-        private CubeMovement.LayerDirections direction;
-        private ContainerCube cube;
-        private Vector2 relativePosition;
-        private Vector2 relativeScale;
-        private bool isHorizFlipped;
+        [SerializeField] private CubeMovement.LayerDirections direction;
+        [SerializeField] private ContainerCube cube;
+        [SerializeField] private Vector2 relativePosition;
+        [SerializeField] private Vector2 relativeScale;
+        [SerializeField] private bool isHorizFlipped;
+        [SerializeField] private bool useDefaultValues;
 
         public CubeMovement.LayerDirections Direction { get => direction; set => direction = value; }
         public ContainerCube Cube { get => cube; set => cube = value; }
@@ -321,34 +415,52 @@ public class Cube : MonoBehaviour
         {
             get
             {
-                if (relativePosition == null) return cube.RelativePosition;
+                if (relativePosition == null || useDefaultValues) return cube.RelativePosition;
                 return relativePosition;
             }
-            set => relativePosition = value;
+            set
+            {
+                relativePosition = value;
+                useDefaultValues = false;
+            }
         }
         public Vector2 RelativeScale
         {
             get
             {
-                if (relativeScale == null) return cube.RelativeScale;
+                if (relativeScale == null || useDefaultValues) return cube.RelativeScale;
                 return relativeScale;
             }
-            set => relativeScale = value;
+            set
+            {
+                relativeScale = value;
+                useDefaultValues = false;
+            }
         }
         public bool IsHorizFlipped
         {
-            get => isHorizFlipped;
-            set => isHorizFlipped = value;
+            get
+            {
+                if (useDefaultValues) return cube.isHorizFlipped;
+                return isHorizFlipped;
+            }
+            set
+            {
+                isHorizFlipped = value;
+                useDefaultValues = false;
+            }
         }
+        public bool UseDefaultValues { get => useDefaultValues; set => useDefaultValues = value; }
         public PreviousParentDetails(CubeMovement.LayerDirections direction, ContainerCube cube)
         {
             this.cube = cube;
             this.direction = direction;
-            this.relativePosition = (cube != null) ? cube.RelativePosition : Vector2.zero;
-            this.relativeScale = (cube != null) ? cube.RelativeScale : Vector2.zero;
-            this.isHorizFlipped = (cube != null) ? cube.IsHorizFlipped : false;
+            relativePosition = (cube != null) ? cube.RelativePosition : Vector2.zero;
+            relativeScale = (cube != null) ? cube.RelativeScale : Vector2.zero;
+            isHorizFlipped = (cube != null) ? cube.IsHorizFlipped : false;
+            useDefaultValues = true;
         }
-
+        
         public PreviousParentDetails(CubeMovement.LayerDirections direction, ContainerCube cube, Vector2 relativePosition, Vector2 relativeScale, bool isHorizFlipped) 
         { 
             this.cube = cube;
@@ -356,6 +468,7 @@ public class Cube : MonoBehaviour
             this.relativePosition = relativePosition;
             this.relativeScale = relativeScale;
             this.isHorizFlipped = isHorizFlipped;
+            useDefaultValues = false;
         }
     }
 }

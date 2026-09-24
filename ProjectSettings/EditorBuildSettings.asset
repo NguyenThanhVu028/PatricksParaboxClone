@@ -39,6 +39,30 @@ EditorBuildSettings:
     path: Assets/Scenes/Empty/Empty3.unity
     guid: 6433727c0435ff744824ac3000da27cf
   - enabled: 1
+    path: Assets/Scenes/Eat/Eat1.unity
+    guid: ea6502e4c983d7c48aaa6b002ae3cb7d
+  - enabled: 1
+    path: Assets/Scenes/Open/Open1.unity
+    guid: 62ea955e2ce5f38448a238729a17cea6
+  - enabled: 1
+    path: Assets/Scenes/Clone/Clone1.unity
+    guid: 90cd0abe379ad5e4aab85b8fac160b6e
+  - enabled: 1
+    path: Assets/Scenes/Clone/Clone2.unity
+    guid: c85811aaf106ccc408fa92b3dabcdec4
+  - enabled: 1
+    path: Assets/Scenes/Clone/Clone3.unity
+    guid: 4cab3c5e5187d0f4fb95036b56f6545c
+  - enabled: 1
+    path: Assets/Scenes/Flip/Flip1.unity
+    guid: 50083e21edc974e40a8c75ab1b187d19
+  - enabled: 1
+    path: Assets/Scenes/Flip/Flip2.unity
+    guid: 71f4655b42108c94d8c34f1abbcaea72
+  - enabled: 1
+    path: Assets/Scenes/Flip/Flip3.unity
+    guid: e4c60fe51801be247afcade330815584
+  - enabled: 1
     path: Assets/Scenes/RealGameLevels/Eat1.unity
     guid: ffb82cb70e7db814fb7f17c1ca8f6d95
   - enabled: 1
