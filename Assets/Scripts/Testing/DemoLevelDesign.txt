@@ -1,0 +1,30 @@
+# LEVEL_CONFIG
+## TIME 150
+
+# CUBES
+##      RED_CUBE
+###         COLOR_ID RED
+###         IS_PLAYER FALSE
+###         IS_FLIPPED TRUE
+###         IS_POSSESSABLE FALSE
+###         IS_SECONDARY_PLAYER FALSE
+###         CUBE_GRID
+            [                                           
+                [ WALL WALL FLOOR FLOOR WALL ]           
+                [ WALL FLOOR GREEN_CUBE FLOOR WALL ]
+                [ WALL FLOOR GREEN_SIMPLE_CUBE FLOOR WALL ]
+                [ WALL FLOOR FLOOR FLOOR WALL ]
+                [ WALL WALL WALL WALL WALL ]
+            ]
+
+##      GREEN_SIMPLE_CUBE
+###         COLOR_ID GREEN
+
+##      GREEN_CUBE
+###         COLOR_ID GREEN
+###         CUBE_GRID
+            [
+                [ FLOOR FLOOR FLOOR ]
+                [ FLOOR FLOOR FLOOR ]
+                [ FLOOR FLOOR FLOOR ]
+            ]

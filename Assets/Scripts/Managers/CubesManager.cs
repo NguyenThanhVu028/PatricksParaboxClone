@@ -10,7 +10,7 @@ public class CubesManager : MonoBehaviour
     [SerializeField] InfinityCube infinityCubePrefab;
     [SerializeField] EpsilonCube epsilonCubePrefab;
 
-    [SerializeField] List<CubeDetails> allCubes = new();
+    [SerializeField] List<CubePrefabDetails> allCubes = new();
 
     private List<VoidCube> voidCubes = new();
     private List<InfinityCube> infinityCubes = new();
@@ -18,7 +18,7 @@ public class CubesManager : MonoBehaviour
 
     public static CubesManager Instance { get => instance; }
 
-    public List<CubeDetails> AllCubes { get => allCubes; }
+    public List<CubePrefabDetails> AllCubes { get => allCubes; }
 
     private void OnEnable()
     {
@@ -37,7 +37,7 @@ public class CubesManager : MonoBehaviour
             playerInputsManager.GameplayInputs.OnResetEvent.AddListener(OnReset);
         }
 
-        foreach(var cube in allCubes)
+        foreach (var cube in allCubes)
         {
             if (cube == null || cube.Cube == null || !cube.Cube.isActiveAndEnabled) continue;
             if (cube.Cube is VoidCube) voidCubes.Add(cube.Cube as VoidCube);
@@ -48,13 +48,13 @@ public class CubesManager : MonoBehaviour
 
     public Cube GetCube(int id)
     {
-        foreach(var cube in allCubes)
+        foreach (var cube in allCubes)
         {
             if (cube == null) continue;
             if (cube.ID == id)
             {
                 if (cube.Cube == null) return null;
-                if (cube.Cube.NeedInstantiating) 
+                if (cube.Cube.NeedInstantiating)
                     return Instantiate(cube.Cube);
                 else return cube.Cube;
             }
@@ -64,7 +64,7 @@ public class CubesManager : MonoBehaviour
 
     public InfinityCube GetInfinityCube(ContainerCube mainContainer, int level)
     {
-        foreach(var cube in infinityCubes)
+        foreach (var cube in infinityCubes)
         {
             if (cube == null) continue;
             if (cube.MainContainerCube == mainContainer && cube.Level == level)
@@ -112,7 +112,7 @@ public class CubesManager : MonoBehaviour
 }
 
 [Serializable]
-public class CubeDetails
+public class CubePrefabDetails
 {
     [Min(1)]
     [SerializeField] int id = 1;
