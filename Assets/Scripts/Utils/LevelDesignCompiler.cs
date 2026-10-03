@@ -2,18 +2,23 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using System.IO;
+using System.Linq;
 
 public class LevelDesignCompiler
 {
-    private const string DEBUG_PREFIX = "[LevelDetailsConverter] ";
+    private const string DEBUG_PREFIX = "[LevelDetailsConverter]";
     private const string COMMAND_SYMBOL = "#";
     private const string COMMENT_SYMBOL = "//";
+    private const string ARRAY_START_SYMBOL = "[";
+    private const string ARRAY_END_SYMBOL = "]";
 
     public static LevelDetails CompileToLevelDetails(string filePath)
     {
-        Command currentCommand = null;
-        bool searchForCommandName = false;
+        ICommand currentCommand = null;
+        bool isSearchForCommand = false;
         bool isCommenting = false;
+
+        Debug.Log($"{DEBUG_PREFIX} Begin compiling file at {filePath}");
 
         if (string.IsNullOrEmpty(filePath))
         {
@@ -23,7 +28,7 @@ public class LevelDesignCompiler
 
         if (!File.Exists(filePath))
         {
-            Debug.LogWarning($"{DEBUG_PREFIX} File does not exist at path: " + filePath);
+            Debug.LogWarning($"{DEBUG_PREFIX} File at {filePath} does not exist");
             return null;
         }
 
@@ -35,7 +40,7 @@ public class LevelDesignCompiler
             return null;
         }
 
-        Debug.Log($"{DEBUG_PREFIX} Extracted {tokens.Count} tokens");
+        Debug.Log($"{DEBUG_PREFIX} Successfully extracted {tokens.Count} tokens");
         LevelDetails levelDetails = new();
 
         for (int i = 0; i < tokens.Count; i++)
@@ -60,15 +65,15 @@ public class LevelDesignCompiler
                 continue;
             }
 
-            if (tokens[i] == COMMAND_SYMBOL)
+            if (tokens[i] == GetCommandSymbolByLevel(1))
             {
                 Debug.Log($"{DEBUG_PREFIX} Command symbol detected");
                 currentCommand = null;
-                searchForCommandName = true;
+                isSearchForCommand = true;
             }
             else
             {
-                if (searchForCommandName)
+                if (isSearchForCommand)
                 {
                     // Only search for command name in the very first token that follows the command symbol
                     // If no valid command name is found -> Discard the command
@@ -81,7 +86,7 @@ public class LevelDesignCompiler
                     {
                         Debug.Log($"{DEBUG_PREFIX} Find new command: {tokens[i]}");
                     }
-                    searchForCommandName = false;
+                    isSearchForCommand = false;
                 }
                 else
                 {
@@ -93,9 +98,9 @@ public class LevelDesignCompiler
         return levelDetails;
     }
 
-    private static Command CreateCommand(string command, LevelDetails levelDetails)
+    private static ICommand CreateCommand(string command, LevelDetails levelDetails)
     {
-        Command newCommand = null;
+        ICommand newCommand = null;
         switch (command)
         {
             case "LEVEL_CONFIG":
@@ -108,24 +113,38 @@ public class LevelDesignCompiler
         newCommand?.Init(levelDetails);
         return newCommand;
     }
+    public static string GetCommandSymbolByLevel(int level)
+    {
+        string result = "";
+        for (int i = 1; i <= level; i++)
+        {
+            result += COMMAND_SYMBOL;
+        }
+        return result;
+    }
 
-    private interface Command
+    private interface ICommand
     {
         public void Init(LevelDetails levelDetails);
         public void ProcessToken(string token);
     }
-    private class LevelConfigCommand : Command
+    private class LevelConfigCommand : ICommand
     {
-        private const string DEBUG_PREFIX = "[LevelConfigCommand] ";
-        private static readonly HashSet<string> LEVEL_PROPERTIES = new()
+        private enum LevelProperties
         {
-            "TIME"
+            TIME
+        }
+
+        private const string DEBUG_PREFIX = "[LevelConfigCommand]";
+        private static readonly Dictionary<LevelProperties, string> LEVEL_PROPERTIES_DICT = new()
+        {
+            [LevelProperties.TIME] = "TIME"
         };
 
         private LevelDetails _levelDetails = null;
         private IValueParser _currentValueParser = null;
-        private bool _searchForProperty = false;
-        private string _propertyName;
+        private bool _isSearchForProperty = false;
+        private LevelProperties _currentProperty;
 
         public void Init(LevelDetails levelDetails)
         {
@@ -140,21 +159,22 @@ public class LevelDesignCompiler
                 Debug.Log($"{DEBUG_PREFIX} Invalid token!");
                 return;
             }
+
             if (_levelDetails == null)
             {
                 Debug.Log($"{DEBUG_PREFIX} Level details needs to be init!");
                 return;
             }
 
-            if (token == (COMMAND_SYMBOL + COMMAND_SYMBOL))
+            if (token == GetCommandSymbolByLevel(2))
             {
                 Debug.Log($"{DEBUG_PREFIX} Property command detected");
                 _currentValueParser = null;
-                _searchForProperty = true;
+                _isSearchForProperty = true;
             }
             else
             {
-                if (_searchForProperty)
+                if (_isSearchForProperty)
                 {
                     if (!IsValidProperty(token))
                     {
@@ -163,10 +183,10 @@ public class LevelDesignCompiler
                     else
                     {
                         Debug.Log($"{DEBUG_PREFIX} Chosen property: {token}");
-                        _propertyName = token;
-                        _currentValueParser = CreateValueParser(token);
+                        _currentProperty = LEVEL_PROPERTIES_DICT.FirstOrDefault(entry => entry.Value == token).Key;
+                        _currentValueParser = CreateValueParser(_currentProperty);
                     }
-                    _searchForProperty = false;
+                    _isSearchForProperty = false;
                 }
                 else if (_currentValueParser != null)
                 {
@@ -181,13 +201,13 @@ public class LevelDesignCompiler
         }
         private bool IsValidProperty(string propertyName)
         {
-            return LEVEL_PROPERTIES.Contains(propertyName);
+            return LEVEL_PROPERTIES_DICT.ContainsValue(propertyName);
         }
-        private IValueParser CreateValueParser(string propertyName)
+        private IValueParser CreateValueParser(LevelProperties property)
         {
-            return propertyName switch
+            return property switch
             {
-                "TIME" => new SingleValueParser<float>(),
+                LevelProperties.TIME => new SingleValueParser<float>(),
                 _ => null,
             };
         }
@@ -198,27 +218,27 @@ public class LevelDesignCompiler
                 Debug.Log($"{DEBUG_PREFIX} Cannot modify property when level details is null");
                 return;
             }
-            switch (_propertyName)
+            switch (_currentProperty)
             {
-                case "TIME":
+                case LevelProperties.TIME:
                     if (value is float floatValue)
                     {
                         _levelDetails.Time = floatValue;
                     }
                     else
                     {
-                        Debug.Log($"Receive invalid value type for {_propertyName}");
+                        Debug.Log($"Receive invalid value type for {_currentProperty}");
                     }
                     break;
             }
         }
     }
-    private class CubesCommand : Command
+    private class CubesCommand : ICommand
     {
         private const string DEBUG_PREFIX = "[CubesCommand]";
 
-        private bool _searchForCubeID = false;
         private LevelDetails _levelDetails = null;
+        private bool _isSearchForCubeID = false;
         private CubeDetailsCommand _currentCubeDetailsCommand = null;
 
         public void Init(LevelDetails levelDetails)
@@ -241,15 +261,15 @@ public class LevelDesignCompiler
                 return;
             }
 
-            if (token == (COMMAND_SYMBOL + COMMAND_SYMBOL))
+            if (token == GetCommandSymbolByLevel(2))
             {
                 Debug.Log($"{DEBUG_PREFIX} Cube details command detected");
-                _searchForCubeID = true;
+                _isSearchForCubeID = true;
                 _currentCubeDetailsCommand = null;
             }
             else
             {
-                if (_searchForCubeID)
+                if (_isSearchForCubeID)
                 {
                     string cubeID = token;
                     CubeDetails foundCubeDetails = null;
@@ -269,7 +289,7 @@ public class LevelDesignCompiler
                         _levelDetails.CubeDetailsList.Add(foundCubeDetails);
                     }
                     _currentCubeDetailsCommand = new(foundCubeDetails);
-                    _searchForCubeID = false;
+                    _isSearchForCubeID = false;
                 }
                 else
                 {
@@ -277,23 +297,32 @@ public class LevelDesignCompiler
                 }
             }
         }
-        private class CubeDetailsCommand : Command
+        private class CubeDetailsCommand : ICommand
         {
-            private const string DEBUG_PREFIX = "[CubeDetailsCommand]";
-            private static readonly HashSet<string> LEVEL_PROPERTIES = new()
+            private enum CubeProperties
             {
-                "COLOR_ID",
-                "IS_PLAYER",
-                "IS_FLIPPED",
-                "IS_POSSESSABLE",
-                "IS_SECONDARY_PLAYER",
-                "CUBE_GRID"
+                COLOR_ID,
+                IS_PLAYER,
+                IS_FLIPPED,
+                IS_POSSESSABLE,
+                IS_SECONDARY_PLAYER,
+                CUBE_GRID,
+            }
+            private const string DEBUG_PREFIX = "[CubeDetailsCommand]";
+            private static readonly Dictionary<CubeProperties, string> CUBE_PROPERTIES_DICT = new()
+            {
+                [CubeProperties.COLOR_ID] = "COLOR_ID",
+                [CubeProperties.IS_PLAYER] = "IS_PLAYER",
+                [CubeProperties.IS_FLIPPED] = "IS_FLIPPED",
+                [CubeProperties.IS_POSSESSABLE] = "IS_POSSESSABLE",
+                [CubeProperties.IS_SECONDARY_PLAYER] = "IS_SECONDARY_PLAYER",
+                [CubeProperties.CUBE_GRID] = "CUBE_GRID"
             };
 
             private CubeDetails _cubeDetails = null;
             private IValueParser _valueParser = null;
             private bool _searchForProperty = false;
-            private string _propertyName;
+            private CubeProperties _property;
             public CubeDetailsCommand(CubeDetails targetCubeDetails)
             {
                 _cubeDetails = targetCubeDetails;
@@ -316,7 +345,7 @@ public class LevelDesignCompiler
                     return;
                 }
 
-                if (token == (COMMAND_SYMBOL + COMMAND_SYMBOL + COMMAND_SYMBOL))
+                if (token == GetCommandSymbolByLevel(3))
                 {
                     Debug.Log($"{DEBUG_PREFIX} Property command detected");
                     _valueParser = null;
@@ -333,8 +362,8 @@ public class LevelDesignCompiler
                         else
                         {
                             Debug.Log($"{DEBUG_PREFIX} Chosen property: {token}");
-                            _propertyName = token;
-                            _valueParser = CreateValueParser(token);
+                            _property = CUBE_PROPERTIES_DICT.FirstOrDefault(entry => entry.Value == token).Key;
+                            _valueParser = CreateValueParser(_property);
                         }
                         _searchForProperty = false;
                     }
@@ -351,26 +380,20 @@ public class LevelDesignCompiler
             }
             private bool IsValidProperty(string propertyName)
             {
-                return LEVEL_PROPERTIES.Contains(propertyName);
+                return CUBE_PROPERTIES_DICT.ContainsValue(propertyName);
             }
-            private IValueParser CreateValueParser(string propertyName)
+            private IValueParser CreateValueParser(CubeProperties property)
             {
-                switch (propertyName)
+                return property switch
                 {
-                    case "COLOR_ID":
-                        return new SingleValueParser<string>();
-                    case "IS_PLAYER":
-                        return new SingleValueParser<bool>();
-                    case "IS_FLIPPED":
-                        return new SingleValueParser<bool>();
-                    case "IS_POSSESSABLE":
-                        return new SingleValueParser<bool>();
-                    case "IS_SECONDARY_PLAYER":
-                        return new SingleValueParser<bool>();
-                    case "CUBE_GRID":
-                        return new Array2DParser<string>();
-                }
-                return null;
+                    CubeProperties.COLOR_ID => new SingleValueParser<string>(),
+                    CubeProperties.IS_PLAYER => new SingleValueParser<bool>(),
+                    CubeProperties.IS_FLIPPED => new SingleValueParser<bool>(),
+                    CubeProperties.IS_POSSESSABLE => new SingleValueParser<bool>(),
+                    CubeProperties.IS_SECONDARY_PLAYER => new SingleValueParser<bool>(),
+                    CubeProperties.CUBE_GRID => new Array2DParser<string>(),
+                    _ => null,
+                };
             }
             private void ApplyChange(object value)
             {
@@ -379,66 +402,66 @@ public class LevelDesignCompiler
                     Debug.Log($"{DEBUG_PREFIX} Cannot modify property when cube details is null");
                     return;
                 }
-                switch (_propertyName)
+                switch (_property)
                 {
-                    case "COLOR_ID":
+                    case CubeProperties.COLOR_ID:
                         if (value is string colorID)
                         {
                             _cubeDetails.ColorID = colorID;
                         }
                         else
                         {
-                            Debug.Log($"Receive invalid value type for {_propertyName}");
+                            Debug.Log($"Receive invalid value type for {_property}");
                         }
                         break;
-                    case "IS_PLAYER":
+                    case CubeProperties.IS_PLAYER:
                         if (value is bool isPlayer)
                         {
                             _cubeDetails.IsPlayer = isPlayer;
                         }
                         else
                         {
-                            Debug.Log($"Receive invalid value type for {_propertyName}");
+                            Debug.Log($"Receive invalid value type for {_property}");
                         }
                         break;
-                    case "IS_FLIPPED":
+                    case CubeProperties.IS_FLIPPED:
                         if (value is bool isFlipped)
                         {
                             _cubeDetails.IsFlipped = isFlipped;
                         }
                         else
                         {
-                            Debug.Log($"Receive invalid value type for {_propertyName}");
+                            Debug.Log($"Receive invalid value type for {_property}");
                         }
                         break;
-                    case "IS_POSSESSABLE":
+                    case CubeProperties.IS_POSSESSABLE:
                         if (value is bool isPossessable)
                         {
                             _cubeDetails.IsPossessable = isPossessable;
                         }
                         else
                         {
-                            Debug.Log($"Receive invalid value type for {_propertyName}");
+                            Debug.Log($"Receive invalid value type for {_property}");
                         }
                         break;
-                    case "IS_SECONDARY_PLAYER":
+                    case CubeProperties.IS_SECONDARY_PLAYER:
                         if (value is bool isSecondaryPlayer)
                         {
                             _cubeDetails.IsSecondaryPlayer = isSecondaryPlayer;
                         }
                         else
                         {
-                            Debug.Log($"Receive invalid value type for {_propertyName}");
+                            Debug.Log($"Receive invalid value type for {_property}");
                         }
                         break;
-                    case "CUBE_GRID":
+                    case CubeProperties.CUBE_GRID:
                         if (value is List<List<string>> cubeGrid)
                         {
                             _cubeDetails.CubeGrid = cubeGrid;
                         }
                         else
                         {
-                            Debug.Log($"Receive invalid value type for {_propertyName}");
+                            Debug.Log($"Receive invalid value type for {_property}");
                         }
                         break;
                 }
@@ -452,7 +475,6 @@ public class LevelDesignCompiler
         public bool Finished { get; }
         public void ProcessToken(string token);
     }
-
     private class SingleValueParser<T> : IValueParser
     {
         private object _value = null;
@@ -482,13 +504,9 @@ public class LevelDesignCompiler
     {
         private const string DEBUG_PREFIX = "[ArrayParser]";
 
-        private const string ARRAY_START_SYMBOL = "[";
-        private const string ARRAY_END_SYMBOL = "]";
-
-        private object _value = null;
+        private List<T> _value = new();
         private bool _finished = false;
 
-        private List<T> _result = new();
         private bool _isStoring = false;
 
         public object Value
@@ -524,7 +542,6 @@ public class LevelDesignCompiler
                 {
                     Debug.Log($"{DEBUG_PREFIX} Stop storing!");
                     _finished = true;
-                    _value = _result;
                     _isStoring = false;
                 }
                 else
@@ -532,24 +549,21 @@ public class LevelDesignCompiler
                     T newValue = (T)Convert.ChangeType(token, typeof(T));
                     if (newValue != null)
                     {
-                        _result.Add(newValue);
+                        _value ??= new();
+                        _value.Add(newValue);
                     }
                 }
             }
         }
     }
-
     private class Array2DParser<T> : IValueParser
     {
         private const string DEBUG_PREFIX = "[Array2DParser]";
 
-        private const string ARRAY_START_SYMBOL = "[";
-        private const string ARRAY_END_SYMBOL = "]";
 
-        private object _value = null;
+        private List<List<T>> _value = null;
         private bool _finished = false;
 
-        private List<List<T>> _result;
         private bool _isStoring = false;
         private int _arrayStartSymbolCount = 0;
         private ArrayParser<T> _arrayParser = null;
@@ -594,7 +608,6 @@ public class LevelDesignCompiler
                     {
                         _finished = true;
                         _isStoring = false;
-                        _value = _result;
                         return;
                     }
 
@@ -607,8 +620,8 @@ public class LevelDesignCompiler
                 {
                     if (_arrayParser.Value is List<T> value)
                     {
-                        _result ??= new();
-                        _result.Add(value);
+                        _value ??= new();
+                        _value.Add(value);
                     }
                     _arrayParser = null;
                 }

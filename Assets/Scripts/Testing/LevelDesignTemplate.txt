@@ -1,0 +1,12 @@
+# LEVEL_CONFIG
+## [PROPERTY_NAME] [VALUE]
+
+# CUBES
+##      [CUBE_ID]
+###         [PROPERTY] [VALUE]
+###         [ARRAY2D_PROPERTY]
+            [                                           
+                [ VALUES . . . ]           
+                [ VALUES . . . ]
+                . . .
+            ]
