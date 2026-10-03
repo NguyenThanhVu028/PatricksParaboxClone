@@ -48,17 +48,24 @@ public class LevelDetails
 public class CubeDetails
 {
     private string _cubeID;
+    private CubeTypes _cubeType;
     private string _colorID;
     private bool _isPlayer;
     private bool _isFlipped;
     private bool _isPossessable;
     private bool _isSecondaryPlayer;
+    private string _mainCubeID;
     private List<List<string>> _cubeGrid;
 
     public string CubeID
     {
         get => _cubeID;
         set => _cubeID = value;
+    }
+    public CubeTypes CubeType
+    {
+        get => _cubeType;
+        set => _cubeType = value;
     }
     public string ColorID
     {
@@ -85,6 +92,11 @@ public class CubeDetails
         get => _isSecondaryPlayer;
         set => _isSecondaryPlayer = value;
     }
+    public string MainCubeID
+    {
+        get => _mainCubeID;
+        set => _mainCubeID = value;
+    }
     public List<List<string>> CubeGrid
     {
         get => _cubeGrid;
@@ -96,11 +108,13 @@ public class CubeDetails
         StringBuilder log = new StringBuilder()
             .AppendLine("[CubeDetails]")
             .AppendLine($"CubeID: {CubeID}")
+            .AppendLine($"CubeType: {CubeType}")
             .AppendLine($"ColorID: {ColorID}")
             .AppendLine($"IsPlayer: {IsPlayer}")
             .AppendLine($"IsFlipped: {IsFlipped}")
             .AppendLine($"IsPossessable: {IsPossessable}")
-            .AppendLine($"IsSecondaryPlayer: {IsSecondaryPlayer}");
+            .AppendLine($"IsSecondaryPlayer: {IsSecondaryPlayer}")
+            .AppendLine($"MainCubeID: {MainCubeID}");
 
         if (CubeGrid == null)
         {

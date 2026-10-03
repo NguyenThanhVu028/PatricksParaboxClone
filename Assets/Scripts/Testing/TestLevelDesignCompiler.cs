@@ -10,7 +10,6 @@ public class TestLevelDesignCompiler : MonoBehaviour
             Application.dataPath,
             "Scripts/Testing/DemoLevelDesign.txt"
         );
-        Debug.Log(_filePath);
 
         LevelDetails newLevelDetails = LevelDesignCompiler.CompileToLevelDetails(_filePath);
         newLevelDetails?.LogProperties();

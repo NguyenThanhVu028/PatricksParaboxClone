@@ -1,33 +1,32 @@
 # LEVEL_CONFIG
-## TIME 200
-
-//
-    This is a block of command
-    Ahihi
-    This wont be process by the compiler
-//
+##      TIME 200
 
 # CUBES
-##      YELLOW_CUBE
-###         COLOR_ID    YELLOW
-###         CUBE_GRID
-            [
-                [ WALL WALL WALL WALL WALL ]
-                [ WALL FLOOR FLOOR SIMPLE_CUBE_PLAYER WALL ]
-                [ WALL FLOOR FLOOR FLOOR WALL ]
-                [ WALL FLOOR FLOOR FLOOR FLOOR ]
-                [ WALL WALL WALL WALL WALL ]
-            ]
+##      YELLOW_CONTAINER
+###         CUBE_TYPE       Container
+###         COLOR_ID        Yellow
+###         CUBE_GRID       [
+                                [ WALL WALL WALL WALL WALL ]
+                                [ WALL FLOOR FLOOR SIMPLE_CUBE_PLAYER WALL ]
+                                [ WALL FLOOR FLOOR FLOOR WALL ]
+                                [ WALL FLOOR FLOOR FLOOR FLOOR ]
+                                [ WALL WALL WALL WALL WALL ]
+                            ]
 
 ##      SIMPLE_CUBE_PLAYER
-###         COLOR_ID    PLAYER
-###         IS_PLAYER   TRUE
+###         CUBE_TYPE       Simple
+###         COLOR_ID        Player
+###         IS_PLAYER       True
 
 ##      RED_CUBE
-###         COLOR_ID    RED
-###         CUBE_GRID
-            [
-                [ FLOOR FLOOR FLOOR ]
-                [ FLOOR YELLOW_CUBE FLOOR ]
-                [ FLOOR FLOOR FLOOR ]
-            ]
+            CUBE_TYPE       Container
+###         COLOR_ID        Red
+###         CUBE_GRID       [
+                                [ FLOOR FLOOR FLOOR ]
+                                [ FLOOR YELLOW_CUBE FLOOR ]
+                                [ FLOOR FLOOR FLOOR ]
+                            ]
+
+##      CLONE_CUBE_1
+###         CUBE_TYPE       Clone
+###         MAIN_CUBE_ID    YELLOW_CONTAINER
