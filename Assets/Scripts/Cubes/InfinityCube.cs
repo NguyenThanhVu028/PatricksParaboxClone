@@ -55,7 +55,7 @@ public class InfinityCube : CloneCube
         {
             Rect iconRect = Relativity.CRectFromPRect(position, iconAdjustedRScl, iconStartingPointRPos + Vector2.down * i * iconAdjustedRScl.y * 2.0f * infinityTextureHeightRatio);
             Rect iconScissorRect = iconRect; iconScissorRect.height *= infinityTextureHeightRatio;
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, infinityTexture.GetTexture(), Color.white, exposure, iconRect.position, iconRect.size, depth, CustomTextureRenderer2D.GetOverlapRect(scissorRect, iconScissorRect), priority);
+            RenderingUtils.RenderMesh(cubeMesh, normalMat, infinityTexture.GetTexture(), Color.white, exposure, iconRect.position, iconRect.size, depth, RenderingUtils.GetOverlapRect(scissorRect, iconScissorRect), priority);
         }
     }
 
@@ -84,7 +84,7 @@ public class InfinityCube : CloneCube
         if (targetTime > 0)
         {
             // Correct the camera transition
-            for(int i = requestedCube.PreviousParents.Count - 1; i >= 0; i--)
+            for (int i = requestedCube.PreviousParents.Count - 1; i >= 0; i--)
             {
                 if (requestedCube.PreviousParents[i].Cube is not InfinityCube) continue;
                 else

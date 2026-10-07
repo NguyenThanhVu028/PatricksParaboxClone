@@ -2,14 +2,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Data that holds all the relations between cubes
-public class CubeRelations
+public class CubeRelationTree
 {
-    private Dictionary<Cube, Relation> _relations;
+    private const string DEBUG_PREFIX = "[CubeRelationTree]";
 
-    public IReadOnlyDictionary<Cube, Relation> Relations
-    {
-        get => _relations;
-    }
+    private Dictionary<Cube, Relation> _relations;
 
     public Relation GetRelation(Cube cube)
     {
@@ -20,12 +17,6 @@ public class CubeRelations
         return default;
     }
 
-    /// <summary>
-    /// Establishes a parent-child relationship between the specified child and parent cubes.
-    /// </summary>
-    /// <param name="childCube">The child cube to establish the relationship for.</param>
-    /// <param name="parentCube">The parent cube to establish the relationship with.</param>
-    /// <returns>True if the relationship was successfully established; otherwise, false.</returns>
     public void EstablishRelation(Cube childCube, Cube parentCube)
     {
         if (childCube == null)
@@ -55,7 +46,6 @@ public class CubeRelations
             if (_relations.TryGetValue(childRelation.ParentCube, out var oldParentRelation))
             {
                 oldParentRelation.ChildCubes?.Remove(childCube);
-                _relations[childRelation.ParentCube] = oldParentRelation;
             }
         }
 
@@ -64,15 +54,45 @@ public class CubeRelations
         {
             var parentRelation = _relations[parentCube];
             parentRelation.ChildCubes?.Add(childCube);
-            _relations[parentCube] = parentRelation;
         }
 
         childRelation.ParentCube = parentCube;
-        _relations[childCube] = childRelation;
+    }
+
+    public Cube GoUp(Cube targetCube)
+    {
+        if (targetCube == null)
+        {
+            return null;
+        }
+
+        if (!_relations.ContainsKey(targetCube))
+        {
+            Debug.Log($"{DEBUG_PREFIX} Cube {targetCube} does not exist in the relation tree!");
+            return null;
+        }
+
+        return _relations[targetCube].ParentCube;
+    }
+
+    public List<Cube> GoDown(Cube targetCube)
+    {
+        if (targetCube == null)
+        {
+            return null;
+        }
+
+        if (!_relations.ContainsKey(targetCube))
+        {
+            Debug.Log($"{DEBUG_PREFIX} Cube {targetCube} does not exist in the relation tree!");
+            return null;
+        }
+
+        return _relations[targetCube].ChildCubes;
     }
 }
 
-public struct Relation
+public class Relation
 {
     public Cube ParentCube;
     public List<Cube> ChildCubes;

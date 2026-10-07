@@ -26,9 +26,9 @@ public class VoidCube : ContainerCube
 
     public override void Draw(Rect position, int priority, float depth = 0, float exposure = 0, Rect? scissorRect = null)
     {
-        if (!CustomTextureRenderer2D.CheckVisibility(position.position, position.size) && enableOcclusionCulling) return;
+        if (!RenderingUtils.CheckVisibility(position.position, position.size) && enableOcclusionCulling) return;
 
-        Vector2 rectSizeInPixel = CustomTextureRenderer2D.ConvertScaleToPixel(position.size);
+        Vector2 rectSizeInPixel = RenderingUtils.ScaleToPixel(position.size);
         if (rectSizeInPixel.x < minPixelToRender || rectSizeInPixel.y < minPixelToRender) return; // Don't draw if the requested rectangle is too small (To avoid infinite rendering)
 
         DrawCube(position, priority, depth, exposure, scissorRect);
@@ -42,7 +42,7 @@ public class VoidCube : ContainerCube
         DrawSurfaceEffects(position, priority, depth, exposure, scissorRect);
     }
 
-    public void SetCentralCube (ContainerCube cube)
+    public void SetCentralCube(ContainerCube cube)
     {
         if (cube == null) return;
 

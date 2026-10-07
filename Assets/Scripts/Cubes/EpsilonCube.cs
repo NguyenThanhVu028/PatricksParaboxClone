@@ -18,7 +18,7 @@ public class EpsilonCube : ContainerCube
 
         if (level <= 0 || epsilonTexture == null) return;
         // Draw the epsilon texture
-        position.width  = Mathf.Abs(position.width);
+        position.width = Mathf.Abs(position.width);
         Vector2 iconNormalRScl = new Vector2(1.0f / level, 1.0f / level);
         Vector2 iconAdjustedRScl = iconNormalRScl;
         iconAdjustedRScl.x *= 1.0f / epsilonTextureHeightRatio;
@@ -40,7 +40,7 @@ public class EpsilonCube : ContainerCube
         {
             Rect iconRect = Relativity.CRectFromPRect(position, iconAdjustedRScl, iconStartingPointRPos + Vector2.down * i * iconAdjustedRScl.y * 2.0f * epsilonTextureHeightRatio);
             Rect iconScissorRect = iconRect; iconScissorRect.height *= epsilonTextureHeightRatio;
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, epsilonTexture.GetTexture(), Color.white, exposure, iconRect.position, iconRect.size, depth, CustomTextureRenderer2D.GetOverlapRect(scissorRect, iconScissorRect), priority);
+            RenderingUtils.RenderMesh(cubeMesh, normalMat, epsilonTexture.GetTexture(), Color.white, exposure, iconRect.position, iconRect.size, depth, RenderingUtils.GetOverlapRect(scissorRect, iconScissorRect), priority);
         }
     }
 

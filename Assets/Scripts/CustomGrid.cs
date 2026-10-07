@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public class CustomGrid <T> where T: new()
+public class CustomGrid<T> where T : new()
 {
     [Min(1)]
     [SerializeField] Vector2Int tiling = new(9, 9);
@@ -17,7 +17,7 @@ public class CustomGrid <T> where T: new()
     public void Init()
     {
         children = new T[tiling.x, tiling.y];
-        for(int row = 0; row < tiling.x; row++)
+        for (int row = 0; row < tiling.x; row++)
         {
             for (int column = 0; column < tiling.y; column++)
             {

@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-public class CustomTextureRenderer2D
+public class RenderingUtils
 {
-    public static readonly int mainTexID = Shader.PropertyToID("_MainTex");
-    public static readonly int colorID = Shader.PropertyToID("_Color");
-    public static readonly int isHighlightedID = Shader.PropertyToID("_IsHighlighted");
-    public static readonly int isHorizedFlippedID = Shader.PropertyToID("_IsHorizFlipped");
-    public static readonly int borderHightlightColorID = Shader.PropertyToID("_BorderHighlightColor");
-    public static readonly int exposureID = Shader.PropertyToID("_Exposure");
-    public static readonly int defaultPriority = 0;
+    public static readonly int MAIN_TEX_ID = Shader.PropertyToID("_MainTex");
+    public static readonly int COLOR_ID = Shader.PropertyToID("_Color");
+    public static readonly int IS_HIGHLIGHTED_ID = Shader.PropertyToID("_IsHighlighted");
+    public static readonly int IS_HORIZONTAL_FLIPPED_ID = Shader.PropertyToID("_IsHorizFlipped");
+    public static readonly int BORDER_HIGHLIGHT_COLOR_ID = Shader.PropertyToID("_BorderHighlightColor");
+    public static readonly int EXPOSURE_ID = Shader.PropertyToID("_Exposure");
+    public static readonly int DEFAULT_PRIORITY = 0;
 
-    private static List<RenderMeshCall> renderMeshCalls = new();
+    private static List<RenderingCall> renderingCalls = new();
 
     public static void RenderMesh(Mesh mesh,
                                     Material material,
@@ -30,64 +30,64 @@ public class CustomTextureRenderer2D
         //if (occlusionCulling && !CheckVisibility(position, size)) return;
 
         MaterialPropertyBlock matProps = new();
-        matProps.SetTexture(mainTexID, texture);
-        matProps.SetColor(colorID, color);
-        matProps.SetFloat(exposureID, exposure);
-        if (size.x < 0) matProps.SetFloat(isHorizedFlippedID, 1);
-        else matProps.SetFloat(isHorizedFlippedID, 0);
+        matProps.SetTexture(MAIN_TEX_ID, texture);
+        matProps.SetColor(COLOR_ID, color);
+        matProps.SetFloat(EXPOSURE_ID, exposure);
+        if (size.x < 0) matProps.SetFloat(IS_HORIZONTAL_FLIPPED_ID, 1);
+        else matProps.SetFloat(IS_HORIZONTAL_FLIPPED_ID, 0);
 
         RenderMesh(mesh, material, matProps, position, size, z, worldSpaceScissorRect, priority);
     }
 
     public static void RenderMesh(Mesh mesh,
-                                    Material material, 
-                                    MaterialPropertyBlock matProps, 
-                                    Vector2 position, 
+                                    Material material,
+                                    MaterialPropertyBlock matProps,
+                                    Vector2 position,
                                     Vector2 size,
                                     float z = 0,
                                     Rect? worldSpaceScissorRect = null,
                                     int priority = 0)
     {
-        renderMeshCalls.Add(new(
-            priority,
-            renderMeshCalls.Count,
-            mesh,
-            material,
-            matProps,
-            position,
-            size,
-            z,
-            worldSpaceScissorRect
+        renderingCalls.Add(
+            new(
+                priority,
+                renderingCalls.Count,
+                mesh,
+                material,
+                matProps,
+                position,
+                size,
+                z,
+                worldSpaceScissorRect
             ));
     }
 
     public static void OnRenderOnScreen()
     {
-        if (renderMeshCalls == null) renderMeshCalls = new();
+        renderingCalls ??= new();
+        renderingCalls.Sort();
 
-        renderMeshCalls.Sort();
-
-        foreach(var renderMeshCall in renderMeshCalls)
+        foreach (var renderMeshCall in renderingCalls)
         {
-            Vector3 positionToRender = new(renderMeshCall.position.x, renderMeshCall.position.y, renderMeshCall.z);
-            Matrix4x4 matrix = Matrix4x4.TRS(positionToRender, Quaternion.identity, renderMeshCall.size); //  Calculate position
+            Vector3 positionToRender = new(renderMeshCall.Position.x, renderMeshCall.Position.y, renderMeshCall.Z);
+            Matrix4x4 matrix = Matrix4x4.TRS(positionToRender, Quaternion.identity, renderMeshCall.Size); //  Calculate position
 
             RasterCommandBuffer cmd = CustomRendererFeature.CustomRenderPass.CommandBuffer;
-            if (renderMeshCall.worldSpaceScissorRect != null)
+            if (renderMeshCall.WorldSpaceScissorRect != null)
             {
-                cmd.EnableScissorRect(ScreenspaceRectFromWorldspace(renderMeshCall.worldSpaceScissorRect.Value));
+                cmd.EnableScissorRect(ScreenspaceRectFromWorldspace(renderMeshCall.WorldSpaceScissorRect.Value));
             }
             cmd.DrawMesh(
-                mesh: renderMeshCall.mesh,
-                material: renderMeshCall.material,
+                mesh: renderMeshCall.Mesh,
+                material: renderMeshCall.Material,
                 matrix: matrix,
                 submeshIndex: 0,
                 shaderPass: -1,
-                properties: renderMeshCall.matProps
+                properties: renderMeshCall.MatProps
                 );
             cmd.DisableScissorRect();
         }
-        renderMeshCalls.Clear();
+        renderingCalls.Clear();
     }
 
     public static Rect ScreenspaceRectFromWorldspace(Rect? worldspaceRect)
@@ -99,7 +99,6 @@ public class CustomTextureRenderer2D
         Vector2 screenTopRight = Camera.main.WorldToScreenPoint(worldTopRight);
         return new Rect(position: screenBottomLeft, size: new(screenTopRight.x - screenBottomLeft.x, screenTopRight.y - screenBottomLeft.y));
     }
-
 
     public static Rect GetOverlapRect(Rect? rect1, Rect? rect2)
     {
@@ -170,7 +169,7 @@ public class CustomTextureRenderer2D
             result.Add(CreateRect(cutMainRectTop, cutMainRectBot, overlapRectRight, cutMainRectRight, (cutMainRect.width < 0)));
             cutMainRectRight = overlapRectRight;
         }
-        if (overlapRectBot >  cutMainRectBot)
+        if (overlapRectBot > cutMainRectBot)
         {
             result.Add(CreateRect(overlapRectBot, cutMainRectBot, cutMainRectLeft, cutMainRectRight, (cutMainRect.width < 0)));
             cutMainRectBot = overlapRectBot;
@@ -225,11 +224,11 @@ public class CustomTextureRenderer2D
             if (entry.Key == null) continue; //  No texture
             if (entry.Value == null) continue; //  No positions in grid
 
-            foreach(var positionInGrid in entry.Value)
+            foreach (var positionInGrid in entry.Value)
             {
                 tileSize.x = (float)targetRenderTexture.width / positionInGrid.GridWidth;
                 tileSize.y = (float)targetRenderTexture.height / positionInGrid.GridHeight;
-                
+
                 rectToDraw.x = positionInGrid.PositionInGrid.y * tileSize.x;
                 rectToDraw.y = positionInGrid.PositionInGrid.x * tileSize.y;
                 rectToDraw.size = tileSize;
@@ -262,7 +261,7 @@ public class CustomTextureRenderer2D
         return true;
     }
 
-    public static Vector2 ConvertScaleToPixel(Vector2 scale)
+    public static Vector2 ScaleToPixel(Vector2 scale)
     {
         if (Camera.main == null) return Vector2.zero;
 
@@ -293,38 +292,38 @@ public class CustomTextureRenderer2D
     }
 
     [Serializable]
-    public struct RenderMeshCall: IComparable<RenderMeshCall>
+    public struct RenderingCall : IComparable<RenderingCall>
     {
-        public int priority;
-        public int originalIndex;
-        public Mesh mesh;
-        public Material material;
-        public MaterialPropertyBlock matProps;
-        public Vector2 position;
-        public Vector2 size;
-        public float z;
-        public Rect? worldSpaceScissorRect;
+        public int Priority;
+        public int OriginalIndex;
+        public Mesh Mesh;
+        public Material Material;
+        public MaterialPropertyBlock MatProps;
+        public Vector2 Position;
+        public Vector2 Size;
+        public float Z;
+        public Rect? WorldSpaceScissorRect;
 
-        public RenderMeshCall(int priority, int index, Mesh mesh, Material material, MaterialPropertyBlock matProps, Vector2 position, Vector2 size, float z, Rect? worldSpaceScissorRect)
+        public RenderingCall(int priority, int index, Mesh mesh, Material material, MaterialPropertyBlock matProps, Vector2 position, Vector2 size, float z, Rect? worldSpaceScissorRect)
         {
-            this.priority = priority;
-            this.originalIndex = index;
-            this.mesh = mesh;
-            this.material = material;
-            this.matProps = matProps;
-            this.position = position;
-            this.size = size;
-            this.z = z;
-            this.worldSpaceScissorRect = worldSpaceScissorRect;
+            Priority = priority;
+            OriginalIndex = index;
+            Mesh = mesh;
+            Material = material;
+            MatProps = matProps;
+            Position = position;
+            Size = size;
+            Z = z;
+            WorldSpaceScissorRect = worldSpaceScissorRect;
         }
 
-        public int CompareTo(RenderMeshCall other)
+        public int CompareTo(RenderingCall other)
         {
-            if (priority < other.priority) return -1;
-            if (priority > other.priority) return 1;
+            if (Priority < other.Priority) return -1;
+            if (Priority > other.Priority) return 1;
 
-            if (originalIndex < other.originalIndex) return -1;
-            if (originalIndex > other.originalIndex) return 1;
+            if (OriginalIndex < other.OriginalIndex) return -1;
+            if (OriginalIndex > other.OriginalIndex) return 1;
 
             return 0;
         }

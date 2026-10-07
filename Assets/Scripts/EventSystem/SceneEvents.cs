@@ -7,7 +7,7 @@ public class SceneEvents : EventPublisher
 {
     private static SceneEvents _instance = null;
 
-    private static SceneEvents Instance
+    public static SceneEvents Instance
     {
         get
         {

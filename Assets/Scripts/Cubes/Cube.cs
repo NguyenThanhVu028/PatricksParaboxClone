@@ -66,9 +66,9 @@ public class Cube : MonoBehaviour
     public float PossessingTime { get => possessingTime; }
 
     // Rendering
-    public bool IsHorizFlipped 
-    { 
-        get => isHorizFlipped; 
+    public bool IsHorizFlipped
+    {
+        get => isHorizFlipped;
         set
         {
             isHorizFlipped = value;
@@ -155,11 +155,11 @@ public class Cube : MonoBehaviour
 
     public virtual void Draw(Rect position, int priority, float depth = 0, float exposure = 0, Rect? scissorRect = null)
     {
-        if (!CustomTextureRenderer2D.CheckVisibility(position.position, position.size) && enableOcclusionCulling) return;
+        if (!RenderingUtils.CheckVisibility(position.position, position.size) && enableOcclusionCulling) return;
 
-        Vector2 rectSizeInPixel = CustomTextureRenderer2D.ConvertScaleToPixel(position.size);
+        Vector2 rectSizeInPixel = RenderingUtils.ScaleToPixel(position.size);
         if (rectSizeInPixel.x < minPixelToRender || rectSizeInPixel.y < minPixelToRender) return; // Don't draw if the requested rectangle is too small (To avoid infinite rendering)
-        if (isHorizFlipped) position.width = - position.width;
+        if (isHorizFlipped) position.width = -position.width;
         DrawCube(position, priority, depth, exposure, scissorRect);
         DrawPlayerFace(position, priority, depth + playerFaceDepthOffset, exposure, scissorRect);
         DrawSurfaceEffects(position, priority, depth + surfaceEffectsDepthOffset, exposure, scissorRect);
@@ -170,7 +170,7 @@ public class Cube : MonoBehaviour
     {
         if (defaultTexture != null && defaultTexture.GetTexture() != null)
         {
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, defaultTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
+            RenderingUtils.RenderMesh(cubeMesh, outlineMat, defaultTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
         }
     }
     public virtual void DrawPlayerFace(Rect position, int priority, float depth, float exposure, Rect? scissorRect)
@@ -178,21 +178,21 @@ public class Cube : MonoBehaviour
         // Get player face texture
         if (IsPlayer && faceTexture != null)
         {
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, faceTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
+            RenderingUtils.RenderMesh(cubeMesh, normalMat, faceTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
         }
         else if (!IsPlayer && canBePlayer && possessableFaceTexture != null)
         {
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, possessableFaceTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
+            RenderingUtils.RenderMesh(cubeMesh, normalMat, possessableFaceTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
         }
     }
     public virtual void DrawSurfaceEffects(Rect position, int priority, float depth, float exposure, Rect? scissorRect)
     {
         var cubeColor = Color.white;
-        foreach( var surfaceEffect in surfaceEffects)
+        foreach (var surfaceEffect in surfaceEffects)
         {
             if (surfaceEffect != null)
             {
-                CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, surfaceEffect.GetTexture(), cubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
+                RenderingUtils.RenderMesh(cubeMesh, normalMat, surfaceEffect.GetTexture(), cubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
             }
         }
     }
@@ -204,13 +204,13 @@ public class Cube : MonoBehaviour
         {
             var newEffect = animationsManager.GetNormalTextureAnimation(aniID);
             if (newEffect == null) return;
-            foreach(var effect in surfaceEffects)
+            foreach (var effect in surfaceEffects)
             {
                 if (effect == newEffect) return;
             }
             surfaceEffects.Add(newEffect);
         }
-            
+
     }
 
     public void RemoveSurfaceEffect(string aniID)
@@ -330,7 +330,7 @@ public class Cube : MonoBehaviour
 
     public void RemovePreviousParent(ContainerCube cube)
     {
-        for(int i = previousParents.Count - 1; i >= 0; i--)
+        for (int i = previousParents.Count - 1; i >= 0; i--)
         {
             if (previousParents[i].Cube == cube)
             {
@@ -362,7 +362,7 @@ public class Cube : MonoBehaviour
 
         public bool IsHorizFlipped { get => isHorizFlipped; set => isHorizFlipped = value; }
 
-        public ContainerCube Parent { get =>  parent; set => parent = value; }
+        public ContainerCube Parent { get => parent; set => parent = value; }
         public Vector2 RelativeScale { get => relativeScale; set => relativeScale = value; }
         public Vector2 RelativePosition { get => relativePosition; set => relativePosition = value; }
 
@@ -460,9 +460,9 @@ public class Cube : MonoBehaviour
             isHorizFlipped = (cube != null) ? cube.IsHorizFlipped : false;
             useDefaultValues = true;
         }
-        
-        public PreviousParentDetails(CubeMovement.LayerDirections direction, ContainerCube cube, Vector2 relativePosition, Vector2 relativeScale, bool isHorizFlipped) 
-        { 
+
+        public PreviousParentDetails(CubeMovement.LayerDirections direction, ContainerCube cube, Vector2 relativePosition, Vector2 relativeScale, bool isHorizFlipped)
+        {
             this.cube = cube;
             this.direction = direction;
             this.relativePosition = relativePosition;

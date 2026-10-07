@@ -61,13 +61,13 @@ public class MainCamera : MonoBehaviour
         {
             if (targetCube == null) return new();
             Rect realRenderPosition = renderRect;
-            if (isHorizFlipped) realRenderPosition.width = - realRenderPosition.width;
+            if (isHorizFlipped) realRenderPosition.width = -realRenderPosition.width;
             if (targetCube.IsHorizFlipped) realRenderPosition.width = -realRenderPosition.width;
             return realRenderPosition;
         }
     }
     public float OrthographicSize { get => mainCamera.orthographicSize; set => mainCamera.orthographicSize = value; }
-    
+
     private void Awake()
     {
         mainCamera = GetComponent<Camera>();
@@ -118,7 +118,7 @@ public class MainCamera : MonoBehaviour
                 renderPos.position = new(-renderPos.position.x, renderPos.position.y);
             }
             if (cubeRenderDetail.TargetCube.IsHorizFlipped) renderPos.size = new(-renderPos.size.x, renderPos.size.y);
-            cubeRenderDetail.TargetCube.Draw(renderPos, CustomTextureRenderer2D.defaultPriority, depth, exposure, GetScreenRect());
+            cubeRenderDetail.TargetCube.Draw(renderPos, RenderingUtils.DEFAULT_PRIORITY, depth, exposure, GetScreenRect());
         }
     }
 
@@ -238,7 +238,7 @@ public class MainCamera : MonoBehaviour
                 var infinityCube = infinityCubes[i].Key;
                 var infinityRect = infinityCubes[i].Value;
                 infinityCube.Parent.CullingCubesOne.Add(infinityCube);
-                infinityCube.Parent.DrawCube(infinityRect, CustomTextureRenderer2D.defaultPriority, depth + infinityBackgroundDepth, exposure, GetScreenRect());
+                infinityCube.Parent.DrawCube(infinityRect, RenderingUtils.DEFAULT_PRIORITY, depth + infinityBackgroundDepth, exposure, GetScreenRect());
                 infinityBackgroundDepth -= infinityBackgroundDepthOffset;
                 infinityCube.Parent.CullingCubesOne.Remove(infinityCube);
             }
@@ -248,7 +248,7 @@ public class MainCamera : MonoBehaviour
             {
                 if (i > 0 && parentAndRects[i].Key.CullingCubesOne != null) parentAndRects[i].Key.CullingCubesOne.Add(parentAndRects[i - 1].Key);
                 var renderRect = parentAndRects[i].Value;
-                parentAndRects[i].Key.DrawCube(renderRect, CustomTextureRenderer2D.defaultPriority, depth, exposure, GetScreenRect());
+                parentAndRects[i].Key.DrawCube(renderRect, RenderingUtils.DEFAULT_PRIORITY, depth, exposure, GetScreenRect());
                 if (i > 0 && parentAndRects[i].Key.CullingCubesOne != null) parentAndRects[i].Key.CullingCubesOne.Remove(parentAndRects[i - 1].Key);
             }
         }
@@ -256,13 +256,13 @@ public class MainCamera : MonoBehaviour
         {
             Rect renderPos = renderRect;
             if (isHorizFlipped) renderPos.size = new(-renderPos.size.x, renderPos.size.y);
-            targetCube.Draw(renderPos, CustomTextureRenderer2D.defaultPriority, depth, exposure, GetScreenRect());
+            targetCube.Draw(renderPos, RenderingUtils.DEFAULT_PRIORITY, depth, exposure, GetScreenRect());
         }
     }
 
     private void OnFinishRender()
     {
-        CustomTextureRenderer2D.OnRenderOnScreen();
+        RenderingUtils.OnRenderOnScreen();
     }
 
     public void SetNewTargetCube(ContainerCube newTarget)
@@ -278,7 +278,7 @@ public class MainCamera : MonoBehaviour
         if (renderMode != MainCameraRenderMode.SingleCube) return;
         if (targetCube == null) return;
 
-        transform.position = new Vector3 (RenderRect.position.x, RenderRect.position.y, transform.position.z);
+        transform.position = new Vector3(RenderRect.position.x, RenderRect.position.y, transform.position.z);
         mainCamera.orthographicSize = GetIdealOrthographicSize(RenderRect, targetCube);
 
         //Debug.Log("Ideal ortho size: " + GetIdealOrthographicSize(renderPosition, targetCube));
@@ -349,7 +349,7 @@ public class MainCamera : MonoBehaviour
         screenRect.width = screenRect.height * ((float)mainCamera.pixelWidth / mainCamera.pixelHeight);
         return screenRect;
     }
-    
+
     private void OnDrawGizmos()
     {
         if (!useGizmos) return;
@@ -360,14 +360,14 @@ public class MainCamera : MonoBehaviour
                 Gizmos.DrawWireCube(RenderRect.position, RenderRect.size);
                 break;
             case MainCameraRenderMode.MultipleCubes:
-                foreach(var cube in cubesToRender)
+                foreach (var cube in cubesToRender)
                 {
                     if (cube == null) continue;
                     Gizmos.DrawWireCube(cube.RenderPosition.position, cube.RenderPosition.size);
                 }
                 break;
         }
-        
+
     }
 
     [Serializable]

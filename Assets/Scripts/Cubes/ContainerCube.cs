@@ -29,7 +29,7 @@ public class ContainerCube : Cube
 
     [SerializeField]
     [Min(0)]
-    ChildCubeInitDetail[] childCubesInitDetails = {new()};
+    ChildCubeInitDetail[] childCubesInitDetails = { new() };
 
     protected List<Cube> emptyCubes = new(); // Seperate empty cubes from other cubes, empty cubes are only be rendered but ignore checking for interactions by other cubes
     protected List<Cube> cullingCubesAll = new(); // These cubes wont be rendered if they are children of this cube, apply to all cube
@@ -86,7 +86,7 @@ public class ContainerCube : Cube
     }
 
     // This dictionary stores calculated static textures and their positions in grid
-    protected Dictionary<Texture2D, List<CustomTextureRenderer2D.TexturePositionInGrid>> staticTextures = new();
+    protected Dictionary<Texture2D, List<RenderingUtils.TexturePositionInGrid>> staticTextures = new();
 
     // All static textures are drawn onto this Render Texture which will later be drawn in Update.
     // Use RenderTexture to reduce calculations on static tiles.
@@ -117,13 +117,13 @@ public class ContainerCube : Cube
     private void InitChildCubes()
     {
         CubesManager cubesManager = CubesManager.Instance;
-        if (cubesManager == null ) { Debug.LogWarning("No cubes manager is found in this scene to spawn cubes!"); return; }
+        if (cubesManager == null) { Debug.LogWarning("No cubes manager is found in this scene to spawn cubes!"); return; }
 
         // Init cubes
         //childCubes = new Cube[tiling.x, tiling.y];
-        for(int row = 0; row < childGrid.Tiling.x; row++)
+        for (int row = 0; row < childGrid.Tiling.x; row++)
         {
-            for(int column = 0; column < childGrid.Tiling.y; column++)
+            for (int column = 0; column < childGrid.Tiling.y; column++)
             {
                 var cubeToSpawnDetails = GetChildCubeInitDetails(row, column);
                 if (cubeToSpawnDetails == null) continue;
@@ -146,7 +146,7 @@ public class ContainerCube : Cube
                 spawnedCube.Init();
             }
         }
-    }    
+    }
     public void CalculateStaticTextures()
     {
         if (staticTexturesRT == null)
@@ -156,7 +156,7 @@ public class ContainerCube : Cube
             staticTexturesRT.filterMode = FilterMode.Point;
         }
 
-        CustomTextureRenderer2D.ClearRenderTexture(staticTexturesRT);
+        RenderingUtils.ClearRenderTexture(staticTexturesRT);
 
         staticTextures.Clear();
 
@@ -198,7 +198,7 @@ public class ContainerCube : Cube
             }
         }
 
-        CustomTextureRenderer2D.DrawTexturesToRenderTextureGrid(ref staticTexturesRT, staticTextures);
+        RenderingUtils.DrawTexturesToRenderTextureGrid(ref staticTexturesRT, staticTextures);
 
         /* To draw static textures on different layers:
          * After drawing textures of one layer
@@ -275,15 +275,15 @@ public class ContainerCube : Cube
         DrawFloor(position, priority, depth + floorDepthOffset, exposure, scissorRect);
         DrawWalls(position, priority, depth + wallDepthOffset, exposure, scissorRect);
         DrawChildCubes(position, priority, depth + childCubesDepthOffset, exposure, scissorRect);
-    }   
+    }
     public virtual void DrawFloor(Rect position, int priority, float depth, float exposure, Rect? scissorRect)
     {
         if (floorTexture == null || floorTexture.GetTexture() == null) return;
-        CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, floorTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
+        RenderingUtils.RenderMesh(cubeMesh, normalMat, floorTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
     }
     public virtual void DrawWalls(Rect position, int priority, float depth, float exposure, Rect? scissorRect)
     {
-        if (staticTexturesRT != null) CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, staticTexturesRT, RealCubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
+        if (staticTexturesRT != null) RenderingUtils.RenderMesh(cubeMesh, outlineMat, staticTexturesRT, RealCubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
     }
     protected virtual void DrawChildCubes(Rect position, int priority, float depth, float exposure, Rect? scissorRect, int minSize = -1)
     {
@@ -331,7 +331,7 @@ public class ContainerCube : Cube
                 //externalCube = null;
             }
         }
-        foreach(var expiredExternalCube in expiredExternalCubes)
+        foreach (var expiredExternalCube in expiredExternalCubes)
         {
             externalCubes.Remove(expiredExternalCube);
         }
@@ -341,7 +341,7 @@ public class ContainerCube : Cube
             var alterEnterCubeMovement = alterEnterCube.GetComponent<CubeMovement>();
             if (alterEnterCubeMovement == null)
             {
-                alterEnterCube = null; 
+                alterEnterCube = null;
                 hideAlterEnterCube = false;
                 return;
             }
@@ -352,7 +352,7 @@ public class ContainerCube : Cube
             }
         }
     }
-    
+
     public virtual void DrawInnerCubes(Rect position, int priority, float depth, float exposure, Rect? scissorRect, float minSize = -1)
     {
         // Draw empty cubes first
@@ -361,7 +361,7 @@ public class ContainerCube : Cube
             Rect childRect = Relativity.CRectFromPRect(position, emptyCube.RelativeScale, emptyCube.RelativePosition);
             if (minSize > 0)
             {
-                Vector2 size = CustomTextureRenderer2D.ConvertScaleToPixel(childRect.size);
+                Vector2 size = RenderingUtils.ScaleToPixel(childRect.size);
                 if (size.x < minSize || size.y < minSize) continue;
             }
             emptyCube.Draw(childRect, priority, depth, exposure, scissorRect);
@@ -389,7 +389,7 @@ public class ContainerCube : Cube
             Rect childRect = Relativity.CRectFromPRect(position, childCube.Cube.RelativeScale, childCube.Cube.RelativePosition);
             if (minSize > 0)
             {
-                Vector2 size = CustomTextureRenderer2D.ConvertScaleToPixel(childRect.size);
+                Vector2 size = RenderingUtils.ScaleToPixel(childRect.size);
                 if (size.x < minSize || size.y < minSize) continue;
             }
 
@@ -405,7 +405,7 @@ public class ContainerCube : Cube
             Rect childRect = Relativity.CRectFromPRect(position, movingCube.RelativeScale, movingCube.RelativePosition);
             if (minSize > 0)
             {
-                Vector2 size = CustomTextureRenderer2D.ConvertScaleToPixel(childRect.size);
+                Vector2 size = RenderingUtils.ScaleToPixel(childRect.size);
                 if (size.x < minSize || size.y < minSize) continue;
             }
 
@@ -418,7 +418,7 @@ public class ContainerCube : Cube
 
     public virtual void DrawExternalCube(Rect position, int priority, float depth, float exposure, Rect? scissorRect, float minSize = -1)
     {
-        for(int i = externalCubes.Count - 1; i >= 0; i--)
+        for (int i = externalCubes.Count - 1; i >= 0; i--)
         {
             var externalCube = externalCubes[i];
             if (externalCube == null) continue;
@@ -428,7 +428,7 @@ public class ContainerCube : Cube
             var childRect = Relativity.CRectFromPRect(position, externalCube.RelativeScale, externalCube.RelativePosition);
             if (minSize > 0)
             {
-                Vector2 size = CustomTextureRenderer2D.ConvertScaleToPixel(childRect.size);
+                Vector2 size = RenderingUtils.ScaleToPixel(childRect.size);
                 if (size.x < minSize || size.y < minSize) return;
             }
 
@@ -452,10 +452,10 @@ public class ContainerCube : Cube
         var childRect = Relativity.CRectFromPRect(position, idealRScl, idealRPos);
         if (minSize > 0)
         {
-            Vector2 size = CustomTextureRenderer2D.ConvertScaleToPixel(childRect.size);
+            Vector2 size = RenderingUtils.ScaleToPixel(childRect.size);
             if (size.x < minSize || size.y < minSize) return;
         }
-        scissorRect = CustomTextureRenderer2D.GetOverlapRect(scissorRect, position);
+        scissorRect = RenderingUtils.GetOverlapRect(scissorRect, position);
         alterEnterCube.Draw(childRect, priority, depth, exposure, scissorRect);
         //Debug.Log($"{name} is drawing alter enter cube: {alterEnterCube.name} at {childRect} width scissor {scissorRect.Value}");
     }
@@ -473,10 +473,10 @@ public class ContainerCube : Cube
         var childRect = Relativity.CRectFromPRect(position, idealRScl, idealRPos);
         if (minSize > 0)
         {
-            Vector2 size = CustomTextureRenderer2D.ConvertScaleToPixel(childRect.size);
+            Vector2 size = RenderingUtils.ScaleToPixel(childRect.size);
             if (size.x < minSize || size.y < minSize) return;
         }
-        scissorRect = CustomTextureRenderer2D.GetOverlapRect(scissorRect, position);
+        scissorRect = RenderingUtils.GetOverlapRect(scissorRect, position);
         exitCube.Draw(childRect, priority, depth, exposure, scissorRect);
         //Debug.Log($"{name} is drawing exit cube {exitCube.name} at {childRect}");
     }
@@ -484,17 +484,17 @@ public class ContainerCube : Cube
     public override void DrawSurfaceEffects(Rect position, int priority, float depth, float exposure, Rect? scissorRect)
     {
         base.DrawSurfaceEffects(position, priority, depth, exposure, scissorRect);
-        if (!isEnterable) CustomTextureRenderer2D.RenderMesh(cubeMesh, normalMat, Texture2D.whiteTexture, unenterableColor, exposure, position.position, position.size, depth);
+        if (!isEnterable) RenderingUtils.RenderMesh(cubeMesh, normalMat, Texture2D.whiteTexture, unenterableColor, exposure, position.position, position.size, depth);
         if (!isLeavable)
         {
             if (materialPropertyBlock == null) materialPropertyBlock = new();
             else materialPropertyBlock.Clear();
-            materialPropertyBlock.SetColor(CustomTextureRenderer2D.colorID, Color.clear);
-            materialPropertyBlock.SetColor(CustomTextureRenderer2D.borderHightlightColorID, unleavableColor);
-            materialPropertyBlock.SetTexture(CustomTextureRenderer2D.mainTexID, Texture2D.whiteTexture);
-            materialPropertyBlock.SetFloat(CustomTextureRenderer2D.isHighlightedID, 1);
+            materialPropertyBlock.SetColor(RenderingUtils.COLOR_ID, Color.clear);
+            materialPropertyBlock.SetColor(RenderingUtils.BORDER_HIGHLIGHT_COLOR_ID, unleavableColor);
+            materialPropertyBlock.SetTexture(RenderingUtils.MAIN_TEX_ID, Texture2D.whiteTexture);
+            materialPropertyBlock.SetFloat(RenderingUtils.IS_HIGHLIGHTED_ID, 1);
 
-            CustomTextureRenderer2D.RenderMesh(cubeMesh, outlineMat, materialPropertyBlock, position.position, position.size, depth, scissorRect, priority);
+            RenderingUtils.RenderMesh(cubeMesh, outlineMat, materialPropertyBlock, position.position, position.size, depth, scissorRect, priority);
         }
     }
 
@@ -515,17 +515,17 @@ public class ContainerCube : Cube
             int exitsLoopCount = 0;
             InfinityCube foundInfinityCube = null;
             EpsilonCube foundEpsilonCube = null;
-            for (int i = requestedCube.PreviousParents.Count - 1; i >= 0 ; i--)
+            for (int i = requestedCube.PreviousParents.Count - 1; i >= 0; i--)
             {
                 if (requestedCube.PreviousParents[i].Cube == null) continue;
                 if (requestedCube.PreviousParents[i].Cube is InfinityCube)
                 {
-                    foundInfinityCube = (InfinityCube) requestedCube.PreviousParents[i].Cube;
+                    foundInfinityCube = (InfinityCube)requestedCube.PreviousParents[i].Cube;
                     break;
                 }
                 if (requestedCube.PreviousParents[i].Cube is EpsilonCube)
                 {
-                    foundEpsilonCube = (EpsilonCube) requestedCube.PreviousParents[i].Cube;
+                    foundEpsilonCube = (EpsilonCube)requestedCube.PreviousParents[i].Cube;
                     break;
                 }
 
@@ -646,8 +646,8 @@ public class ContainerCube : Cube
         }
 
         // If there is another cube that is trying to move into this position first
-        if (childGrid.Children[requestedPosition.x, requestedPosition.y].Cube != null && 
-            childGrid.Children[requestedPosition.x, requestedPosition.y].Cube.GetComponent<CubeMovement>() != null && 
+        if (childGrid.Children[requestedPosition.x, requestedPosition.y].Cube != null &&
+            childGrid.Children[requestedPosition.x, requestedPosition.y].Cube.GetComponent<CubeMovement>() != null &&
             childGrid.Children[requestedPosition.x, requestedPosition.y].Cube.GetComponent<CubeMovement>().IsMoving)
         {
             if (useDebug) Debug.Log($"{requestedCube.name} fail to move because another cube is entering {requestedPosition.x}, {requestedPosition.y} of {gameObject.name}!");
@@ -854,12 +854,12 @@ public class ContainerCube : Cube
     private float LetRequestedCubeEnter(Cube requestedCube, Vector2 cRPos, Vector2 cRScl, int row, int column, CubeMovement.GridDirections direction, float targetTime, bool external)
     {
         if (useDebug) Debug.Log($"{requestedCube.name} successfully move to an empty position {row}, {column} of {gameObject.name}!");
-        
+
         Vector2 childCubeTargetRPos = Relativity.RPosFromGridTile(childGrid.Tiling.y, childGrid.Tiling.x, row, column);
         Vector2 childCubeTargetRScl = new Vector2(1.0f / childGrid.Tiling.y, 1.0f / childGrid.Tiling.x);
 
         if (useDebug) Debug.Log($"{requestedCube.name} new relative vallues: {childCubeTargetRPos}, {childCubeTargetRScl}, targetTime: {targetTime}");
-        
+
         var requestedCubeMovement = requestedCube.GetComponent<CubeMovement>();
         if (requestedCubeMovement == null) return 0;
 

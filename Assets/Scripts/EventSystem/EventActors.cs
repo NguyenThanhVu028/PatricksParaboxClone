@@ -11,21 +11,24 @@ public class EventPublisher
     /// Normal listeners. Only listen for event fired AFTER subscription.
     /// </summary>
     /// <param name="listener"></param>
-    public void AddListener(string eventName, IEventListener listener)
+    public void AddListener(IEventListener listener, string eventName)
     {
         if (listener == null)
         {
             return;
         }
         _normalListeners ??= new();
-        _normalListeners[eventName] ??= new();
+        if (!_normalListeners.ContainsKey(eventName))
+        {
+            _normalListeners.Add(eventName, new());
+        }
         _normalListeners[eventName].Add(listener);
     }
     /// <summary>
     /// These listeners only listen to the event once, can listen for event that has already fired in THE SAME FRAME.
     /// </summary>
     /// <param name="listener"></param>
-    public void AddListenerOnce(string eventName, IEventListener listener)
+    public void AddListenerOnce(IEventListener listener, string eventName)
     {
         if (listener == null)
         {
@@ -35,24 +38,36 @@ public class EventPublisher
         if (_previousEvents.TryGetValue(eventName, out var eventDetails))
         {
             // Remove the record if the stored event has expired
-            if (eventDetails.Item1 != Time.timeSinceLevelLoad)
+            if (!Mathf.Approximately(eventDetails.Item1, Time.timeSinceLevelLoad))
             {
                 _previousEvents.Remove(eventName);
                 return;
             }
-            listener.ReceiveEvent(eventName, _previousEvents[eventName]);
+            listener.ReceiveEvent(eventName, _previousEvents[eventName].Item2);
         }
         else
         {
             _onceTimeListeners ??= new();
-            _onceTimeListeners[eventName] ??= new();
+            if (!_onceTimeListeners.ContainsKey(eventName))
+            {
+                _onceTimeListeners.Add(eventName, new());
+            }
             _onceTimeListeners[eventName].Add(listener);
         }
     }
 
     public void InvokeEvent(string eventName, object value)
     {
-        _previousEvents[eventName] = (Time.timeSinceLevelLoad, value);
+        Debug.Log($"Event invoke: {eventName}, {value}");
+
+        if (!_previousEvents.ContainsKey(eventName))
+        {
+            _previousEvents.Add(eventName, (Time.timeSinceLevelLoad, value));
+        }
+        else
+        {
+            _previousEvents[eventName] = (Time.timeSinceLevelLoad, value);
+        }
 
         if (_normalListeners.TryGetValue(eventName, out List<IEventListener> listeners))
         {

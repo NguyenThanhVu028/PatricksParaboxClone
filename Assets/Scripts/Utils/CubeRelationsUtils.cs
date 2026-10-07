@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -7,31 +8,22 @@ using UnityEngine;
 public class CubeRelationsUtils
 {
     private static CubeRelationsUtils _instance;
-    private CubeRelations _cubeRelations;
+    private CubeRelationTree _cubeRelationTree;
 
     public static CubeRelationsUtils Instance
     {
         get => _instance;
     }
 
-    public static void Init(CubeRelations cubeRelations)
+    public static void Init(CubeRelationTree cubeRelations)
     {
-        if (_instance == null)
-        {
-            _instance = new CubeRelationsUtils();
-        }
-        _instance._cubeRelations = cubeRelations;
+        _instance ??= new CubeRelationsUtils();
+        _instance._cubeRelationTree = cubeRelations;
     }
 
     public void SetParent(Cube childCube, Cube parentCube)
     {
-        if (_cubeRelations == null)
-        {
-            Debug.LogWarning("CubeRelations instance is not initialized.");
-            return;
-        }
-
-        _cubeRelations.EstablishRelation(childCube, parentCube);
+        _cubeRelationTree.EstablishRelation(childCube, parentCube);
     }
 }
 
