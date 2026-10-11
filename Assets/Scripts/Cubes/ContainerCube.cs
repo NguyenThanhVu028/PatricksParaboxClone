@@ -38,7 +38,7 @@ public class ContainerCube : Cube
     protected bool hideExitCube = false;
     protected Cube exitCube = null;
     protected Vector2 exitCubeOldRPos = new();
-    protected CubeMovement.GridDirections exitDirection;
+    protected GridDirections exitDirection;
 
     protected List<Cube> externalCubes = new();
     protected List<Cube> expiredExternalCubes = new();
@@ -46,7 +46,7 @@ public class ContainerCube : Cube
     protected bool hideAlterEnterCube = false;
     protected Cube alterEnterCube = null;
     protected Vector2 alterEnterOldRPos = new();
-    protected CubeMovement.GridDirections alterEnterDirection;
+    protected GridDirections alterEnterDirection;
 
     protected bool useDebug = false;
 
@@ -69,12 +69,12 @@ public class ContainerCube : Cube
     public List<Cube> CullingCubesOne { get => cullingCubesOne; }
     public bool HideExitCube { get => hideExitCube; set => hideExitCube = value; }
     public Cube ExitCube { get => exitCube; set => exitCube = value; }
-    public CubeMovement.GridDirections ExitDirection { get => exitDirection; }
+    public GridDirections ExitDirection { get => exitDirection; }
     public Vector2 ExitCubeOldRPos { get => exitCubeOldRPos; }
     public List<Cube> ExternalCubes { get => externalCubes; set => externalCubes = value; }
     public bool HideAlterEnterCube { get => hideAlterEnterCube; set => hideAlterEnterCube = value; }
     public Cube AlterEnterCube { get => alterEnterCube; set => alterEnterCube = value; }
-    public CubeMovement.GridDirections AlterEnterDirection { get => alterEnterDirection; }
+    public GridDirections AlterEnterDirection { get => alterEnterDirection; }
     public Vector2 AlterEnterOldRPos { get => alterEnterOldRPos; }
 
     // Used by the Editor
@@ -140,7 +140,7 @@ public class ContainerCube : Cube
                 else
                 {
                     childGrid.Children[row, column].Cube = spawnedCube;
-                    childGrid.Children[row, column].MovingDirection = CubeMovement.GridDirections.None;
+                    childGrid.Children[row, column].MovingDirection = GridDirections.None;
                 }
                 //ModifyChildCube(spawnedCube);
                 spawnedCube.Init();
@@ -499,7 +499,7 @@ public class ContainerCube : Cube
     }
 
     // This functions if call when a cube is trying to move within / entering this cube
-    public virtual float RequestToMove(Vector2 cRPos, Vector2 cRScl, Cube requestedCube, CubeMovement.GridDirections direction, bool external = false, bool specialMove = false)
+    public virtual float RequestToMove(Vector2 cRPos, Vector2 cRScl, Cube requestedCube, GridDirections direction, bool external = false, bool specialMove = false)
     {
         // Check if the requested cube can move
         if (requestedCube.CubeType == CubeTypes.Static || requestedCube.CubeType == CubeTypes.Empty) return 0;
@@ -531,8 +531,8 @@ public class ContainerCube : Cube
 
                 if (requestedCube.PreviousParents[i].Cube == this)
                 {
-                    if (requestedCube.PreviousParents[i].Direction == CubeMovement.LayerDirections.In) entriesLoopCount++;
-                    else if (requestedCube.PreviousParents[i].Direction == CubeMovement.LayerDirections.Out) exitsLoopCount++;
+                    if (requestedCube.PreviousParents[i].Direction == LayerDirections.In) entriesLoopCount++;
+                    else if (requestedCube.PreviousParents[i].Direction == LayerDirections.Out) exitsLoopCount++;
                 }
             }
             if (useDebug) Debug.Log($"Exit count: {exitsLoopCount}, entry count: {entriesLoopCount}");
@@ -597,11 +597,11 @@ public class ContainerCube : Cube
         {
             if (childGrid.CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y))
             {
-                requestedCube.PreviousParents.Add(new(CubeMovement.LayerDirections.Out, this));
+                requestedCube.PreviousParents.Add(new(LayerDirections.Out, this));
             }
             else
             {
-                requestedCube.PreviousParents.Add(new(CubeMovement.LayerDirections.In, this));
+                requestedCube.PreviousParents.Add(new(LayerDirections.In, this));
             }
         }
         // If the requested cube is a child of this cube -> Pick it up from its position
@@ -633,7 +633,7 @@ public class ContainerCube : Cube
             }
             else
             {
-                if (!external) childGrid.Children[requestedCubePosition.x, requestedCubePosition.y].MovingDirection = CubeMovement.GridDirections.None;
+                if (!external) childGrid.Children[requestedCubePosition.x, requestedCubePosition.y].MovingDirection = GridDirections.None;
             }
             return targetTime;
         }
@@ -661,7 +661,7 @@ public class ContainerCube : Cube
             var tempTargetTime = TryLetRequestedCubeEnterBlockageCube(cRPos, cRScl, enterableCube, requestedCube, direction);
             if (tempTargetTime > 0)
             {
-                if (!external) childGrid.Children[requestedCubePosition.x, requestedCubePosition.y].MovingDirection = CubeMovement.GridDirections.None;
+                if (!external) childGrid.Children[requestedCubePosition.x, requestedCubePosition.y].MovingDirection = GridDirections.None;
                 return tempTargetTime;
             }
         }
@@ -671,7 +671,7 @@ public class ContainerCube : Cube
         {
             Cube blockageCube = childGrid.Children[requestedPosition.x, requestedPosition.y].Cube;
             childGrid.Children[requestedPosition.x, requestedPosition.y].Cube = null;
-            childGrid.Children[requestedPosition.x, requestedPosition.y].MovingDirection = CubeMovement.GridDirections.None;
+            childGrid.Children[requestedPosition.x, requestedPosition.y].MovingDirection = GridDirections.None;
 
             var tempTargetTime = TryLetBlockageCubeEnterRequestedCube(blockageCube, enterable, cRPos, cRScl, direction);
 
@@ -697,7 +697,7 @@ public class ContainerCube : Cube
                 HandleFailToMove(requestedCube, requestedCubePosition, external);
                 return 0;
             }
-            if (!external) childGrid.Children[requestedCubePosition.x, requestedCubePosition.y].MovingDirection = CubeMovement.GridDirections.None;
+            if (!external) childGrid.Children[requestedCubePosition.x, requestedCubePosition.y].MovingDirection = GridDirections.None;
             return LetRequestedCubeEnter(requestedCube, cRPos, cRScl, requestedPosition.x, requestedPosition.y, direction, targetTime, external);
         }
 
@@ -709,7 +709,7 @@ public class ContainerCube : Cube
         return 0;
     }
 
-    private float TakeRequestedCubeToInfinityCube(Cube requestedCube, InfinityCube previousInfinityCube, CubeMovement.GridDirections direction, bool external, bool specialMove)
+    private float TakeRequestedCubeToInfinityCube(Cube requestedCube, InfinityCube previousInfinityCube, GridDirections direction, bool external, bool specialMove)
     {
         if (useDebug) Debug.Log($"{requestedCube.name} is in infinite exits!");
         if (CubesManager.Instance == null) return 0;
@@ -729,19 +729,19 @@ public class ContainerCube : Cube
             if (childGrid.CheckValidGridPosition(requestedCubePosition.x, requestedCubePosition.y))
             {
                 childGrid.Children[requestedCubePosition.x, requestedCubePosition.y].Cube = requestedCube;
-                childGrid.Children[requestedCubePosition.x, requestedCubePosition.y].MovingDirection = CubeMovement.GridDirections.None;
+                childGrid.Children[requestedCubePosition.x, requestedCubePosition.y].MovingDirection = GridDirections.None;
             }
             if (!requestedCube.IsPossessing)
             {
                 requestedCube.PreviousParents.Clear();
-                requestedCube.PreviousParents.Add(new(CubeMovement.LayerDirections.In, this));
+                requestedCube.PreviousParents.Add(new(LayerDirections.In, this));
             }
         }
         else if (!requestedCube.IsPossessing) requestedCube.RemovePreviousParent(this);
         // Dont clear previous parents list if the requested cube is possessing another cube, which is later used to play camera transition
     }
 
-    private float TryPushRequestedCubeOutside(Vector2 cRPos, Vector2 cRScl, Cube requestedCube, CubeMovement.GridDirections direction, bool external)
+    private float TryPushRequestedCubeOutside(Vector2 cRPos, Vector2 cRScl, Cube requestedCube, GridDirections direction, bool external)
     {
         if (!isLeavable) return 0;
 
@@ -802,7 +802,7 @@ public class ContainerCube : Cube
         return 0;
     }
 
-    private float TryPushBlockageCubeAway(Cube blockageCube, int row, int column, CubeMovement.GridDirections direction, bool specialMove)
+    private float TryPushBlockageCubeAway(Cube blockageCube, int row, int column, GridDirections direction, bool specialMove)
     {
         if (useDebug) Debug.Log($"Try to push {blockageCube.name} away");
         var blockageCubeMovement = blockageCube.GetComponent<CubeMovement>();
@@ -820,7 +820,7 @@ public class ContainerCube : Cube
         return 0;
     }
 
-    private float TryLetRequestedCubeEnterBlockageCube(Vector2 requestedCubeRPos, Vector2 requestedCubeRScl, ContainerCube blockageCube, Cube requestedCube, CubeMovement.GridDirections direction)
+    private float TryLetRequestedCubeEnterBlockageCube(Vector2 requestedCubeRPos, Vector2 requestedCubeRScl, ContainerCube blockageCube, Cube requestedCube, GridDirections direction)
     {
         Vector2 childCubeRPosToBlockageCube = Relativity.SRPosFromSameParent(blockageCube.RelativePosition, blockageCube.RelativeScale, requestedCubeRPos);
         Vector2 childCubeRSclToBlockageCube = Relativity.SRSclFromSameParent(blockageCube.RelativeScale, requestedCubeRScl);
@@ -834,7 +834,7 @@ public class ContainerCube : Cube
         return 0;
     }
 
-    private float TryLetBlockageCubeEnterRequestedCube(Cube blockageCube, ContainerCube requestedCube, Vector2 requestedCubeRPos, Vector2 requestedCubeRScl, CubeMovement.GridDirections direction)
+    private float TryLetBlockageCubeEnterRequestedCube(Cube blockageCube, ContainerCube requestedCube, Vector2 requestedCubeRPos, Vector2 requestedCubeRScl, GridDirections direction)
     {
         if (useDebug) Debug.Log($"Try to let {blockageCube.name} enter {requestedCube.name}");
 
@@ -851,7 +851,7 @@ public class ContainerCube : Cube
         return 0;
     }
 
-    private float LetRequestedCubeEnter(Cube requestedCube, Vector2 cRPos, Vector2 cRScl, int row, int column, CubeMovement.GridDirections direction, float targetTime, bool external)
+    private float LetRequestedCubeEnter(Cube requestedCube, Vector2 cRPos, Vector2 cRScl, int row, int column, GridDirections direction, float targetTime, bool external)
     {
         if (useDebug) Debug.Log($"{requestedCube.name} successfully move to an empty position {row}, {column} of {gameObject.name}!");
 
@@ -879,7 +879,7 @@ public class ContainerCube : Cube
         }
 
         childGrid.Children[row, column].Cube = requestedCube;
-        childGrid.Children[row, column].MovingDirection = CubeMovement.GridDirections.None;
+        childGrid.Children[row, column].MovingDirection = GridDirections.None;
 
         Vector2 requestedCubeOldRPos = requestedCube.RelativePosition;
         Vector2 requestedCubeOldRScl = requestedCube.RelativeScale;
@@ -939,16 +939,16 @@ public class ContainerCube : Cube
     public class ChildCubeDetails
     {
         private Cube cube;
-        private CubeMovement.GridDirections movingDirection;
+        private GridDirections movingDirection;
 
         public Cube Cube { get => cube; set => cube = value; }
-        public CubeMovement.GridDirections MovingDirection { get => movingDirection; set => movingDirection = value; }
+        public GridDirections MovingDirection { get => movingDirection; set => movingDirection = value; }
         public ChildCubeDetails()
         {
             cube = null;
-            movingDirection = CubeMovement.GridDirections.None;
+            movingDirection = GridDirections.None;
         }
-        public ChildCubeDetails(Cube cube = null, CubeMovement.GridDirections movingDirection = CubeMovement.GridDirections.None)
+        public ChildCubeDetails(Cube cube = null, GridDirections movingDirection = GridDirections.None)
         {
             this.cube = cube;
             this.movingDirection = movingDirection;

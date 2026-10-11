@@ -4,9 +4,9 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
-public class PlayerInputsManager : MonoBehaviour 
+public class PlayerInputsManager : MonoBehaviour
 {
-    public enum ActionMaps { Gameplay, UI}
+    public enum ActionMaps { Gameplay, UI }
 
     private static PlayerInputsManager instance;
     public static PlayerInputsManager Instance { get => instance; }
@@ -86,7 +86,7 @@ public class PlayerInputsManager : MonoBehaviour
     }
 
     [Serializable]
-    public class GameplayInputsReceiver: MainInputSystem.INormalActions
+    public class GameplayInputsReceiver : MainInputSystem.INormalActions
     {
         [SerializeField] bool allowTakingMovementInput = true;
         [SerializeField] bool allowUsingMovementInput = true;
@@ -101,7 +101,7 @@ public class PlayerInputsManager : MonoBehaviour
         public UnityEvent OnRedoEvent { get => onRedoEvent; }
         public UnityEvent OnPauseEvent { get => onPauseEvent; }
 
-        private List<CubeMovement.GridDirections> movementInputsList = new(); // Store all the received inputs
+        private List<GridDirections> movementInputsList = new(); // Store all the received inputs
 
         // Movement inputs
         public void StopUsingMovementInputs()
@@ -125,26 +125,26 @@ public class PlayerInputsManager : MonoBehaviour
         public void OnMoveUp(bool isActive)
         {
             if (!allowTakingMovementInput) return;
-            if (isActive) AddToInputList(CubeMovement.GridDirections.Up);
-            else RemoveFromInputList(CubeMovement.GridDirections.Up);
+            if (isActive) AddToInputList(GridDirections.Up);
+            else RemoveFromInputList(GridDirections.Up);
         }
         public void OnMoveDown(bool isActive)
         {
             if (!allowTakingMovementInput) return;
-            if (isActive) AddToInputList(CubeMovement.GridDirections.Down);
-            else RemoveFromInputList(CubeMovement.GridDirections.Down);
+            if (isActive) AddToInputList(GridDirections.Down);
+            else RemoveFromInputList(GridDirections.Down);
         }
         public void OnMoveLeft(bool isActive)
         {
             if (!allowTakingMovementInput) return;
-            if (isActive) AddToInputList(CubeMovement.GridDirections.Left);
-            else RemoveFromInputList(CubeMovement.GridDirections.Left);
+            if (isActive) AddToInputList(GridDirections.Left);
+            else RemoveFromInputList(GridDirections.Left);
         }
         public void OnMoveRight(bool isActive)
         {
             if (!allowTakingMovementInput) return;
-            if (isActive) AddToInputList(CubeMovement.GridDirections.Right);
-            else RemoveFromInputList(CubeMovement.GridDirections.Right);
+            if (isActive) AddToInputList(GridDirections.Right);
+            else RemoveFromInputList(GridDirections.Right);
         }
 
         public void OnMove(InputAction.CallbackContext context) { }
@@ -170,20 +170,20 @@ public class PlayerInputsManager : MonoBehaviour
         }
 
         // Actions on movement inputs list
-        private void AddToInputList(CubeMovement.GridDirections movementInput)
+        private void AddToInputList(GridDirections movementInput)
         {
-            if (movementInput == CubeMovement.GridDirections.None) return;
+            if (movementInput == GridDirections.None) return;
             //if (movementInputsList.Contains(movementInput)) return;
             movementInputsList.Remove(movementInput); // Remove the input if it already exists to avoid duplicates and add it to the end of the list
             movementInputsList.Add(movementInput);
         }
-        private void RemoveFromInputList(CubeMovement.GridDirections movementInput)
+        private void RemoveFromInputList(GridDirections movementInput)
         {
             movementInputsList.Remove(movementInput);
         }
-        public CubeMovement.GridDirections GetLatestMovementInput()
+        public GridDirections GetLatestMovementInput()
         {
-            if (movementInputsList == null || movementInputsList.Count == 0 || !allowUsingMovementInput) return CubeMovement.GridDirections.None;
+            if (movementInputsList == null || movementInputsList.Count == 0 || !allowUsingMovementInput) return GridDirections.None;
             return movementInputsList[movementInputsList.Count - 1];
         }
 

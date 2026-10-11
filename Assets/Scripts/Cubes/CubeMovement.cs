@@ -5,9 +5,6 @@ using UnityEngine.Events;
 [RequireComponent(typeof(Cube))]
 public class CubeMovement : MonoBehaviour
 {
-    public enum GridDirections{ Up, Down, Left, Right, None }
-    public enum LayerDirections { In, Out, None }
-
     [Header("Movement Settings")]
     [SerializeField] float defaultMoveTime = 0.1f; // Used when player simply moving from one point to another
     [SerializeField] float defaultEnterTime = 0.5f; // Used when player enters a cube, transforms, . . .
@@ -75,7 +72,7 @@ public class CubeMovement : MonoBehaviour
             {
                 if (MainCamera.Instance.TargetCubeRect.size.x < 0) movementInput = CubeMovement.FlipMovementInput(movementInput, true);
             }
-            if (movementInput != CubeMovement.GridDirections.None)
+            if (movementInput != GridDirections.None)
             {
                 var targetTime = selfCube.Parent.RequestToMove(selfCube.RelativePosition, selfCube.RelativeScale, selfCube, movementInput);
                 // Update camera trasition
@@ -94,17 +91,17 @@ public class CubeMovement : MonoBehaviour
                         MainCamera.Instance.PlayTransition(selfCube.PreviousParents, selfCube.PossessingTime);
                     }
                     selfCube.PreviousParents.Clear();
-                    selfCube.PreviousParents.Add(new Cube.PreviousParentDetails(CubeMovement.LayerDirections.In, selfCube.Parent));
+                    selfCube.PreviousParents.Add(new Cube.PreviousParentDetails(LayerDirections.In, selfCube.Parent));
                 }
                 else if (MainCamera.Instance != null) MainCamera.Instance.ClearTransition();
 
                 HistoryManager historyManager = HistoryManager.Instance;
                 if (historyManager != null) historyManager.NormalArchiveHistoryRecord(); // Player will archive the record
-                
+
                 coolDownTimer = coolDownTime;
             }
         }
-        
+
         if (coolDownTimer > 0) coolDownTimer -= Time.deltaTime;
         if (coolDownTimer < 0) coolDownTimer = 0;
     }
@@ -134,11 +131,11 @@ public class CubeMovement : MonoBehaviour
         //for (int i = 1; i < selfCube.PreviousParents.Count; i++)
         //{
         //    if (selfCube.PreviousParents[i].Cube == null) continue;
-        //    if (selfCube.PreviousParents[i].Direction == CubeMovement.LayerDirections.In)
+        //    if (selfCube.PreviousParents[i].Direction == LayerDirections.In)
         //    {
         //        selfCube.PreviousParents[i].Cube.ModifyChildCubeEnter(selfCube);
         //    }
-        //    else if (selfCube.PreviousParents[i].Direction == CubeMovement.LayerDirections.Out)
+        //    else if (selfCube.PreviousParents[i].Direction == LayerDirections.Out)
         //    {
         //        selfCube.PreviousParents[i].Cube.ModifyChildCubeInnerEnter(selfCube);
         //        selfCube.PreviousParents[i - 1].Cube.ModifyChildCubeExit(selfCube);
@@ -349,7 +346,7 @@ public class CubeMovement : MonoBehaviour
                         // Calculate final parent rect
                         if (i > 0)
                         {
-                            if (selfCube.PreviousParents[i].Direction == CubeMovement.LayerDirections.Out)
+                            if (selfCube.PreviousParents[i].Direction == LayerDirections.Out)
                             {
                                 Vector2 oldTargetRectPos = finalParentRect.position;
                                 var rScl = (currentCube.UseDefaultValues) ? currentCube.Cube.RelativeScale : currentCube.RelativeScale;

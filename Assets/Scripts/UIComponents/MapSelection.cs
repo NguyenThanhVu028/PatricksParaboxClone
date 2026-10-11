@@ -23,7 +23,7 @@ public class MapSelection : MonoBehaviour
 
         WorldCube lastOpenedWorld = null;
         var allWorldCubes = FindObjectsByType<WorldCube>(FindObjectsSortMode.None);
-        foreach(var worldCube in allWorldCubes)
+        foreach (var worldCube in allWorldCubes)
         {
             if (worldCube.WorldName == gameData.LastOpenedWorldName)
             {
@@ -32,7 +32,7 @@ public class MapSelection : MonoBehaviour
             }
         }
 
-        if(lastOpenedWorld == null) lastOpenedWorld = defaultWorldCube;
+        if (lastOpenedWorld == null) lastOpenedWorld = defaultWorldCube;
 
         if (playerCube != null && lastOpenedWorld != null && playerCube.IsPlayer)
         {
@@ -41,7 +41,7 @@ public class MapSelection : MonoBehaviour
             playerCube.RelativePosition = new(0, 1.5f);
             playerCube.Init();
 
-            var targetPosInGrid = lastOpenedWorld.ChildGrid.GetEnterPosition(CubeMovement.GridDirections.Down, playerCube.RelativePosition);
+            var targetPosInGrid = lastOpenedWorld.ChildGrid.GetEnterPosition(GridDirections.Down, playerCube.RelativePosition);
             lastOpenedWorld.ChildGrid.Children[targetPosInGrid.x, targetPosInGrid.y].Cube = playerCube;
             lastOpenedWorld.ExternalCubes.Add(playerCube);
 
@@ -61,7 +61,7 @@ public class MapSelection : MonoBehaviour
             backgroundMusicAudioPlayer = SoundsManager.Instance.GetBackgroundMusicPlayer();
             if (backgroundMusicAudioPlayer != null && !backgroundMusicAudioPlayer.IsPlaying)
             {
-                foreach(var audioClipID in backgroundMusicIDs) backgroundMusicAudioPlayer.AddToPlayList(SoundsManager.Instance.GetAudio(audioClipID));
+                foreach (var audioClipID in backgroundMusicIDs) backgroundMusicAudioPlayer.AddToPlayList(SoundsManager.Instance.GetAudio(audioClipID));
                 backgroundMusicAudioPlayer.SetPlayMode(AudioPlayer.PlayModes.Random);
                 backgroundMusicAudioPlayer.Play();
             }

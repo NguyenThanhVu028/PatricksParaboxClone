@@ -116,16 +116,16 @@ public static class Relativity
         return sRScl;
     }
 
-    public static List<CubeMovement.GridDirections> CheckEdgeOfGrid(int gridWidth, int gridHeight, Vector2 rPos)
+    public static List<GridDirections> CheckEdgeOfGrid(int gridWidth, int gridHeight, Vector2 rPos)
     {
-        List<CubeMovement.GridDirections> edges = new();
+        List<GridDirections> edges = new();
         Vector2Int gridPos = GridPosFromRPos(gridWidth, gridHeight, rPos);
-        if (gridPos.x == 0) edges.Add(CubeMovement.GridDirections.Up);
-        if (gridPos.x == gridHeight - 1) edges.Add(CubeMovement.GridDirections.Down);
-        if (gridPos.y == 0) edges.Add(CubeMovement.GridDirections.Left);
-        if (gridPos.y == gridWidth - 1) edges.Add(CubeMovement.GridDirections.Right);
+        if (gridPos.x == 0) edges.Add(GridDirections.Up);
+        if (gridPos.x == gridHeight - 1) edges.Add(GridDirections.Down);
+        if (gridPos.y == 0) edges.Add(GridDirections.Left);
+        if (gridPos.y == gridWidth - 1) edges.Add(GridDirections.Right);
 
-        if (edges.Count == 0) edges.Add(CubeMovement.GridDirections.None);
+        if (edges.Count == 0) edges.Add(GridDirections.None);
         return edges;
     }
 

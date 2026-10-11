@@ -109,7 +109,7 @@ public class Cube : MonoBehaviour
     protected virtual void InitPreviousParents()
     {
         previousParents.Clear();
-        previousParents.Add(new(CubeMovement.LayerDirections.In, parent));
+        previousParents.Add(new(LayerDirections.In, parent));
     }
     protected virtual void InitAnimations()
     {
@@ -402,14 +402,14 @@ public class Cube : MonoBehaviour
     [Serializable]
     public struct PreviousParentDetails
     {
-        [SerializeField] private CubeMovement.LayerDirections direction;
+        [SerializeField] private LayerDirections direction;
         [SerializeField] private ContainerCube cube;
         [SerializeField] private Vector2 relativePosition;
         [SerializeField] private Vector2 relativeScale;
         [SerializeField] private bool isHorizFlipped;
         [SerializeField] private bool useDefaultValues;
 
-        public CubeMovement.LayerDirections Direction { get => direction; set => direction = value; }
+        public LayerDirections Direction { get => direction; set => direction = value; }
         public ContainerCube Cube { get => cube; set => cube = value; }
         public Vector2 RelativePosition
         {
@@ -451,7 +451,7 @@ public class Cube : MonoBehaviour
             }
         }
         public bool UseDefaultValues { get => useDefaultValues; set => useDefaultValues = value; }
-        public PreviousParentDetails(CubeMovement.LayerDirections direction, ContainerCube cube)
+        public PreviousParentDetails(LayerDirections direction, ContainerCube cube)
         {
             this.cube = cube;
             this.direction = direction;
@@ -461,7 +461,7 @@ public class Cube : MonoBehaviour
             useDefaultValues = true;
         }
 
-        public PreviousParentDetails(CubeMovement.LayerDirections direction, ContainerCube cube, Vector2 relativePosition, Vector2 relativeScale, bool isHorizFlipped)
+        public PreviousParentDetails(LayerDirections direction, ContainerCube cube, Vector2 relativePosition, Vector2 relativeScale, bool isHorizFlipped)
         {
             this.cube = cube;
             this.direction = direction;

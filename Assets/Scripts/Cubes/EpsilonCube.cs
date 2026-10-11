@@ -44,7 +44,7 @@ public class EpsilonCube : ContainerCube
         }
     }
 
-    public float RequestToMove(Cube requestedCube, CubeMovement.GridDirections direction, bool external = false, bool specialMove = false)
+    public float RequestToMove(Cube requestedCube, GridDirections direction, bool external = false, bool specialMove = false)
     {
         // Assume the epsilon cube main container is at the same level as the requested cube
         //if (mainContainerCube == null) return 0;
@@ -64,8 +64,8 @@ public class EpsilonCube : ContainerCube
             //{
             //    requestedCube.PreviousParents.RemoveRange(1, (requestedCube.PreviousParents.Count - 1));
             //}
-            requestedCube.PreviousParents.Add(new(CubeMovement.LayerDirections.None, null, mainCube.RelativePosition, mainCube.RelativeScale, mainCube.IsHorizFlipped));
-            requestedCube.PreviousParents.Add(new(CubeMovement.LayerDirections.In, this, mainCube.RelativePosition, mainCube.RelativeScale, mainCube.IsHorizFlipped));
+            requestedCube.PreviousParents.Add(new(LayerDirections.None, null, mainCube.RelativePosition, mainCube.RelativeScale, mainCube.IsHorizFlipped));
+            requestedCube.PreviousParents.Add(new(LayerDirections.In, this, mainCube.RelativePosition, mainCube.RelativeScale, mainCube.IsHorizFlipped));
             if (MainCamera.Instance != null) MainCamera.Instance.SetTransition(new FadeTransition());
             alterEnterCube = requestedCube;
             hideAlterEnterCube = false;

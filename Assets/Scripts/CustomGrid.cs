@@ -57,24 +57,24 @@ public class CustomGrid<T> where T : new()
     }
 
     // This function is used when a child outside of the grid wants to enter from a specific direction
-    public Vector2Int GetEnterPosition(CubeMovement.GridDirections direction, Vector2 rPos)
+    public Vector2Int GetEnterPosition(GridDirections direction, Vector2 rPos)
     {
         int column = 0, row = 0;
         switch (direction)
         {
-            case CubeMovement.GridDirections.Up:
+            case GridDirections.Up:
                 column = Mathf.RoundToInt((tiling.y - 1) * (rPos.x + 1) * 0.5f);
                 row = tiling.x - 1;
                 break;
-            case CubeMovement.GridDirections.Down:
+            case GridDirections.Down:
                 column = Mathf.RoundToInt((tiling.y - 1) * (rPos.x + 1) * 0.5f);
                 row = 0;
                 break;
-            case CubeMovement.GridDirections.Right:
+            case GridDirections.Right:
                 row = Mathf.RoundToInt((tiling.x - 1) * (1 - rPos.y) * 0.5f);
                 column = 0;
                 break;
-            case CubeMovement.GridDirections.Left:
+            case GridDirections.Left:
                 row = Mathf.RoundToInt((tiling.x - 1) * (1 - rPos.y) * 0.5f);
                 column = tiling.y - 1;
                 break;

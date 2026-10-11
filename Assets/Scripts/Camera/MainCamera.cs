@@ -151,13 +151,13 @@ public class MainCamera : MonoBehaviour
             parentAndRects.Add(new(currentCube, currentRect));
 
             // If there are exposed adges -> draw infinity background
-            List<CubeMovement.GridDirections> exposedEdges = new();
+            List<GridDirections> exposedEdges = new();
             if (currentCube.Parent != null)
             {
                 if (currentCube.Parent is not VoidCube)
                 {
                     exposedEdges = Relativity.CheckEdgeOfGrid(currentCube.Parent.Tiling.x, currentCube.Parent.Tiling.y, currentCube.RelativePosition);
-                    if (exposedEdges[0] == CubeMovement.GridDirections.None) exposedEdges.Clear();
+                    if (exposedEdges[0] == GridDirections.None) exposedEdges.Clear();
                 }
                 else exposedEdges.Clear();
             }
@@ -182,14 +182,14 @@ public class MainCamera : MonoBehaviour
                 parentCount++;
                 parentAndRects.Add(new(currentCube, currentRect));
 
-                List<CubeMovement.GridDirections> parentExposedEdges = new();
+                List<GridDirections> parentExposedEdges = new();
                 if (currentCube.Parent != null)
                 {
                     if (currentCube.Parent is VoidCube) exposedEdges.Clear();
                     else
                     {
                         parentExposedEdges = Relativity.CheckEdgeOfGrid(currentCube.Parent.Tiling.x, currentCube.Parent.Tiling.y, currentCube.RelativePosition);
-                        if (parentExposedEdges[0] == CubeMovement.GridDirections.None) parentExposedEdges.Clear();
+                        if (parentExposedEdges[0] == GridDirections.None) parentExposedEdges.Clear();
                         exposedEdges.RemoveAll(edge => !parentExposedEdges.Contains(edge));
                     }
                 }
@@ -225,7 +225,7 @@ public class MainCamera : MonoBehaviour
                     }
                     //if (exposedEdges.Count == 0) break; // No more exposed edge -> stop rendering infinity cubes
                     //if (infinityCube.Parent is VoidCube ||
-                    //    Relativity.CheckEdgeOfGrid(infinityCube.Parent.Tiling.x, infinityCube.Parent.Tiling.y, infinityCube.RelativePosition)[0] == CubeMovement.GridDirections.None) break;
+                    //    Relativity.CheckEdgeOfGrid(infinityCube.Parent.Tiling.x, infinityCube.Parent.Tiling.y, infinityCube.RelativePosition)[0] == GridDirections.None) break;
 
                     infinityLevel++;
                 }

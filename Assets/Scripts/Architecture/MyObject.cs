@@ -2,22 +2,35 @@ using System.Collections.Generic;
 
 public class MyObject
 {
-    private List<MyComponent> _components = new();
+    protected List<MyComponent> _components = new();
+    protected RelativeTransform _transform;
+
+    public RelativeTransform Transform
+    {
+        get => _transform;
+    }
 
     public MyObject()
     {
-
+        // Every MyObject must have the transform component
+        _transform = new RelativeTransform();
+        RegisterComponent(_transform);
     }
 
-    public void RegisterComponent(MyComponent component)
+    public virtual bool RegisterComponent(MyComponent component)
     {
         if (component == null)
         {
-            return;
+            return false;
         }
 
-        component.RegisterObject(this);
-        _components.Add(component);
+        if (component.RegisterObject(this))
+        {
+            _components.Add(component);
+            return true;
+        }
+
+        return false;
     }
 
     public T GetComponent<T>() where T : MyComponent

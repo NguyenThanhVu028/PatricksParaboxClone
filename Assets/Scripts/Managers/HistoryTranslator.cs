@@ -55,7 +55,7 @@ public class HistoryTranslator : MonoBehaviour
                 Debug.Log($"{historyEvent.TargetCube.Parent} removes {historyEvent.TargetCube}");
                 historyEvent.TargetCube.Parent.ChildGrid.RemoveChild(
                     (child) => child.Cube == historyEvent.TargetCube,
-                    (ref ContainerCube.ChildCubeDetails child) => { child.Cube = null; child.MovingDirection = CubeMovement.GridDirections.None; }
+                    (ref ContainerCube.ChildCubeDetails child) => { child.Cube = null; child.MovingDirection = GridDirections.None; }
                     );
             }
 
@@ -70,11 +70,11 @@ public class HistoryTranslator : MonoBehaviour
             if (!historyEvent.Properties.Parent.ChildGrid.CheckValidGridPosition(targetCubePrevPosInParent.x, targetCubePrevPosInParent.y)) return;
             // Return target cube back to its previous parent cube
             historyEvent.Properties.Parent.ChildCubes[targetCubePrevPosInParent.x, targetCubePrevPosInParent.y].Cube = historyEvent.TargetCube;
-            historyEvent.Properties.Parent.ChildCubes[targetCubePrevPosInParent.x, targetCubePrevPosInParent.y].MovingDirection = CubeMovement.GridDirections.None;
+            historyEvent.Properties.Parent.ChildCubes[targetCubePrevPosInParent.x, targetCubePrevPosInParent.y].MovingDirection = GridDirections.None;
             historyEvent.TargetCube.ApplyNewProperties(historyEvent.Properties);
             //historyEvent.TargetCube.Parent = historyEvent.Properties.Parent;
             historyEvent.TargetCube.PreviousParents.Clear();
-            historyEvent.TargetCube.PreviousParents.Add(new(CubeMovement.LayerDirections.In, historyEvent.Properties.Parent));
+            historyEvent.TargetCube.PreviousParents.Add(new(LayerDirections.In, historyEvent.Properties.Parent));
             // Return target cube's relative position, relative scale and horizontal flip status back to previous values
             //historyEvent.TargetCube.RelativePosition = historyEvent.Properties.RelativePosition;
             //historyEvent.TargetCube.RelativeScale = historyEvent.Properties.RelativeScale;
