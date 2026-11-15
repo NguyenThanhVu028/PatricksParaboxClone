@@ -384,7 +384,7 @@ public class LevelDesignCompiler
             {
                 return property switch
                 {
-                    CubeProperties.CUBE_TYPE => new SingleValueParser<CubeTypes>(),
+                    CubeProperties.CUBE_TYPE => new SingleValueParser<CubeType>(),
                     CubeProperties.COLOR_ID => new SingleValueParser<string>(),
                     CubeProperties.IS_PLAYER => new SingleValueParser<bool>(),
                     CubeProperties.IS_FLIPPED => new SingleValueParser<bool>(),
@@ -405,7 +405,7 @@ public class LevelDesignCompiler
                 switch (_currentProperty)
                 {
                     case CubeProperties.CUBE_TYPE:
-                        if (value is CubeTypes cubeType)
+                        if (value is CubeType cubeType)
                         {
                             _cubeDetails.CubeType = cubeType;
                             if (_debugProcess) Debug.Log($"Apply new value: {cubeType} to {_currentProperty}");

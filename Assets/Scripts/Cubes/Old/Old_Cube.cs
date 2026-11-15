@@ -18,7 +18,7 @@ public class Old_Cube : MonoBehaviour
     [SerializeField] protected bool canBePlayer = false;
     [SerializeField] protected CubeTypes cubeType;
     [SerializeField] protected ColorPalette colorPalette;
-    [SerializeField] protected ColorPalette.ColorEnum cubeColor;
+    [SerializeField] protected ColorType cubeColor;
     [SerializeField] protected bool needInstantiating = true;
     [Header("Rendering")]
     [SerializeField] protected CustomTexture defaultTexture;
@@ -53,7 +53,7 @@ public class Old_Cube : MonoBehaviour
     public bool CanBePlayer { get => canBePlayer; set => canBePlayer = value; }
     public CubeTypes CubeType { get => cubeType; }
     public ColorPalette ColorPalette { get => colorPalette; }
-    public ColorPalette.ColorEnum CubeColor { get => cubeColor; set => cubeColor = value; }
+    public ColorType CubeColor { get => cubeColor; set => cubeColor = value; }
     public Color RealCubeColor
     {
         get
@@ -109,7 +109,7 @@ public class Old_Cube : MonoBehaviour
     protected virtual void InitPreviousParents()
     {
         previousParents.Clear();
-        previousParents.Add(new(LayerDirections.In, parent));
+        previousParents.Add(new(LayerDirection.In, parent));
     }
     protected virtual void InitAnimations()
     {
@@ -347,7 +347,7 @@ public class Old_Cube : MonoBehaviour
         [SerializeField] protected bool isPlayer = false;
         [SerializeField] protected bool canBePlayer = false;
         [SerializeField] protected CubeTypes cubeType;
-        [SerializeField] protected ColorPalette.ColorEnum cubeColor;
+        [SerializeField] protected ColorType cubeColor;
         [Header("Rendering")]
         [SerializeField] protected bool isHorizFlipped = false;
         [Header("Cube stats")]
@@ -358,7 +358,7 @@ public class Old_Cube : MonoBehaviour
         public bool IsPlayer { get => isPlayer; set => isPlayer = value; }
         public bool CanBePlayer { get => canBePlayer; set => canBePlayer = value; }
         public CubeTypes CubeType { get => cubeType; set => cubeType = value; }
-        public ColorPalette.ColorEnum CubeColor { get => cubeColor; set => cubeColor = value; }
+        public ColorType CubeColor { get => cubeColor; set => cubeColor = value; }
 
         public bool IsHorizFlipped { get => isHorizFlipped; set => isHorizFlipped = value; }
 
@@ -402,14 +402,14 @@ public class Old_Cube : MonoBehaviour
     [Serializable]
     public struct PreviousParentDetails
     {
-        [SerializeField] private LayerDirections direction;
+        [SerializeField] private LayerDirection direction;
         [SerializeField] private ContainerCube cube;
         [SerializeField] private Vector2 relativePosition;
         [SerializeField] private Vector2 relativeScale;
         [SerializeField] private bool isHorizFlipped;
         [SerializeField] private bool useDefaultValues;
 
-        public LayerDirections Direction { get => direction; set => direction = value; }
+        public LayerDirection Direction { get => direction; set => direction = value; }
         public ContainerCube Cube { get => cube; set => cube = value; }
         public Vector2 RelativePosition
         {
@@ -451,7 +451,7 @@ public class Old_Cube : MonoBehaviour
             }
         }
         public bool UseDefaultValues { get => useDefaultValues; set => useDefaultValues = value; }
-        public PreviousParentDetails(LayerDirections direction, ContainerCube cube)
+        public PreviousParentDetails(LayerDirection direction, ContainerCube cube)
         {
             this.cube = cube;
             this.direction = direction;
@@ -461,7 +461,7 @@ public class Old_Cube : MonoBehaviour
             useDefaultValues = true;
         }
 
-        public PreviousParentDetails(LayerDirections direction, ContainerCube cube, Vector2 relativePosition, Vector2 relativeScale, bool isHorizFlipped)
+        public PreviousParentDetails(LayerDirection direction, ContainerCube cube, Vector2 relativePosition, Vector2 relativeScale, bool isHorizFlipped)
         {
             this.cube = cube;
             this.direction = direction;

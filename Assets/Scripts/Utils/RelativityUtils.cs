@@ -115,16 +115,16 @@ public static class RelativityUtils
         return sRScl;
     }
 
-    public static List<GridDirections> CheckEdgeOfGrid(int gridWidth, int gridHeight, Vector2 rPos)
+    public static List<GridDirection> CheckEdgeOfGrid(int gridWidth, int gridHeight, Vector2 rPos)
     {
-        List<GridDirections> edges = new();
+        List<GridDirection> edges = new();
         Vector2Int gridPos = GridPosFromRPos(gridWidth, gridHeight, rPos);
-        if (gridPos.x == 0) edges.Add(GridDirections.Up);
-        if (gridPos.x == gridHeight - 1) edges.Add(GridDirections.Down);
-        if (gridPos.y == 0) edges.Add(GridDirections.Left);
-        if (gridPos.y == gridWidth - 1) edges.Add(GridDirections.Right);
+        if (gridPos.x == 0) edges.Add(GridDirection.Up);
+        if (gridPos.x == gridHeight - 1) edges.Add(GridDirection.Down);
+        if (gridPos.y == 0) edges.Add(GridDirection.Left);
+        if (gridPos.y == gridWidth - 1) edges.Add(GridDirection.Right);
 
-        if (edges.Count == 0) edges.Add(GridDirections.None);
+        if (edges.Count == 0) edges.Add(GridDirection.None);
         return edges;
     }
 

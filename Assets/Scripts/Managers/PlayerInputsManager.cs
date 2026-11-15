@@ -101,7 +101,7 @@ public class PlayerInputsManager : MonoBehaviour
         public UnityEvent OnRedoEvent { get => onRedoEvent; }
         public UnityEvent OnPauseEvent { get => onPauseEvent; }
 
-        private List<GridDirections> movementInputsList = new(); // Store all the received inputs
+        private List<GridDirection> movementInputsList = new(); // Store all the received inputs
 
         // Movement inputs
         public void StopUsingMovementInputs()
@@ -125,26 +125,26 @@ public class PlayerInputsManager : MonoBehaviour
         public void OnMoveUp(bool isActive)
         {
             if (!allowTakingMovementInput) return;
-            if (isActive) AddToInputList(GridDirections.Up);
-            else RemoveFromInputList(GridDirections.Up);
+            if (isActive) AddToInputList(GridDirection.Up);
+            else RemoveFromInputList(GridDirection.Up);
         }
         public void OnMoveDown(bool isActive)
         {
             if (!allowTakingMovementInput) return;
-            if (isActive) AddToInputList(GridDirections.Down);
-            else RemoveFromInputList(GridDirections.Down);
+            if (isActive) AddToInputList(GridDirection.Down);
+            else RemoveFromInputList(GridDirection.Down);
         }
         public void OnMoveLeft(bool isActive)
         {
             if (!allowTakingMovementInput) return;
-            if (isActive) AddToInputList(GridDirections.Left);
-            else RemoveFromInputList(GridDirections.Left);
+            if (isActive) AddToInputList(GridDirection.Left);
+            else RemoveFromInputList(GridDirection.Left);
         }
         public void OnMoveRight(bool isActive)
         {
             if (!allowTakingMovementInput) return;
-            if (isActive) AddToInputList(GridDirections.Right);
-            else RemoveFromInputList(GridDirections.Right);
+            if (isActive) AddToInputList(GridDirection.Right);
+            else RemoveFromInputList(GridDirection.Right);
         }
 
         public void OnMove(InputAction.CallbackContext context) { }
@@ -170,20 +170,20 @@ public class PlayerInputsManager : MonoBehaviour
         }
 
         // Actions on movement inputs list
-        private void AddToInputList(GridDirections movementInput)
+        private void AddToInputList(GridDirection movementInput)
         {
-            if (movementInput == GridDirections.None) return;
+            if (movementInput == GridDirection.None) return;
             //if (movementInputsList.Contains(movementInput)) return;
             movementInputsList.Remove(movementInput); // Remove the input if it already exists to avoid duplicates and add it to the end of the list
             movementInputsList.Add(movementInput);
         }
-        private void RemoveFromInputList(GridDirections movementInput)
+        private void RemoveFromInputList(GridDirection movementInput)
         {
             movementInputsList.Remove(movementInput);
         }
-        public GridDirections GetLatestMovementInput()
+        public GridDirection GetLatestMovementInput()
         {
-            if (movementInputsList == null || movementInputsList.Count == 0 || !allowUsingMovementInput) return GridDirections.None;
+            if (movementInputsList == null || movementInputsList.Count == 0 || !allowUsingMovementInput) return GridDirection.None;
             return movementInputsList[movementInputsList.Count - 1];
         }
 

@@ -50,7 +50,7 @@ public class VoidCube : ContainerCube
         if (childGrid.Children[center.x, center.y].Cube != null)
         {
             childGrid.Children[center.x, center.y].Cube.Parent = null;
-            childGrid.RemoveChild(center.x, center.y, (ref ChildCubeDetails cubeDetails) => { cubeDetails.Cube = null; cubeDetails.MovingDirection = GridDirections.None; });
+            childGrid.RemoveChild(center.x, center.y, (ref ChildCubeDetails cubeDetails) => { cubeDetails.Cube = null; cubeDetails.MovingDirection = GridDirection.None; });
         }
 
         cube.Parent = this;
@@ -58,7 +58,7 @@ public class VoidCube : ContainerCube
         cube.RelativeScale = new(1.0f / childGrid.Tiling.y, 1.0f / childGrid.Tiling.x);
         cube.Init();
         childGrid.Children[center.x, center.y].Cube = cube;
-        childGrid.Children[center.x, center.y].MovingDirection = GridDirections.None;
+        childGrid.Children[center.x, center.y].MovingDirection = GridDirection.None;
         mainCube = cube;
     }
 

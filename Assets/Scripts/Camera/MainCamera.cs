@@ -151,13 +151,13 @@ public class MainCamera : MonoBehaviour
             parentAndRects.Add(new(currentCube, currentRect));
 
             // If there are exposed adges -> draw infinity background
-            List<GridDirections> exposedEdges = new();
+            List<GridDirection> exposedEdges = new();
             if (currentCube.Parent != null)
             {
                 if (currentCube.Parent is not VoidCube)
                 {
                     exposedEdges = RelativityUtils.CheckEdgeOfGrid(currentCube.Parent.Tiling.x, currentCube.Parent.Tiling.y, currentCube.RelativePosition);
-                    if (exposedEdges[0] == GridDirections.None) exposedEdges.Clear();
+                    if (exposedEdges[0] == GridDirection.None) exposedEdges.Clear();
                 }
                 else exposedEdges.Clear();
             }
@@ -182,14 +182,14 @@ public class MainCamera : MonoBehaviour
                 parentCount++;
                 parentAndRects.Add(new(currentCube, currentRect));
 
-                List<GridDirections> parentExposedEdges = new();
+                List<GridDirection> parentExposedEdges = new();
                 if (currentCube.Parent != null)
                 {
                     if (currentCube.Parent is VoidCube) exposedEdges.Clear();
                     else
                     {
                         parentExposedEdges = RelativityUtils.CheckEdgeOfGrid(currentCube.Parent.Tiling.x, currentCube.Parent.Tiling.y, currentCube.RelativePosition);
-                        if (parentExposedEdges[0] == GridDirections.None) parentExposedEdges.Clear();
+                        if (parentExposedEdges[0] == GridDirection.None) parentExposedEdges.Clear();
                         exposedEdges.RemoveAll(edge => !parentExposedEdges.Contains(edge));
                     }
                 }

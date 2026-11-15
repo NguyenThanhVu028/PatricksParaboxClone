@@ -6,7 +6,7 @@ public class MenuItem : MonoBehaviour
 {
     [SerializeField] Image cursor;
     [SerializeField] ColorPalette cursorColorPalette;
-    [SerializeField] ColorPalette.ColorEnum cursorColor = ColorPalette.ColorEnum.Red;
+    [SerializeField] ColorType cursorColor = ColorType.Red;
 
     private void OnEnable()
     {

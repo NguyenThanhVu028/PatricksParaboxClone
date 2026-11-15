@@ -1,4 +1,4 @@
-public enum GridDirections
+public enum GridDirection
 {
     Up,
     Down,
@@ -7,4 +7,4 @@ public enum GridDirections
     None
 }
 
-public enum LayerDirections { In, Out, None }
+public enum LayerDirection { In, Out, None }

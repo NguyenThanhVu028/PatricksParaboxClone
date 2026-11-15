@@ -41,7 +41,7 @@ public class MapSelection : MonoBehaviour
             playerCube.RelativePosition = new(0, 1.5f);
             playerCube.Init();
 
-            var targetPosInGrid = lastOpenedWorld.ChildGrid.GetEnterPosition(GridDirections.Down, playerCube.RelativePosition);
+            var targetPosInGrid = lastOpenedWorld.ChildGrid.GetEnterPosition(GridDirection.Down, playerCube.RelativePosition);
             lastOpenedWorld.ChildGrid.Children[targetPosInGrid.x, targetPosInGrid.y].Cube = playerCube;
             lastOpenedWorld.ExternalCubes.Add(playerCube);
 

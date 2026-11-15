@@ -16,7 +16,7 @@ public class CustomAnimatedTexture : CustomTexture
     public List<FrameDetails> Frames { get => frames; }
     public float TotalDuration { get => totalDuration; set => totalDuration = value; }
 
-    public void StartAnimation() 
+    public void StartAnimation()
     {
         currentFrameIndex = 0;
 
@@ -34,7 +34,7 @@ public class CustomAnimatedTexture : CustomTexture
         lastFrameTime = Time.timeSinceLevelLoad;
     }
 
-    public override Texture GetTexture()
+    public override Texture2D GetTexture()
     {
         if (frames.Count == 0 || totalDuration == 0) return null;
         if (currentFrameIndex < 0) currentFrameIndex = 0;
@@ -64,11 +64,11 @@ public class CustomAnimatedTexture : CustomTexture
     [Serializable]
     public class FrameDetails
     {
-        [SerializeField] Texture texture;
+        [SerializeField] Texture2D texture;
         [Min(0)]
         [SerializeField] float duration = 0.1f;
 
-        public Texture Texture { get => texture; }
+        public Texture2D Texture { get => texture; }
         public float Duration { get => duration; }
     }
 }

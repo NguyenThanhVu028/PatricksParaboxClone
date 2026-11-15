@@ -71,7 +71,7 @@ public class CloneCube : ContainerCube
         if (isHorizFlipped != mainContainerCube.IsHorizFlipped) childCube.IsHorizFlipped = !childCube.IsHorizFlipped;
     }
 
-    public override float RequestToMove(Vector2 cRPos, Vector2 cRScl, Old_Cube requestedCube, GridDirections direction, bool external = false, bool specialMove = false)
+    public override float RequestToMove(Vector2 cRPos, Vector2 cRScl, Old_Cube requestedCube, GridDirection direction, bool external = false, bool specialMove = false)
     {
         if (mainContainerCube == null || !isEnterable) return 0;
 
@@ -87,7 +87,7 @@ public class CloneCube : ContainerCube
         {
             cRPos.x = -cRPos.x;
             direction = Old_CubeMovement.FlipMovementInput(direction, true);
-            requestedCube.PreviousParents.Add(new(LayerDirections.In, this, Vector2.zero, Vector2.one, true));
+            requestedCube.PreviousParents.Add(new(LayerDirection.In, this, Vector2.zero, Vector2.one, true));
             //requestedCube.PreviousParents.Add(
             //        //new(LayerDirections.In, 
             //        //    this, 
@@ -102,7 +102,7 @@ public class CloneCube : ContainerCube
             //        new((float)(1.0f / mainContainerCube.RelativeScale.x) / (1.0f / relativeScale.x),
             //            (float)(1.0f / mainContainerCube.RelativeScale.y) / (1.0f / relativeScale.y)), true));
         }
-        else requestedCube.PreviousParents.Add(new(LayerDirections.In, this, Vector2.zero, Vector2.one, false));
+        else requestedCube.PreviousParents.Add(new(LayerDirection.In, this, Vector2.zero, Vector2.one, false));
         //requestedCube.PreviousParents.Add(
         //        //new(LayerDirections.In, 
         //        //    this, 
@@ -117,7 +117,7 @@ public class CloneCube : ContainerCube
         //        new((float)(1.0f / mainContainerCube.RelativeScale.x) / (1.0f / relativeScale.x),
         //            (float)(1.0f / mainContainerCube.RelativeScale.y) / (1.0f / relativeScale.y)), false));
 
-        requestedCube.PreviousParents.Add(new(LayerDirections.None, null, Vector2.zero, Vector2.one, false));
+        requestedCube.PreviousParents.Add(new(LayerDirection.None, null, Vector2.zero, Vector2.one, false));
         float finalTargetTime = mainContainerCube.RequestToMove(cRPos, cRScl, requestedCube, direction, external, specialMove);
 
         if (finalTargetTime <= 0)

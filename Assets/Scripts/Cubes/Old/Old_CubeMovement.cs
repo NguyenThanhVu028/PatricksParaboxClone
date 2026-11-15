@@ -67,12 +67,12 @@ public class Old_CubeMovement : MonoBehaviour
             PlayerInputsManager.Instance != null &&
             !IsMoving && !IsCoolingDown)
         {
-            GridDirections movementInput = PlayerInputsManager.Instance.GameplayInputs.GetLatestMovementInput();
+            GridDirection movementInput = PlayerInputsManager.Instance.GameplayInputs.GetLatestMovementInput();
             if (MainCamera.Instance != null && MainCamera.Instance.RenderMode == MainCamera.MainCameraRenderMode.SingleCube)
             {
                 if (MainCamera.Instance.TargetCubeRect.size.x < 0) movementInput = Old_CubeMovement.FlipMovementInput(movementInput, true);
             }
-            if (movementInput != GridDirections.None)
+            if (movementInput != GridDirection.None)
             {
                 var targetTime = selfCube.Parent.RequestToMove(selfCube.RelativePosition, selfCube.RelativeScale, selfCube, movementInput);
                 // Update camera trasition
@@ -91,7 +91,7 @@ public class Old_CubeMovement : MonoBehaviour
                         MainCamera.Instance.PlayTransition(selfCube.PreviousParents, selfCube.PossessingTime);
                     }
                     selfCube.PreviousParents.Clear();
-                    selfCube.PreviousParents.Add(new Old_Cube.PreviousParentDetails(LayerDirections.In, selfCube.Parent));
+                    selfCube.PreviousParents.Add(new Old_Cube.PreviousParentDetails(LayerDirection.In, selfCube.Parent));
                 }
                 else if (MainCamera.Instance != null) MainCamera.Instance.ClearTransition();
 
@@ -202,7 +202,7 @@ public class Old_CubeMovement : MonoBehaviour
 
         isExternal = false;
         selfCube.PreviousParents.Clear();
-        selfCube.PreviousParents.Add(new(LayerDirections.In, selfCube.Parent)); // Update current parent after moving
+        selfCube.PreviousParents.Add(new(LayerDirection.In, selfCube.Parent)); // Update current parent after moving
         if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.GameplayInputs.ContinueUsingMovementInputs();
         onMoveEnd.Invoke();
     }
@@ -240,7 +240,7 @@ public class Old_CubeMovement : MonoBehaviour
                     if (selfCube.PreviousParents[i].Cube == null) continue;
 
                     // Find external parent
-                    if (selfCube.PreviousParents[i].Direction == LayerDirections.In)
+                    if (selfCube.PreviousParents[i].Direction == LayerDirection.In)
                     {
                         if (externalParent == null && i > 0)
                         {
@@ -255,7 +255,7 @@ public class Old_CubeMovement : MonoBehaviour
                     }
                     else
                     {
-                        if (selfCube.PreviousParents[i].Direction == LayerDirections.Out && i > 0)
+                        if (selfCube.PreviousParents[i].Direction == LayerDirection.Out && i > 0)
                         {
                             selfCube.PreviousParents[i - 1].Cube.ModifyChildCubeExit(currentProperties);
                             selfCube.PreviousParents[i].Cube.ModifyChildCubeInnerEnter(currentProperties);
@@ -317,7 +317,7 @@ public class Old_CubeMovement : MonoBehaviour
                         // Conditions to hide or unhide itself when it is either the enter / exit cube from a parent
                         if (selfCube.PreviousParents[i].Cube.AlterEnterCube == selfCube || selfCube.PreviousParents[i].Cube.ExitCube == selfCube)
                         {
-                            if (i > 0 && selfCube.PreviousParents[i - 1].Direction == LayerDirections.None)
+                            if (i > 0 && selfCube.PreviousParents[i - 1].Direction == LayerDirection.None)
                             {
                                 selfCube.PreviousParents[i].Cube.HideAlterEnterCube = false;
                                 selfCube.PreviousParents[i].Cube.HideExitCube = false;
@@ -330,7 +330,7 @@ public class Old_CubeMovement : MonoBehaviour
                         }
 
                         // Find external parent
-                        if (selfCube.PreviousParents[i].Direction == LayerDirections.In)
+                        if (selfCube.PreviousParents[i].Direction == LayerDirection.In)
                         {
                             if (externalParent == null && i > 0)
                             {
@@ -346,7 +346,7 @@ public class Old_CubeMovement : MonoBehaviour
                         // Calculate final parent rect
                         if (i > 0)
                         {
-                            if (selfCube.PreviousParents[i].Direction == LayerDirections.Out)
+                            if (selfCube.PreviousParents[i].Direction == LayerDirection.Out)
                             {
                                 Vector2 oldTargetRectPos = finalParentRect.position;
                                 var rScl = (currentCube.UseDefaultValues) ? currentCube.Cube.RelativeScale : currentCube.RelativeScale;
@@ -414,7 +414,7 @@ public class Old_CubeMovement : MonoBehaviour
         isExternal = false;
         coolDownTimer = coolDownTime;
         selfCube.PreviousParents.Clear();
-        selfCube.PreviousParents.Add(new(LayerDirections.In, selfCube.Parent)); // Update current parent after moving
+        selfCube.PreviousParents.Add(new(LayerDirection.In, selfCube.Parent)); // Update current parent after moving
         var selfCubePosition = selfCube.Parent.ChildGrid.FindChild((cubeDetail) => cubeDetail.Cube == selfCube);
         selfCube.ApplyNewProperties(currentProperties);
         selfCube.RelativePosition = RelativityUtils.RPosFromGridTile(selfCube.Parent.Tiling.y, selfCube.Parent.Tiling.x, selfCubePosition.x, selfCubePosition.y);
@@ -430,78 +430,78 @@ public class Old_CubeMovement : MonoBehaviour
     }
 
     // Helper functions
-    public static Vector2Int ConvertGridDirectionToGridOffset(GridDirections input)
+    public static Vector2Int ConvertGridDirectionToGridOffset(GridDirection input)
     {
         switch (input)
         {
-            case GridDirections.Up:
+            case GridDirection.Up:
                 return new Vector2Int(-1, 0);
-            case GridDirections.Down:
+            case GridDirection.Down:
                 return new Vector2Int(1, 0);
-            case GridDirections.Left:
+            case GridDirection.Left:
                 return new Vector2Int(0, -1);
-            case GridDirections.Right:
+            case GridDirection.Right:
                 return new Vector2Int(0, 1);
             default:
                 return Vector2Int.zero;
         }
     }
 
-    public static Vector2 ConvertGridDirectionToPositionOffset(GridDirections direction)
+    public static Vector2 ConvertGridDirectionToPositionOffset(GridDirection direction)
     {
         switch (direction)
         {
-            case GridDirections.Up:
+            case GridDirection.Up:
                 return Vector2.up;
-            case GridDirections.Down:
+            case GridDirection.Down:
                 return Vector2.down;
-            case GridDirections.Left:
+            case GridDirection.Left:
                 return Vector2.left;
-            case GridDirections.Right:
+            case GridDirection.Right:
                 return Vector2.right;
             default:
                 return Vector2.zero;
         }
     }
 
-    public static GridDirections FlipMovementInput(GridDirections input, bool horizontal)
+    public static GridDirection FlipMovementInput(GridDirection input, bool horizontal)
     {
         switch (input)
         {
-            case GridDirections.Up:
-                return (horizontal) ? GridDirections.Up : GridDirections.Down;
-            case GridDirections.Down:
-                return (horizontal) ? GridDirections.Down : GridDirections.Up;
-            case GridDirections.Left:
-                return (horizontal) ? GridDirections.Right : GridDirections.Left;
-            case GridDirections.Right:
-                return (horizontal) ? GridDirections.Left : GridDirections.Right;
+            case GridDirection.Up:
+                return (horizontal) ? GridDirection.Up : GridDirection.Down;
+            case GridDirection.Down:
+                return (horizontal) ? GridDirection.Down : GridDirection.Up;
+            case GridDirection.Left:
+                return (horizontal) ? GridDirection.Right : GridDirection.Left;
+            case GridDirection.Right:
+                return (horizontal) ? GridDirection.Left : GridDirection.Right;
             default:
-                return GridDirections.None;
+                return GridDirection.None;
         }
     }
-    public static GridDirections ReverseMovementInput(GridDirections input)
+    public static GridDirection ReverseMovementInput(GridDirection input)
     {
         switch (input)
         {
-            case GridDirections.Up:
-                return GridDirections.Down;
-            case GridDirections.Down:
-                return GridDirections.Up;
-            case GridDirections.Left:
-                return GridDirections.Right;
-            case GridDirections.Right:
-                return GridDirections.Left;
+            case GridDirection.Up:
+                return GridDirection.Down;
+            case GridDirection.Down:
+                return GridDirection.Up;
+            case GridDirection.Left:
+                return GridDirection.Right;
+            case GridDirection.Right:
+                return GridDirection.Left;
             default:
-                return GridDirections.None;
+                return GridDirection.None;
         }
     }
-    public static bool CheckOppositeMovementInputs(GridDirections input1, GridDirections input2)
+    public static bool CheckOppositeMovementInputs(GridDirection input1, GridDirection input2)
     {
-        if (input1 == GridDirections.None || input2 == GridDirections.None) return false;
-        return (input1 == GridDirections.Up && input2 == GridDirections.Down) ||
-               (input1 == GridDirections.Down && input2 == GridDirections.Up) ||
-               (input1 == GridDirections.Left && input2 == GridDirections.Right) ||
-               (input1 == GridDirections.Right && input2 == GridDirections.Left);
+        if (input1 == GridDirection.None || input2 == GridDirection.None) return false;
+        return (input1 == GridDirection.Up && input2 == GridDirection.Down) ||
+               (input1 == GridDirection.Down && input2 == GridDirection.Up) ||
+               (input1 == GridDirection.Left && input2 == GridDirection.Right) ||
+               (input1 == GridDirection.Right && input2 == GridDirection.Left);
     }
 }

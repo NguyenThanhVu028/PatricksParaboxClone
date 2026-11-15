@@ -1,4 +1,4 @@
-public enum CubeTypes
+public enum CubeType
 {
     Container,
     Simple,

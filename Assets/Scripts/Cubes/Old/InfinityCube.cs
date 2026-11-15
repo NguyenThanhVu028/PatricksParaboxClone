@@ -59,13 +59,13 @@ public class InfinityCube : CloneCube
         }
     }
 
-    public float RequestToMove(Old_Cube requestedCube, GridDirections direction, bool external = false, bool specialMove = false)
+    public float RequestToMove(Old_Cube requestedCube, GridDirection direction, bool external = false, bool specialMove = false)
     {
         if (parent == null || mainContainerCube == null) return 0;
         Debug.Log($"Requested cube: {requestedCube.name} requests infinity cube: {name} level: {level}");
         var cRPos = requestedCube.RelativePosition;
         var cRScl = requestedCube.RelativeScale;
-        requestedCube.PreviousParents.Add(new(LayerDirections.None, this));
+        requestedCube.PreviousParents.Add(new(LayerDirection.None, this));
 
         // Flip the requested cube if it is trying to move outside of a horizontally flipped cube
         if (mainContainerCube.IsHorizFlipped)
@@ -92,7 +92,7 @@ public class InfinityCube : CloneCube
                     if (requestedCube.PreviousParents[i].Cube != this) break;
                     var finalCube = requestedCube.PreviousParents[requestedCube.PreviousParents.Count - 1];
                     requestedCube.PreviousParents.Clear();
-                    requestedCube.PreviousParents.Add(new(LayerDirections.In, this));
+                    requestedCube.PreviousParents.Add(new(LayerDirection.In, this));
                     requestedCube.PreviousParents.Add(finalCube);
                     break;
                 }

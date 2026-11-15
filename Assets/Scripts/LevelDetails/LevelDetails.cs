@@ -48,7 +48,7 @@ public class LevelDetails
 public class CubeDetails
 {
     private string _cubeID;
-    private CubeTypes _cubeType;
+    private CubeType _cubeType;
     private string _colorID;
     private bool _isPlayer;
     private bool _isFlipped;
@@ -62,7 +62,7 @@ public class CubeDetails
         get => _cubeID;
         set => _cubeID = value;
     }
-    public CubeTypes CubeType
+    public CubeType CubeType
     {
         get => _cubeType;
         set => _cubeType = value;
