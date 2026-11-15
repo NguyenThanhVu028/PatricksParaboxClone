@@ -46,7 +46,7 @@ public class CubesManager : MonoBehaviour
         }
     }
 
-    public Cube GetCube(int id)
+    public Old_Cube GetCube(int id)
     {
         foreach (var cube in allCubes)
         {
@@ -116,8 +116,8 @@ public class CubePrefabDetails
 {
     [Min(1)]
     [SerializeField] int id = 1;
-    [SerializeField] Cube cube;
+    [SerializeField] Old_Cube cube;
 
     public int ID { get => id; }
-    public Cube Cube { get => cube; }
+    public Old_Cube Cube { get => cube; }
 }

@@ -1,5 +1,5 @@
 using UnityEngine;
 
-public class SimpleCube : Cube
+public class SimpleCube : Old_Cube
 {
 }

@@ -71,7 +71,7 @@ public class CloneCube : ContainerCube
         if (isHorizFlipped != mainContainerCube.IsHorizFlipped) childCube.IsHorizFlipped = !childCube.IsHorizFlipped;
     }
 
-    public override float RequestToMove(Vector2 cRPos, Vector2 cRScl, Cube requestedCube, GridDirections direction, bool external = false, bool specialMove = false)
+    public override float RequestToMove(Vector2 cRPos, Vector2 cRScl, Old_Cube requestedCube, GridDirections direction, bool external = false, bool specialMove = false)
     {
         if (mainContainerCube == null || !isEnterable) return 0;
 
@@ -86,7 +86,7 @@ public class CloneCube : ContainerCube
         if (isHorizFlipped != mainContainerCube.IsHorizFlipped)
         {
             cRPos.x = -cRPos.x;
-            direction = CubeMovement.FlipMovementInput(direction, true);
+            direction = Old_CubeMovement.FlipMovementInput(direction, true);
             requestedCube.PreviousParents.Add(new(LayerDirections.In, this, Vector2.zero, Vector2.one, true));
             //requestedCube.PreviousParents.Add(
             //        //new(LayerDirections.In, 

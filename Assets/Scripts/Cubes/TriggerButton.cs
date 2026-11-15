@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-public class TriggerButton : Cube
+public class TriggerButton : Old_Cube
 {
     [SerializeField] protected UnityEvent onButtonActivated = new();
     [SerializeField] protected UnityEvent onButtonDeactivated = new();
@@ -16,7 +16,7 @@ public class TriggerButton : Cube
     {
         if (parent != null)
         {
-            positionInParent = Relativity.GridPosFromRPos(parent.Tiling.y, parent.Tiling.x, relativePosition);
+            positionInParent = RelativityUtils.GridPosFromRPos(parent.Tiling.y, parent.Tiling.x, relativePosition);
         }
 
         base.Init();

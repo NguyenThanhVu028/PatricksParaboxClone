@@ -1,24 +1,24 @@
 using UnityEngine;
 
-public class WallCube : Cube
+public class WallCube : Old_Cube
 {
     [SerializeField] int wallSubdivision = 2;
     [SerializeField] Texture2D[,] cubeTex;
 
     private void OnEnable()
     {
-        if (GetComponent<CubeMovement>() != null)
+        if (GetComponent<Old_CubeMovement>() != null)
         {
-            GetComponent<CubeMovement>().OnMoveStart.AddListener(OnMoveStart);
+            GetComponent<Old_CubeMovement>().OnMoveStart.AddListener(OnMoveStart);
         }
 
         onParentChanged += OnParentChanged;
     }
     private void OnDisable()
     {
-        if (GetComponent<CubeMovement>() != null)
+        if (GetComponent<Old_CubeMovement>() != null)
         {
-            GetComponent<CubeMovement>().OnMoveStart.RemoveListener(OnMoveStart);
+            GetComponent<Old_CubeMovement>().OnMoveStart.RemoveListener(OnMoveStart);
         }
 
         onParentChanged -= OnParentChanged;

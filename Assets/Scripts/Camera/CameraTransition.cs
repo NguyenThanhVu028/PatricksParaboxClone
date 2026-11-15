@@ -6,7 +6,7 @@ public abstract class CameraTransition
 {
     protected int priority; // The higher the priority, the earlier the transition
     protected float targetTime;
-    protected List<Cube.PreviousParentDetails> cubesToTraverse = null;
+    protected List<Old_Cube.PreviousParentDetails> cubesToTraverse = null;
     public abstract IEnumerator ExecuteCoroutine(MainCamera mainCamera);
     public bool IsHigherPriorityThan(CameraTransition other)
     {
@@ -17,7 +17,7 @@ public abstract class CameraTransition
     {
         targetTime = time;
     }
-    public void SetCubesToTraverse(List<Cube.PreviousParentDetails> cubes)
+    public void SetCubesToTraverse(List<Old_Cube.PreviousParentDetails> cubes)
     {
         cubesToTraverse = cubes;
     }
@@ -40,14 +40,14 @@ public class ZoomingTransition : CameraTransition
 
         // Traverse the previous parents list to calculate new target cube rect
         targetCubeRect = mainCamera.TargetCubeRect;
-        Cube.PreviousParentDetails currentCube = cubesToTraverse[0];
+        Old_Cube.PreviousParentDetails currentCube = cubesToTraverse[0];
         for (int i = 1; i < cubesToTraverse.Count; i++)
         {
             if (cubesToTraverse[i].Cube == null) continue;
             if (cubesToTraverse[i].Direction == LayerDirections.Out)
             {
                 Vector2 oldTargetRectPos = targetCubeRect.position;
-                targetCubeRect = Relativity.PRectFromCRect(targetCubeRect, currentCube.RelativeScale, currentCube.RelativePosition);
+                targetCubeRect = RelativityUtils.PRectFromCRect(targetCubeRect, currentCube.RelativeScale, currentCube.RelativePosition);
                 if (currentCube.IsHorizFlipped)
                 {
                     targetCubeRect.width = -targetCubeRect.width;
@@ -56,7 +56,7 @@ public class ZoomingTransition : CameraTransition
             }
             else
             {
-                targetCubeRect = Relativity.CRectFromPRect(targetCubeRect, cubesToTraverse[i].RelativeScale, cubesToTraverse[i].RelativePosition);
+                targetCubeRect = RelativityUtils.CRectFromPRect(targetCubeRect, cubesToTraverse[i].RelativeScale, cubesToTraverse[i].RelativePosition);
                 if (cubesToTraverse[i].IsHorizFlipped)
                 {
                     targetCubeRect.width = -targetCubeRect.width;
@@ -163,12 +163,12 @@ public class ZoomingTransition : CameraTransition
         oldTargetNewRect.y = mainCamera.TargetCubeRect.position.y + (oldDistanceFromNewTarget.y / targetCubeRect.size.y) * mainCamera.TargetCubeRect.size.y;
 
         float cameraRelativeOrthoSize = mainCamera.OrthographicSize / mainCamera.TargetCubeRect.height;
-        Vector2 cameraRPosToOldTarget = Relativity.CRPosFromCRealPos(mainCamera.TargetCubeRect, mainCamera.transform.position);
+        Vector2 cameraRPosToOldTarget = RelativityUtils.CRPosFromCRealPos(mainCamera.TargetCubeRect, mainCamera.transform.position);
 
         float elapsedTime = -1;
         var oldOrthoSize = Mathf.Abs(cameraRelativeOrthoSize * oldTargetNewRect.height);
         var targetOrthoSize = mainCamera.GetIdealOrthographicSize(mainCamera.TargetCubeRect, newTarget);
-        Vector3 oldPos = Relativity.CRealPosFromCRPos(oldTargetNewRect, cameraRPosToOldTarget); ; oldPos.z = -10;
+        Vector3 oldPos = RelativityUtils.CRealPosFromCRPos(oldTargetNewRect, cameraRPosToOldTarget); ; oldPos.z = -10;
         Vector3 targetPos = mainCamera.TargetCubeRect.position; targetPos.z = -10;
 
         mainCamera.OrthographicSize = oldOrthoSize;
@@ -205,7 +205,7 @@ public class FadeTransition : CameraTransition
 
         // Traverse the previous parents list to check for isHorizFlipped status
         bool isNegative = mainCamera.TargetCubeRect.size.x < 0;
-        Cube.PreviousParentDetails currentCube = cubesToTraverse[0];
+        Old_Cube.PreviousParentDetails currentCube = cubesToTraverse[0];
         for (int i = 1; i < cubesToTraverse.Count; i++)
         {
             if (cubesToTraverse[i].Cube == null) continue;

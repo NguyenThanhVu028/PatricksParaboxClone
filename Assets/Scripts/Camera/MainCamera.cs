@@ -156,14 +156,14 @@ public class MainCamera : MonoBehaviour
             {
                 if (currentCube.Parent is not VoidCube)
                 {
-                    exposedEdges = Relativity.CheckEdgeOfGrid(currentCube.Parent.Tiling.x, currentCube.Parent.Tiling.y, currentCube.RelativePosition);
+                    exposedEdges = RelativityUtils.CheckEdgeOfGrid(currentCube.Parent.Tiling.x, currentCube.Parent.Tiling.y, currentCube.RelativePosition);
                     if (exposedEdges[0] == GridDirections.None) exposedEdges.Clear();
                 }
                 else exposedEdges.Clear();
             }
             else
             {
-                if (currentCube is not VoidCube) exposedEdges = Relativity.CheckEdgeOfGrid(1, 1, Vector2Int.zero); // No parent -> all 4 edges is exposed
+                if (currentCube is not VoidCube) exposedEdges = RelativityUtils.CheckEdgeOfGrid(1, 1, Vector2Int.zero); // No parent -> all 4 edges is exposed
             }
 
             // Traverse through all regular parents
@@ -171,7 +171,7 @@ public class MainCamera : MonoBehaviour
             {
                 if (currentCube.Parent == null) break;
                 Vector3 oldRenderPos = currentRect.position;
-                currentRect = Relativity.PRectFromCRect(currentRect, currentCube.RelativeScale, currentCube.RelativePosition);
+                currentRect = RelativityUtils.PRectFromCRect(currentRect, currentCube.RelativeScale, currentCube.RelativePosition);
                 if (currentCube.IsHorizFlipped)
                 {
                     currentRect.width = -currentRect.width;
@@ -188,7 +188,7 @@ public class MainCamera : MonoBehaviour
                     if (currentCube.Parent is VoidCube) exposedEdges.Clear();
                     else
                     {
-                        parentExposedEdges = Relativity.CheckEdgeOfGrid(currentCube.Parent.Tiling.x, currentCube.Parent.Tiling.y, currentCube.RelativePosition);
+                        parentExposedEdges = RelativityUtils.CheckEdgeOfGrid(currentCube.Parent.Tiling.x, currentCube.Parent.Tiling.y, currentCube.RelativePosition);
                         if (parentExposedEdges[0] == GridDirections.None) parentExposedEdges.Clear();
                         exposedEdges.RemoveAll(edge => !parentExposedEdges.Contains(edge));
                     }
@@ -208,7 +208,7 @@ public class MainCamera : MonoBehaviour
                     if (infinityCube == null || infinityCube.Parent == null) break;
 
                     Vector3 oldRenderPos = targetCubeRect.position;
-                    var infinityCubeRect = Relativity.PRectFromCRect(targetCubeRect, infinityCube.RelativeScale, infinityCube.RelativePosition);
+                    var infinityCubeRect = RelativityUtils.PRectFromCRect(targetCubeRect, infinityCube.RelativeScale, infinityCube.RelativePosition);
 
                     if (currentCube.IsHorizFlipped)
                     {
@@ -220,7 +220,7 @@ public class MainCamera : MonoBehaviour
                     if (infinityCube.Parent is VoidCube) exposedEdges.Clear();
                     else
                     {
-                        var infinityCubeExposedEdges = Relativity.CheckEdgeOfGrid(infinityCube.Parent.Tiling.x, infinityCube.Parent.Tiling.y, infinityCube.RelativePosition);
+                        var infinityCubeExposedEdges = RelativityUtils.CheckEdgeOfGrid(infinityCube.Parent.Tiling.x, infinityCube.Parent.Tiling.y, infinityCube.RelativePosition);
                         exposedEdges.RemoveAll(edge => !infinityCubeExposedEdges.Contains(edge));
                     }
                     //if (exposedEdges.Count == 0) break; // No more exposed edge -> stop rendering infinity cubes
@@ -301,7 +301,7 @@ public class MainCamera : MonoBehaviour
     }
     public void ClearTransition() { currentTransition = null; }
 
-    public void PlayTransition(List<Cube.PreviousParentDetails> cubesToTraverse, float targetTime)
+    public void PlayTransition(List<Old_Cube.PreviousParentDetails> cubesToTraverse, float targetTime)
     {
         if (transitionCoroutine != null || currentTransition == null) return;
         currentTransition.SetTargetTime(targetTime);
@@ -373,10 +373,10 @@ public class MainCamera : MonoBehaviour
     [Serializable]
     public class CubeRenderDetail
     {
-        [SerializeField] Cube targetCube;
+        [SerializeField] Old_Cube targetCube;
         [SerializeField] Rect renderPosition;
 
-        public Cube TargetCube { get => targetCube; }
+        public Old_Cube TargetCube { get => targetCube; }
         public Rect RenderPosition { get => renderPosition; }
     }
 

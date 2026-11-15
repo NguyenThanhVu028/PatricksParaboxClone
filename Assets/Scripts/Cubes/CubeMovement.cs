@@ -2,14 +2,14 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
-[RequireComponent(typeof(Cube))]
-public class CubeMovement : MonoBehaviour
+[RequireComponent(typeof(Old_Cube))]
+public class Old_CubeMovement : MonoBehaviour
 {
     [Header("Movement Settings")]
     [SerializeField] float defaultMoveTime = 0.1f; // Used when player simply moving from one point to another
     [SerializeField] float defaultEnterTime = 0.5f; // Used when player enters a cube, transforms, . . .
     [SerializeField] float coolDownTime = 0.075f;
-    [SerializeField] protected Cube selfCube;
+    [SerializeField] protected Old_Cube selfCube;
 
     [Header("SoundsSettings")]
     [SerializeField] string movementAudioID = "Movement";
@@ -27,7 +27,7 @@ public class CubeMovement : MonoBehaviour
     private bool debugMovement = false;
     private SaveAndLoadManager.GameData gameData;
 
-    public bool Movable { get { return selfCube != null && selfCube.CubeType != Cube.CubeTypes.Static && selfCube.CubeType != Cube.CubeTypes.Empty; } }
+    public bool Movable { get { return selfCube != null && selfCube.CubeType != Old_Cube.CubeTypes.Static && selfCube.CubeType != Old_Cube.CubeTypes.Empty; } }
     public bool IsMoving { get => movingCoroutine != null; }
     public bool IsCoolingDown { get => (coolDownTimer > 0); }
     public bool IsExternal { get => isExternal; }
@@ -47,14 +47,14 @@ public class CubeMovement : MonoBehaviour
             return defaultEnterTime;
         }
     }
-    public Cube SelfCube { get => selfCube; }
+    public Old_Cube SelfCube { get => selfCube; }
     public UnityEvent OnMoveStart { get => onMoveStart; }
     public UnityEvent OnMoveEnd { get => onMoveEnd; }
     public float MovingProgress { get => movingProgress; }
 
     private void OnEnable()
     {
-        selfCube = GetComponent<Cube>();
+        selfCube = GetComponent<Old_Cube>();
     }
     private void Start()
     {
@@ -70,7 +70,7 @@ public class CubeMovement : MonoBehaviour
             GridDirections movementInput = PlayerInputsManager.Instance.GameplayInputs.GetLatestMovementInput();
             if (MainCamera.Instance != null && MainCamera.Instance.RenderMode == MainCamera.MainCameraRenderMode.SingleCube)
             {
-                if (MainCamera.Instance.TargetCubeRect.size.x < 0) movementInput = CubeMovement.FlipMovementInput(movementInput, true);
+                if (MainCamera.Instance.TargetCubeRect.size.x < 0) movementInput = Old_CubeMovement.FlipMovementInput(movementInput, true);
             }
             if (movementInput != GridDirections.None)
             {
@@ -91,7 +91,7 @@ public class CubeMovement : MonoBehaviour
                         MainCamera.Instance.PlayTransition(selfCube.PreviousParents, selfCube.PossessingTime);
                     }
                     selfCube.PreviousParents.Clear();
-                    selfCube.PreviousParents.Add(new Cube.PreviousParentDetails(LayerDirections.In, selfCube.Parent));
+                    selfCube.PreviousParents.Add(new Old_Cube.PreviousParentDetails(LayerDirections.In, selfCube.Parent));
                 }
                 else if (MainCamera.Instance != null) MainCamera.Instance.ClearTransition();
 
@@ -169,13 +169,13 @@ public class CubeMovement : MonoBehaviour
         }
         else
         {
-            Vector2 oldParentRPos = Relativity.PRPosToAChild(cubeOldRPos, cubeOldRScl);
-            Vector2 oldParentRScl = Relativity.PRSclToAChild(cubeOldRScl);
+            Vector2 oldParentRPos = RelativityUtils.PRPosToAChild(cubeOldRPos, cubeOldRScl);
+            Vector2 oldParentRScl = RelativityUtils.PRSclToAChild(cubeOldRScl);
 
-            Vector2 newParentRPos = Relativity.PRPosToAChild(startRPos, startRScl);
-            Vector2 newParentRScl = Relativity.PRSclToAChild(startRScl);
+            Vector2 newParentRPos = RelativityUtils.PRPosToAChild(startRPos, startRScl);
+            Vector2 newParentRScl = RelativityUtils.PRSclToAChild(startRScl);
 
-            Vector2 oldParentRSclToNewParent = Relativity.SRSclFromSameParent(newParentRScl, oldParentRScl);
+            Vector2 oldParentRSclToNewParent = RelativityUtils.SRSclFromSameParent(newParentRScl, oldParentRScl);
 
             if (oldParentRSclToNewParent.x < 1 && oldParentRSclToNewParent.y < 1)
             {
@@ -209,8 +209,8 @@ public class CubeMovement : MonoBehaviour
 
     protected IEnumerator MovingCoroutine(Vector2 startRPos, Vector2 startRScl, Vector2 endRPos, Vector2 endRScl, float time)
     {
-        Cube.CubeProperties applyProperties = selfCube.GetCubeProperties();
-        Cube.CubeProperties currentProperties = selfCube.GetCubeProperties();
+        Old_Cube.CubeProperties applyProperties = selfCube.GetCubeProperties();
+        Old_Cube.CubeProperties currentProperties = selfCube.GetCubeProperties();
         if (time > 0)
         {
             float elapsedTime = -1;
@@ -234,7 +234,7 @@ public class CubeMovement : MonoBehaviour
             {
                 externalParent = selfCube.PreviousParents[0].Cube;
                 //applyProperties.CopyProperties(currentProperties);
-                Cube.PreviousParentDetails currentCube = selfCube.PreviousParents[0];
+                Old_Cube.PreviousParentDetails currentCube = selfCube.PreviousParents[0];
                 for (int i = 0; i < selfCube.PreviousParents.Count; i++)
                 {
                     if (selfCube.PreviousParents[i].Cube == null) continue;
@@ -303,7 +303,7 @@ public class CubeMovement : MonoBehaviour
                     Rect initParentRect = new(0, 0, 1, 1);
                     Rect externalParentRect = initParentRect;
                     Rect finalParentRect = initParentRect;
-                    Cube.PreviousParentDetails currentCube = selfCube.PreviousParents[0];
+                    Old_Cube.PreviousParentDetails currentCube = selfCube.PreviousParents[0];
                     for (int i = 0; i < selfCube.PreviousParents.Count; i++)
                     {
                         if (selfCube.PreviousParents[i].Cube == null) continue;
@@ -352,7 +352,7 @@ public class CubeMovement : MonoBehaviour
                                 var rScl = (currentCube.UseDefaultValues) ? currentCube.Cube.RelativeScale : currentCube.RelativeScale;
                                 var rPos = (currentCube.UseDefaultValues) ? currentCube.Cube.RelativePosition : currentCube.RelativePosition;
                                 var isHorizFlipped = (currentCube.UseDefaultValues) ? currentCube.Cube.IsHorizFlipped : currentCube.IsHorizFlipped;
-                                finalParentRect = Relativity.PRectFromCRect(finalParentRect, rScl, rPos);
+                                finalParentRect = RelativityUtils.PRectFromCRect(finalParentRect, rScl, rPos);
                                 if (isHorizFlipped)
                                 {
                                     finalParentRect.width = -finalParentRect.width;
@@ -365,7 +365,7 @@ public class CubeMovement : MonoBehaviour
                                 var rPos = (selfCube.PreviousParents[i].UseDefaultValues) ? selfCube.PreviousParents[i].Cube.RelativePosition : selfCube.PreviousParents[i].RelativePosition;
                                 var isHorizFlipped = (selfCube.PreviousParents[i].UseDefaultValues) ? selfCube.PreviousParents[i].Cube.IsHorizFlipped : selfCube.PreviousParents[i].IsHorizFlipped;
                                 //Debug.Log("RScl: " + rScl);
-                                finalParentRect = Relativity.CRectFromPRect(finalParentRect, rScl, rPos);
+                                finalParentRect = RelativityUtils.CRectFromPRect(finalParentRect, rScl, rPos);
                                 if (isHorizFlipped)
                                 {
                                     finalParentRect.width = -finalParentRect.width;
@@ -380,10 +380,10 @@ public class CubeMovement : MonoBehaviour
                     if (externalParent != null)
                     {
                         // Calculate correct rPos, rScl, . . .
-                        var realStartPos = Relativity.CRealPosFromCRPos(initParentRect, previousRPos);
-                        startRPos = Relativity.CRPosFromCRealPos(externalParentRect, realStartPos);
-                        var realEndPos = Relativity.CRealPosFromCRPos(finalParentRect, previousEndRPos);
-                        endRPos = Relativity.CRPosFromCRealPos(externalParentRect, realEndPos);
+                        var realStartPos = RelativityUtils.CRealPosFromCRPos(initParentRect, previousRPos);
+                        startRPos = RelativityUtils.CRPosFromCRealPos(externalParentRect, realStartPos);
+                        var realEndPos = RelativityUtils.CRealPosFromCRPos(finalParentRect, previousEndRPos);
+                        endRPos = RelativityUtils.CRPosFromCRealPos(externalParentRect, realEndPos);
                         //Debug.Log("Cube: " + selfCube.name);
                         //Debug.Log($"exter parent: {externalParent.name}, exter rect: {externalParentRect}, final rect: {finalParentRect}");
                         //Debug.Log($"real start: {realStartPos}, startPos: {startRPos}, real end: {realEndPos}, end pos: {endRPos}");
@@ -417,7 +417,7 @@ public class CubeMovement : MonoBehaviour
         selfCube.PreviousParents.Add(new(LayerDirections.In, selfCube.Parent)); // Update current parent after moving
         var selfCubePosition = selfCube.Parent.ChildGrid.FindChild((cubeDetail) => cubeDetail.Cube == selfCube);
         selfCube.ApplyNewProperties(currentProperties);
-        selfCube.RelativePosition = Relativity.RPosFromGridTile(selfCube.Parent.Tiling.y, selfCube.Parent.Tiling.x, selfCubePosition.x, selfCubePosition.y);
+        selfCube.RelativePosition = RelativityUtils.RPosFromGridTile(selfCube.Parent.Tiling.y, selfCube.Parent.Tiling.x, selfCubePosition.x, selfCubePosition.y);
         selfCube.RelativeScale = new(1.0f / selfCube.Parent.Tiling.y, 1.0f / selfCube.Parent.Tiling.x);
         if (selfCube.IsPlayer && MainCamera.Instance != null)
         {

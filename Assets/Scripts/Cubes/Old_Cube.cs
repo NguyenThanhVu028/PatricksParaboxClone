@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class Cube : MonoBehaviour
+public class Old_Cube : MonoBehaviour
 {
     // Normal: cube that can be pushed -> Try both pushing, entering and possessing
     // Static: cube that can't be pushed -> Try entering and possessing
@@ -231,7 +231,7 @@ public class Cube : MonoBehaviour
         }
     }
 
-    public bool StartPossessing(Cube targetCube)
+    public bool StartPossessing(Old_Cube targetCube)
     {
         if (!isPlayer) return false;
         if (targetCube == null) return false;
@@ -316,7 +316,7 @@ public class Cube : MonoBehaviour
         }
     }
 
-    private IEnumerator PossessingCoroutine(Cube targetCube)
+    private IEnumerator PossessingCoroutine(Old_Cube targetCube)
     {
         IsPlayer = false;
         if (PlayerInputsManager.Instance != null) PlayerInputsManager.Instance.GameplayInputs.StopUsingMovementInputs();
@@ -382,7 +382,7 @@ public class Cube : MonoBehaviour
             relativeScale = properties.relativeScale;
         }
 
-        public virtual void CopyProperties(Cube cubeToCopy)
+        public virtual void CopyProperties(Old_Cube cubeToCopy)
         {
             if (cubeToCopy == null) return;
 

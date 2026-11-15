@@ -28,7 +28,7 @@ public class HistoryManager : MonoBehaviour
     }
 
     // Called by every cube that moves
-    public void RecordNewEvent(Cube targetCube, Cube.CubeProperties properties)
+    public void RecordNewEvent(Old_Cube targetCube, Old_Cube.CubeProperties properties)
     {
         newHistoryRecord.AddHistoryEvent(targetCube, properties);
     }
@@ -168,7 +168,7 @@ public class HistoryRecord
     //    }
     //    events.Add(new(targetCube, previousParent, previousRPos, previousRScl, isHorizFlipped, isPlayer, isEnterable, isLeavable));
     //}
-    public void AddHistoryEvent(Cube targetCube, Cube.CubeProperties properties)
+    public void AddHistoryEvent(Old_Cube targetCube, Old_Cube.CubeProperties properties)
     {
         foreach (var evnt in events)
         {
@@ -190,8 +190,8 @@ public class HistoryRecord
 [Serializable]
 public class HistoryEvent
 {
-    [SerializeField] Cube targetCube;
-    [SerializeField] Cube.CubeProperties properties;
+    [SerializeField] Old_Cube targetCube;
+    [SerializeField] Old_Cube.CubeProperties properties;
     //[SerializeField] ContainerCube previousParent;
     //[SerializeField] Vector2 previousRPos = new();
     //[SerializeField] Vector2 previousRScl = new();
@@ -200,8 +200,8 @@ public class HistoryEvent
     //[SerializeField] bool isEnterable = true;
     //[SerializeField] bool isLeavable = true;
 
-    public Cube TargetCube { get => targetCube; }
-    public Cube.CubeProperties Properties { get => properties; set => properties = value; }
+    public Old_Cube TargetCube { get => targetCube; }
+    public Old_Cube.CubeProperties Properties { get => properties; set => properties = value; }
     //public ContainerCube PreviousParent { get => previousParent; set => previousParent = value; }
     //public Vector2 PreviousRPos { get => previousRPos; set => previousRPos = value; }
     //public Vector2 PreviousRScl { get => previousRScl; set => previousRScl = value; }
@@ -221,7 +221,7 @@ public class HistoryEvent
     //    this.isEnterable = isEnterable;
     //    this.isLeavable = isLeavable;
     //}
-    public HistoryEvent (Cube targetCube, Cube.CubeProperties properties)
+    public HistoryEvent(Old_Cube targetCube, Old_Cube.CubeProperties properties)
     {
         this.targetCube = targetCube;
         this.properties = properties;

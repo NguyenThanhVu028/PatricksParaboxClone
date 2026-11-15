@@ -1,5 +1,5 @@
 using UnityEngine;
-using static Cube;
+using static Old_Cube;
 
 public class HistoryTranslator : MonoBehaviour
 {
@@ -45,8 +45,8 @@ public class HistoryTranslator : MonoBehaviour
             if (historyEvent == null || historyEvent.TargetCube == null) continue;
 
             // Stop all coroutines
-            if (historyEvent.TargetCube.GetComponent<CubeMovement>() != null)
-                historyEvent.TargetCube.GetComponent<CubeMovement>().StopMoving();
+            if (historyEvent.TargetCube.GetComponent<Old_CubeMovement>() != null)
+                historyEvent.TargetCube.GetComponent<Old_CubeMovement>().StopMoving();
             historyEvent.TargetCube.StopPossessing();
 
             // Let target cube leave its current parent
@@ -66,7 +66,7 @@ public class HistoryTranslator : MonoBehaviour
                 continue;
             }
 
-            Vector2Int targetCubePrevPosInParent = Relativity.GridPosFromRPos(historyEvent.Properties.Parent.Tiling.y, historyEvent.Properties.Parent.Tiling.x, historyEvent.Properties.RelativePosition);
+            Vector2Int targetCubePrevPosInParent = RelativityUtils.GridPosFromRPos(historyEvent.Properties.Parent.Tiling.y, historyEvent.Properties.Parent.Tiling.x, historyEvent.Properties.RelativePosition);
             if (!historyEvent.Properties.Parent.ChildGrid.CheckValidGridPosition(targetCubePrevPosInParent.x, targetCubePrevPosInParent.y)) return;
             // Return target cube back to its previous parent cube
             historyEvent.Properties.Parent.ChildCubes[targetCubePrevPosInParent.x, targetCubePrevPosInParent.y].Cube = historyEvent.TargetCube;

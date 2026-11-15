@@ -3,7 +3,7 @@ using UnityEngine.Rendering;
 
 public class TestManualRendering : MonoBehaviour
 {
-    [SerializeField] Cube cubeToFocus;
+    [SerializeField] Old_Cube cubeToFocus;
     //[SerializeField] Texture2D textureToRender;
     [SerializeField] Texture2D defaultTile;
     [SerializeField] Texture2D wallTile;
@@ -39,7 +39,7 @@ public class TestManualRendering : MonoBehaviour
     {
         Vector2 tileSize = new Vector2(renderZoneSize.x / grid.GetLength(0), renderZoneSize.y / grid.GetLength(0));
         Vector2 startingPoint = new Vector2(renderZonePos.x - renderZoneSize.x * 0.5f + tileSize.x * 0.5f, renderZonePos.y + renderZoneSize.y * 0.5f - tileSize.y * 0.5f);
-        
+
 
         for (int i = 0; i < grid.GetLength(0); i++)
         {

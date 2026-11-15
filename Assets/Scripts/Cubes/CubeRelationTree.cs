@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,9 +7,9 @@ public class CubeRelationTree
 {
     private const string DEBUG_PREFIX = "[CubeRelationTree]";
 
-    private Dictionary<Cube, Relation> _relations;
+    private Dictionary<BaseCube, Relation> _relations;
 
-    public Relation GetRelation(Cube cube)
+    public Relation GetRelation(BaseCube cube)
     {
         if (_relations.TryGetValue(cube, out var relation))
         {
@@ -17,89 +18,75 @@ public class CubeRelationTree
         return default;
     }
 
-    public void EstablishRelation(Cube childCube, Cube parentCube)
+    public void EstablishRelation(BaseCube parentCube, BaseCube childCube)
     {
         if (childCube == null)
         {
-            Debug.LogWarning("Cannot establish relation on a null child cube!");
+            Debug.LogWarning($"{DEBUG_PREFIX} Cannot establish relation on a null child cube!");
             return;
         }
 
+
+        // Make sure both child cube and parent cube exist in the tree first!
         if (!_relations.ContainsKey(childCube))
         {
-            _relations.Add(childCube, new Relation());
+            _relations.Add(childCube, new Relation(childCube, parentCube));
         }
 
         if (parentCube != null)
         {
             if (!_relations.ContainsKey(parentCube))
             {
-                _relations.Add(parentCube, new Relation());
+                _relations.Add(parentCube, new(parentCube, null));
             }
         }
 
-        var childRelation = _relations[childCube];
-
-        // Remove the child cube from its current parent's child list, if it has a parent.
-        if (childRelation.ParentCube != null)
+        // Remove child cube from its current parent
+        var childCubeRelation = _relations[childCube];
+        if (childCubeRelation.ParentCube == parentCube)
         {
-            if (_relations.TryGetValue(childRelation.ParentCube, out var oldParentRelation))
-            {
-                oldParentRelation.ChildCubes?.Remove(childCube);
-            }
+            return;
+        }
+        if (_relations.TryGetValue(childCubeRelation.ParentCube, out Relation currentParentRelation))
+        {
+            currentParentRelation.SelfGrid.RemoveChild(childCube);
         }
 
-        // Establish the new parent-child relationship.
-        if (parentCube != null)
-        {
-            var parentRelation = _relations[parentCube];
-            parentRelation.ChildCubes?.Add(childCube);
-        }
-
-        childRelation.ParentCube = parentCube;
+        // Establish new relation with the new parent
+        childCubeRelation.ParentCube = parentCube;
     }
 
-    public Cube GoUp(Cube targetCube)
+    public BaseCube GetParent(BaseCube childCube)
     {
-        if (targetCube == null)
+        if (childCube == null || !_relations.TryGetValue(childCube, out Relation relation))
         {
             return null;
         }
 
-        if (!_relations.ContainsKey(targetCube))
-        {
-            Debug.Log($"{DEBUG_PREFIX} Cube {targetCube} does not exist in the relation tree!");
-            return null;
-        }
-
-        return _relations[targetCube].ParentCube;
+        return relation.ParentCube;
     }
 
-    public List<Cube> GoDown(Cube targetCube)
+    public List<BaseCube> GetChildren(BaseCube parentCube, Func<BaseCube, bool> condition = null)
     {
-        if (targetCube == null)
+        var result = new List<BaseCube>();
+        if (parentCube == null || !_relations.TryGetValue(parentCube, out Relation relation))
         {
-            return null;
+            return result;
         }
 
-        if (!_relations.ContainsKey(targetCube))
-        {
-            Debug.Log($"{DEBUG_PREFIX} Cube {targetCube} does not exist in the relation tree!");
-            return null;
-        }
-
-        return _relations[targetCube].ChildCubes;
+        return relation.SelfGrid?.GetChildren(condition);
     }
+
 }
 
 public class Relation
 {
-    public Cube ParentCube;
-    public List<Cube> ChildCubes;
+    public BaseCube ParentCube;
+    public CubeGrid SelfGrid;
 
-    public Relation(Cube parentCube = null, List<Cube> childCubes = null)
+    public Relation(BaseCube selfCube, BaseCube parentCube = null)
     {
         ParentCube = parentCube;
-        ChildCubes = childCubes ?? new List<Cube>();
+        SelfGrid = selfCube.GetComponent<CubeGrid>();
     }
 }

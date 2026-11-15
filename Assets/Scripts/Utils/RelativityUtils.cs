@@ -1,8 +1,7 @@
-using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class Relativity
+public static class RelativityUtils
 {
     /*
      * Conventions of relative scale:

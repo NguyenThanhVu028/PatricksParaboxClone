@@ -42,7 +42,7 @@ public class MapSelectionCube : ContainerCube
             var triggerButton = Instantiate(triggerButtonPrefab);
 
             triggerButton.RelativeScale = new Vector2(1.0f / childGrid.Tiling.y, 1.0f / childGrid.Tiling.x);
-            triggerButton.RelativePosition = Relativity.RPosFromGridTile(childGrid.Tiling.y, childGrid.Tiling.x, 0, 0);
+            triggerButton.RelativePosition = RelativityUtils.RPosFromGridTile(childGrid.Tiling.y, childGrid.Tiling.x, 0, 0);
             triggerButton.Parent = this;
             emptyCubes.Add(triggerButton);
             //ModifyChildCube(triggerButton);
@@ -57,7 +57,7 @@ public class MapSelectionCube : ContainerCube
             gameData = SaveAndLoadManager.GeneralGameData;
             if (gameData != null)
             {
-                foreach(var mapID in gameData.FinishedMapIDs)
+                foreach (var mapID in gameData.FinishedMapIDs)
                 {
                     if (mapID == mapName)
                     {
@@ -72,7 +72,7 @@ public class MapSelectionCube : ContainerCube
         if (!hasFinished)
         {
             AddSurfaceEffect(notFinishedEffect);
-            foreach(var dependentMap in dependentMapSelectionCubes)
+            foreach (var dependentMap in dependentMapSelectionCubes)
             {
                 if (dependentMap == null) continue;
                 dependentMap.OnRequiredMapFinished(false);

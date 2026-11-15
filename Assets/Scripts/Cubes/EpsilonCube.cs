@@ -38,20 +38,20 @@ public class EpsilonCube : ContainerCube
 
         for (int i = 0; i < level; i++)
         {
-            Rect iconRect = Relativity.CRectFromPRect(position, iconAdjustedRScl, iconStartingPointRPos + Vector2.down * i * iconAdjustedRScl.y * 2.0f * epsilonTextureHeightRatio);
+            Rect iconRect = RelativityUtils.CRectFromPRect(position, iconAdjustedRScl, iconStartingPointRPos + Vector2.down * i * iconAdjustedRScl.y * 2.0f * epsilonTextureHeightRatio);
             Rect iconScissorRect = iconRect; iconScissorRect.height *= epsilonTextureHeightRatio;
             RenderingUtils.RenderMesh(cubeMesh, normalMat, epsilonTexture.GetTexture(), Color.white, exposure, iconRect.position, iconRect.size, depth, RenderingUtils.GetOverlapRect(scissorRect, iconScissorRect), priority);
         }
     }
 
-    public float RequestToMove(Cube requestedCube, GridDirections direction, bool external = false, bool specialMove = false)
+    public float RequestToMove(Old_Cube requestedCube, GridDirections direction, bool external = false, bool specialMove = false)
     {
         // Assume the epsilon cube main container is at the same level as the requested cube
         //if (mainContainerCube == null) return 0;
         //Debug.Log($"Main container : {mainContainerCube.name}, main RPos: {mainContainerCube.RelativePosition}, requestedCube RPos: {requestedCube.RelativePosition}");
         if (requestedCube.PreviousParents.Count < 2) return 0;
         if (requestedCube.PreviousParents[1].Cube == null) return 0;
-        Vector2 requestedCubeRPos = Relativity.SRPosFromSameParent(requestedCube.PreviousParents[1].Cube.RelativePosition, requestedCube.PreviousParents[1].Cube.RelativeScale, requestedCube.RelativePosition);
+        Vector2 requestedCubeRPos = RelativityUtils.SRPosFromSameParent(requestedCube.PreviousParents[1].Cube.RelativePosition, requestedCube.PreviousParents[1].Cube.RelativeScale, requestedCube.RelativePosition);
         Vector2 requestedCubeRScl = new Vector2(1.0f / childGrid.Tiling.y, 1.0f / childGrid.Tiling.x);
         bool tempIsEnterable = isEnterable;
         isEnterable = true;

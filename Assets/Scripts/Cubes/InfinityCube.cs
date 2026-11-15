@@ -53,13 +53,13 @@ public class InfinityCube : CloneCube
 
         for (int i = 0; i < level; i++)
         {
-            Rect iconRect = Relativity.CRectFromPRect(position, iconAdjustedRScl, iconStartingPointRPos + Vector2.down * i * iconAdjustedRScl.y * 2.0f * infinityTextureHeightRatio);
+            Rect iconRect = RelativityUtils.CRectFromPRect(position, iconAdjustedRScl, iconStartingPointRPos + Vector2.down * i * iconAdjustedRScl.y * 2.0f * infinityTextureHeightRatio);
             Rect iconScissorRect = iconRect; iconScissorRect.height *= infinityTextureHeightRatio;
             RenderingUtils.RenderMesh(cubeMesh, normalMat, infinityTexture.GetTexture(), Color.white, exposure, iconRect.position, iconRect.size, depth, RenderingUtils.GetOverlapRect(scissorRect, iconScissorRect), priority);
         }
     }
 
-    public float RequestToMove(Cube requestedCube, GridDirections direction, bool external = false, bool specialMove = false)
+    public float RequestToMove(Old_Cube requestedCube, GridDirections direction, bool external = false, bool specialMove = false)
     {
         if (parent == null || mainContainerCube == null) return 0;
         Debug.Log($"Requested cube: {requestedCube.name} requests infinity cube: {name} level: {level}");
@@ -71,14 +71,14 @@ public class InfinityCube : CloneCube
         if (mainContainerCube.IsHorizFlipped)
         {
             cRPos.x = -cRPos.x;
-            direction = CubeMovement.FlipMovementInput(direction, true);
+            direction = Old_CubeMovement.FlipMovementInput(direction, true);
         }
 
-        Vector2 outterCubeRPos = Relativity.PRPosToAChild(relativePosition, relativeScale);
-        Vector2 outterCubeRScl = Relativity.PRSclToAChild(relativeScale);
+        Vector2 outterCubeRPos = RelativityUtils.PRPosToAChild(relativePosition, relativeScale);
+        Vector2 outterCubeRScl = RelativityUtils.PRSclToAChild(relativeScale);
 
-        Vector2 childCubeRPosToOutterCube = Relativity.SRPosFromSameParent(outterCubeRPos, outterCubeRScl, cRPos);
-        Vector2 childCubeRSclToOutterCube = Relativity.SRSclFromSameParent(outterCubeRScl, cRScl);
+        Vector2 childCubeRPosToOutterCube = RelativityUtils.SRPosFromSameParent(outterCubeRPos, outterCubeRScl, cRPos);
+        Vector2 childCubeRSclToOutterCube = RelativityUtils.SRSclFromSameParent(outterCubeRScl, cRScl);
 
         float targetTime = parent.RequestToMove(childCubeRPosToOutterCube, childCubeRSclToOutterCube, requestedCube, direction, external, specialMove);
         if (targetTime > 0)

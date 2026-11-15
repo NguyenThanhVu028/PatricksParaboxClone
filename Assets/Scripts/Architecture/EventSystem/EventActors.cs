@@ -3,15 +3,15 @@ using UnityEngine;
 
 public class EventPublisher
 {
-    protected Dictionary<string, List<IEventListener>> _normalListeners = new();
-    protected Dictionary<string, List<IEventListener>> _onceTimeListeners = new();
-    protected Dictionary<string, (float, object)> _previousEvents = new();
+    protected Dictionary<GameEvents, List<IEventListener>> _normalListeners = new();
+    protected Dictionary<GameEvents, List<IEventListener>> _onceTimeListeners = new();
+    protected Dictionary<GameEvents, (float, object)> _previousEvents = new();
 
     /// <summary>
     /// Normal listeners. Only listen for event fired AFTER subscription.
     /// </summary>
     /// <param name="listener"></param>
-    public void AddListener(IEventListener listener, string eventName)
+    public void AddListener(IEventListener listener, GameEvents eventName)
     {
         if (listener == null)
         {
@@ -28,7 +28,7 @@ public class EventPublisher
     /// These listeners only listen to the event once, can listen for event that has already fired in THE SAME FRAME.
     /// </summary>
     /// <param name="listener"></param>
-    public void AddListenerOnce(IEventListener listener, string eventName)
+    public void AddListenerOnce(IEventListener listener, GameEvents eventName)
     {
         if (listener == null)
         {
@@ -56,7 +56,7 @@ public class EventPublisher
         }
     }
 
-    public void InvokeEvent(string eventName, object value)
+    public void InvokeEvent(GameEvents eventName, object value)
     {
         Debug.Log($"Event invoke: {eventName}, {value}");
 
@@ -93,5 +93,5 @@ public class EventPublisher
 
 public interface IEventListener
 {
-    public void ReceiveEvent(string eventName, object value);
+    public void ReceiveEvent(GameEvents eventName, object value);
 }

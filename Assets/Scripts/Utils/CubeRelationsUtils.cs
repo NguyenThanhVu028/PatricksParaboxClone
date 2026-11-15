@@ -7,21 +7,14 @@ using UnityEngine;
 /// </summary>
 public class CubeRelationsUtils
 {
-    private static CubeRelationsUtils _instance;
-    private CubeRelationTree _cubeRelationTree;
-
-    public static CubeRelationsUtils Instance
-    {
-        get => _instance;
-    }
+    private static CubeRelationTree _cubeRelationTree;
 
     public static void Init(CubeRelationTree cubeRelations)
     {
-        _instance ??= new CubeRelationsUtils();
-        _instance._cubeRelationTree = cubeRelations;
+        _cubeRelationTree = cubeRelations;
     }
 
-    public void SetParent(Cube childCube, Cube parentCube)
+    public void SetParent(BaseCube childCube, BaseCube parentCube)
     {
         _cubeRelationTree.EstablishRelation(childCube, parentCube);
     }

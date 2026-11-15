@@ -127,23 +127,23 @@ public class SaveAndLoadManager : MonoBehaviour
         public float MoveTime { get => moveTime; set => moveTime = value; }
         public float EnterTime { get => enterTime; set => enterTime = value; }
 
-        public float MusicVolume 
-        { 
+        public float MusicVolume
+        {
             get => musicVolume;
             set
             {
                 musicVolume = value;
                 onMusicVolumeChanged.Invoke(musicVolume);
-            } 
+            }
         }
-        public float SFXVolume 
-        { 
-            get => sfxVolume; 
+        public float SFXVolume
+        {
+            get => sfxVolume;
             set
             {
                 sfxVolume = value;
                 onSFXVolumeChanged.Invoke(sfxVolume);
-            } 
+            }
         }
 
         public UnityEvent<float> OnMusicVolumeChanged { get => onMusicVolumeChanged; }

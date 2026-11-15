@@ -6,7 +6,7 @@ public class MapSelection : MonoBehaviour
 {
     [SerializeField] string mainMenuSceneName = "MainMenu";
     [SerializeField] WorldCube defaultWorldCube;
-    [SerializeField] Cube playerCube;
+    [SerializeField] Old_Cube playerCube;
 
     [SerializeField] List<string> backgroundMusicIDs = new();
     private AudioPlayer backgroundMusicAudioPlayer;
@@ -48,7 +48,7 @@ public class MapSelection : MonoBehaviour
             Vector2 targetRScl = new(1.0f / lastOpenedWorld.ChildGrid.Tiling.y, 1.0f / lastOpenedWorld.ChildGrid.Tiling.x);
             Vector2 targetRPos = new(0, 1.0f - targetRScl.y);
 
-            var playerCubeMovement = playerCube.GetComponent<CubeMovement>();
+            var playerCubeMovement = playerCube.GetComponent<Old_CubeMovement>();
             if (playerCubeMovement != null)
             {
                 playerCubeMovement.StartMoving(playerCube.RelativePosition, playerCube.RelativeScale, targetRPos, targetRScl, 0.5f, lastOpenedWorld, true);
