@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Serializable]
 public class AnimatedTexture : MyTexture2D
 {
     [SerializeField] bool _autoStart = true;

@@ -18,20 +18,22 @@ public class TestMyRuleTile : MonoBehaviour
             {new OtherObject(), new OtherObject(), new OtherObject(), new TestWall(), new TestWall()}
         };
 
-        // testRuleTile.SetOutput("Top Left", ResourcesUtils.Load<Texture2D>(ResourceTypes.Sprites, "TopLeft"));
-        // testRuleTile.SetOutput("Left", ResourcesUtils.Load<Texture2D>(ResourceTypes.Sprites, "Left"));
-        // testRuleTile.SetOutput("Bottom Left", ResourcesUtils.Load<Texture2D>(ResourceTypes.Sprites, "BottomLeft"));
-        // testRuleTile.SetOutput("Bottom", ResourcesUtils.Load<Texture2D>(ResourceTypes.Sprites, "Bottom"));
-        // testRuleTile.SetOutput("Bottom Right", ResourcesUtils.Load<Texture2D>(ResourceTypes.Sprites, "BottomRight"));
-        // testRuleTile.SetOutput("Right", ResourcesUtils.Load<Texture2D>(ResourceTypes.Sprites, "Right"));
-        // testRuleTile.SetOutput("Top Right", ResourcesUtils.Load<Texture2D>(ResourceTypes.Sprites, "TopRight"));
-        // testRuleTile.SetOutput("Top", ResourcesUtils.Load<Texture2D>(ResourceTypes.Sprites, "Top"));
-        // testRuleTile.SetOutput("Inner Top Left", ResourcesUtils.Load<Texture2D>(ResourceTypes.Sprites, "InnerTopLeft"));
-        // testRuleTile.SetOutput("Inner Bottom Left", ResourcesUtils.Load<Texture2D>(ResourceTypes.Sprites, "InnerBottomLeft"));
-        // testRuleTile.SetOutput("Inner Bottom Right", ResourcesUtils.Load<Texture2D>(ResourceTypes.Sprites, "InnerBottomRight"));
-        // testRuleTile.SetOutput("Inner Top Right", ResourcesUtils.Load<Texture2D>(ResourceTypes.Sprites, "InnerTopRight"));
-        // testRuleTile.SetOutput("Center", ResourcesUtils.Load<Texture2D>(ResourceTypes.Sprites, "Center"));
-        // testRuleTile.SetDefaultTexture(ResourcesUtils.Load<Texture2D>(ResourceTypes.Sprites, "Center"));
+        TexturePack texturePack = ResourcesUtils.Load<TexturePack>(ResourceType.ScriptableObjects, GameConfigs.MainTexturePack);
+
+        testRuleTile.SetOutput("Top Left", texturePack.GetTexture(TextureName.Cube_Wall_TopLeft).GetTexture());
+        testRuleTile.SetOutput("Left", texturePack.GetTexture(TextureName.Cube_Wall_Left).GetTexture());
+        testRuleTile.SetOutput("Bottom Left", texturePack.GetTexture(TextureName.Cube_Wall_BottomLeft).GetTexture());
+        testRuleTile.SetOutput("Bottom", texturePack.GetTexture(TextureName.Cube_Wall_Bottom).GetTexture());
+        testRuleTile.SetOutput("Bottom Right", texturePack.GetTexture(TextureName.Cube_Wall_BottomRight).GetTexture());
+        testRuleTile.SetOutput("Right", texturePack.GetTexture(TextureName.Cube_Wall_Right).GetTexture());
+        testRuleTile.SetOutput("Top Right", texturePack.GetTexture(TextureName.Cube_Wall_TopRight).GetTexture());
+        testRuleTile.SetOutput("Top", texturePack.GetTexture(TextureName.Cube_Wall_Top).GetTexture());
+        testRuleTile.SetOutput("Inner Top Left", texturePack.GetTexture(TextureName.Cube_Wall_InnerTopLeft).GetTexture());
+        testRuleTile.SetOutput("Inner Bottom Left", texturePack.GetTexture(TextureName.Cube_Wall_InnerBottomLeft).GetTexture());
+        testRuleTile.SetOutput("Inner Bottom Right", texturePack.GetTexture(TextureName.Cube_Wall_InnerBottomRight).GetTexture());
+        testRuleTile.SetOutput("Inner Top Right", texturePack.GetTexture(TextureName.Cube_Wall_InnerTopRight).GetTexture());
+        testRuleTile.SetOutput("Center", texturePack.GetTexture(TextureName.Cube_Wall_Center).GetTexture());
+        testRuleTile.SetDefaultTexture(texturePack.GetTexture(TextureName.Cube_Wall_Center).GetTexture());
 
         testRuleTile.DrawOnRenderTexture(testGrid, 2, new(16, 16), ref _outputRenderTexture);
     }

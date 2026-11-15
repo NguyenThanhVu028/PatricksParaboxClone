@@ -20,6 +20,7 @@ public enum TextureName
 
     Effect_Mirror,
     Effect_Clone,
+    Effect_Shinny,
 
     Symbol_Infinity,
     Symbol_Epsilon
