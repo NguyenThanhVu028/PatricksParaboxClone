@@ -63,7 +63,7 @@ public class TriggerButton : Old_Cube
         {
             Color cubeColor = Color.white;
             if (colorPalette != null) cubeColor = colorPalette.GetColor(this.cubeColor);
-            RenderingUtils.RenderMesh(cubeMesh, normalMat, defaultTexture.GetTexture(), cubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
+            Old_RenderingUtils.RenderMesh(cubeMesh, normalMat, defaultTexture.GetTexture(), cubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
         }
     }
 }

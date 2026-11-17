@@ -55,7 +55,7 @@ public class InfinityCube : CloneCube
         {
             Rect iconRect = RelativityUtils.CRectFromPRect(position, iconAdjustedRScl, iconStartingPointRPos + Vector2.down * i * iconAdjustedRScl.y * 2.0f * infinityTextureHeightRatio);
             Rect iconScissorRect = iconRect; iconScissorRect.height *= infinityTextureHeightRatio;
-            RenderingUtils.RenderMesh(cubeMesh, normalMat, infinityTexture.GetTexture(), Color.white, exposure, iconRect.position, iconRect.size, depth, RenderingUtils.GetOverlapRect(scissorRect, iconScissorRect), priority);
+            Old_RenderingUtils.RenderMesh(cubeMesh, normalMat, infinityTexture.GetTexture(), Color.white, exposure, iconRect.position, iconRect.size, depth, Old_RenderingUtils.GetOverlapRect(scissorRect, iconScissorRect), priority);
         }
     }
 

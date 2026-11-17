@@ -155,9 +155,9 @@ public class Old_Cube : MonoBehaviour
 
     public virtual void Draw(Rect position, int priority, float depth = 0, float exposure = 0, Rect? scissorRect = null)
     {
-        if (!RenderingUtils.CheckVisibility(position.position, position.size) && enableOcclusionCulling) return;
+        if (!Old_RenderingUtils.CheckVisibility(position.position, position.size) && enableOcclusionCulling) return;
 
-        Vector2 rectSizeInPixel = RenderingUtils.ScaleToPixel(position.size);
+        Vector2 rectSizeInPixel = Old_RenderingUtils.ScaleToPixel(position.size);
         if (rectSizeInPixel.x < minPixelToRender || rectSizeInPixel.y < minPixelToRender) return; // Don't draw if the requested rectangle is too small (To avoid infinite rendering)
         if (isHorizFlipped) position.width = -position.width;
         DrawCube(position, priority, depth, exposure, scissorRect);
@@ -170,7 +170,7 @@ public class Old_Cube : MonoBehaviour
     {
         if (defaultTexture != null && defaultTexture.GetTexture() != null)
         {
-            RenderingUtils.RenderMesh(cubeMesh, outlineMat, defaultTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
+            Old_RenderingUtils.RenderMesh(cubeMesh, outlineMat, defaultTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
         }
     }
     public virtual void DrawPlayerFace(Rect position, int priority, float depth, float exposure, Rect? scissorRect)
@@ -178,11 +178,11 @@ public class Old_Cube : MonoBehaviour
         // Get player face texture
         if (IsPlayer && faceTexture != null)
         {
-            RenderingUtils.RenderMesh(cubeMesh, normalMat, faceTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
+            Old_RenderingUtils.RenderMesh(cubeMesh, normalMat, faceTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
         }
         else if (!IsPlayer && canBePlayer && possessableFaceTexture != null)
         {
-            RenderingUtils.RenderMesh(cubeMesh, normalMat, possessableFaceTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
+            Old_RenderingUtils.RenderMesh(cubeMesh, normalMat, possessableFaceTexture.GetTexture(), RealCubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
         }
     }
     public virtual void DrawSurfaceEffects(Rect position, int priority, float depth, float exposure, Rect? scissorRect)
@@ -192,7 +192,7 @@ public class Old_Cube : MonoBehaviour
         {
             if (surfaceEffect != null)
             {
-                RenderingUtils.RenderMesh(cubeMesh, normalMat, surfaceEffect.GetTexture(), cubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
+                Old_RenderingUtils.RenderMesh(cubeMesh, normalMat, surfaceEffect.GetTexture(), cubeColor, exposure, position.position, position.size, depth, scissorRect, priority);
             }
         }
     }

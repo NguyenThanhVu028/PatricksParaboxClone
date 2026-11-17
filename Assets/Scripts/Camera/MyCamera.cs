@@ -37,6 +37,11 @@ public class MyCamera : MonoBehaviour
         get => _instance;
     }
 
+    public Camera MainCamera
+    {
+        get => _mainCamera;
+    }
+
     public bool IsHorizFlipped
     {
         get => _isHorizFlipped;

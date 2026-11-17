@@ -40,7 +40,7 @@ public class EpsilonCube : ContainerCube
         {
             Rect iconRect = RelativityUtils.CRectFromPRect(position, iconAdjustedRScl, iconStartingPointRPos + Vector2.down * i * iconAdjustedRScl.y * 2.0f * epsilonTextureHeightRatio);
             Rect iconScissorRect = iconRect; iconScissorRect.height *= epsilonTextureHeightRatio;
-            RenderingUtils.RenderMesh(cubeMesh, normalMat, epsilonTexture.GetTexture(), Color.white, exposure, iconRect.position, iconRect.size, depth, RenderingUtils.GetOverlapRect(scissorRect, iconScissorRect), priority);
+            Old_RenderingUtils.RenderMesh(cubeMesh, normalMat, epsilonTexture.GetTexture(), Color.white, exposure, iconRect.position, iconRect.size, depth, Old_RenderingUtils.GetOverlapRect(scissorRect, iconScissorRect), priority);
         }
     }
 

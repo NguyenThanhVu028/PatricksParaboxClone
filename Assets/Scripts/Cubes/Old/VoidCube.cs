@@ -26,9 +26,9 @@ public class VoidCube : ContainerCube
 
     public override void Draw(Rect position, int priority, float depth = 0, float exposure = 0, Rect? scissorRect = null)
     {
-        if (!RenderingUtils.CheckVisibility(position.position, position.size) && enableOcclusionCulling) return;
+        if (!Old_RenderingUtils.CheckVisibility(position.position, position.size) && enableOcclusionCulling) return;
 
-        Vector2 rectSizeInPixel = RenderingUtils.ScaleToPixel(position.size);
+        Vector2 rectSizeInPixel = Old_RenderingUtils.ScaleToPixel(position.size);
         if (rectSizeInPixel.x < minPixelToRender || rectSizeInPixel.y < minPixelToRender) return; // Don't draw if the requested rectangle is too small (To avoid infinite rendering)
 
         DrawCube(position, priority, depth, exposure, scissorRect);
