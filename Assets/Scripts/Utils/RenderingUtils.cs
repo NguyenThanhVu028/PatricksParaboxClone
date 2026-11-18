@@ -68,15 +68,15 @@ public static class RenderingUtils
 
     public static bool CheckVisibility(Rect rect)
     {
-        if (MyCamera.Instance == null || MyCamera.Instance.MainCamera) return false;
+        if (RecursiveCamera.Instance == null || RecursiveCamera.Instance.MainCamera) return false;
 
         rect.size = new(Mathf.Abs(rect.size.x), Mathf.Abs(rect.size.y));
 
         Vector2 topLeftPos = new Vector2(rect.position.x - rect.size.x * 0.5f, rect.position.y + rect.size.y * 0.5f);
         Vector2 bottomRightPos = new Vector2(topLeftPos.x + rect.size.x, topLeftPos.y - rect.size.y);
 
-        Vector2 topLeftViewportPos = MyCamera.Instance.MainCamera.WorldToViewportPoint(topLeftPos);
-        Vector2 bottomRightViewportPos = MyCamera.Instance.MainCamera.WorldToViewportPoint(bottomRightPos);
+        Vector2 topLeftViewportPos = RecursiveCamera.Instance.MainCamera.WorldToViewportPoint(topLeftPos);
+        Vector2 bottomRightViewportPos = RecursiveCamera.Instance.MainCamera.WorldToViewportPoint(bottomRightPos);
 
         if (topLeftViewportPos.x >= 1 || topLeftViewportPos.y <= 0) return false;
         if (bottomRightViewportPos.x <= 0 || bottomRightViewportPos.y >= 1) return false;
@@ -127,9 +127,9 @@ public static class RenderingUtils
 
     public static Vector2 WorldSizeToScreenSize(Vector2 scale)
     {
-        if (MyCamera.Instance == null || MyCamera.Instance.MainCamera == null) return Vector2.zero;
+        if (RecursiveCamera.Instance == null || RecursiveCamera.Instance.MainCamera == null) return Vector2.zero;
 
-        int pixelPerUnit = Mathf.RoundToInt(MyCamera.Instance.MainCamera.pixelHeight / (MyCamera.Instance.MainCamera.orthographicSize * 2.0f));
+        int pixelPerUnit = Mathf.RoundToInt(RecursiveCamera.Instance.MainCamera.pixelHeight / (RecursiveCamera.Instance.MainCamera.orthographicSize * 2.0f));
         return new Vector2(Mathf.Abs(scale.x) * pixelPerUnit, Mathf.Abs(scale.y) * pixelPerUnit);
     }
 

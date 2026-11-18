@@ -1,6 +1,14 @@
 public class BaseCube : MyObject
 {
-    private BaseRenderer _renderer;
+    protected ColorType _color;
+
+    protected BaseRenderer _renderer;
+
+    public ColorType Color
+    {
+        get => _color;
+        set => _color = value;
+    }
 
     public BaseRenderer Renderer
     {
@@ -12,4 +20,6 @@ public class BaseCube : MyObject
             RegisterComponent(_renderer);
         }
     }
+
+    public BaseCube(bool isActive) : base(isActive) { }
 }

@@ -7,7 +7,9 @@ public class ResourcesUtils
     {
         {ResourceType.LevelDesigns, "LevelDesigns"},
         {ResourceType.Prefabs, "Prefabs"},
-        {ResourceType.ScriptableObjects, "ScriptableObjects"}
+        {ResourceType.ScriptableObjects, "ScriptableObjects"},
+        {ResourceType.Meshes, "Meshes"},
+        {ResourceType.Materials, "Materials"}
     };
 
     public static Dictionary<(ResourceType, string), Object> _cache = new();

@@ -15,8 +15,8 @@ public class Vux : MonoBehaviour
     public event Action<float> OnUpdate;
     public event Action<float> OnLateUpdate;
     public event Action<float> OnFixedUpdate;
-    public event Action OnBeginRender;
-    public event Action OnFinishRender;
+    public event Action OnPreRender;
+    public event Action OnRender;
 
     private void Awake()
     {
@@ -32,14 +32,14 @@ public class Vux : MonoBehaviour
 
     private void Start()
     {
-        CustomRendererFeature.CustomRenderPass.OnPrepareExecuteCmd.AddListener(HandleBeginRender);
-        CustomRendererFeature.CustomRenderPass.OnExecuteCmd.AddListener(HandleFinishRender);
+        CustomRendererFeature.CustomRenderPass.OnPrepareExecuteCmd.AddListener(HandlePreRender);
+        CustomRendererFeature.CustomRenderPass.OnExecuteCmd.AddListener(HandleRender);
     }
 
     private void OnDisable()
     {
-        CustomRendererFeature.CustomRenderPass.OnPrepareExecuteCmd.RemoveListener(HandleBeginRender);
-        CustomRendererFeature.CustomRenderPass.OnExecuteCmd.RemoveListener(HandleFinishRender);
+        CustomRendererFeature.CustomRenderPass.OnPrepareExecuteCmd.RemoveListener(HandlePreRender);
+        CustomRendererFeature.CustomRenderPass.OnExecuteCmd.RemoveListener(HandleRender);
     }
 
     private void Update()
@@ -57,14 +57,14 @@ public class Vux : MonoBehaviour
         OnFixedUpdate?.Invoke(Time.fixedDeltaTime);
     }
 
-    private void HandleBeginRender()
+    private void HandlePreRender()
     {
-        OnBeginRender?.Invoke();
+        OnPreRender?.Invoke();
     }
 
-    private void HandleFinishRender()
+    private void HandleRender()
     {
-        OnFinishRender?.Invoke();
+        OnRender?.Invoke();
     }
 
 }

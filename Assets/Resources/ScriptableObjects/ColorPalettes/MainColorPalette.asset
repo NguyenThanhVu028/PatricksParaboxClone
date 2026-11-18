@@ -16,27 +16,27 @@ MonoBehaviour:
   colors:
   - ColorType: 0
     Color: {r: 1, g: 0.37145594, b: 0.37145594, a: 1}
-  - ColorType: 0
+  - ColorType: 1
     Color: {r: 0.5924158, g: 1, b: 0.096226394, a: 1}
-  - ColorType: 0
+  - ColorType: 2
     Color: {r: 0.2396226, g: 0.70987344, b: 1, a: 1}
-  - ColorType: 0
+  - ColorType: 3
     Color: {r: 1, g: 0.89893615, b: 0, a: 1}
-  - ColorType: 0
+  - ColorType: 4
     Color: {r: 0.2999999, g: 1, b: 1, a: 1}
-  - ColorType: 0
+  - ColorType: 5
     Color: {r: 0.7015094, g: 0.36037737, b: 1, a: 1}
-  - ColorType: 0
+  - ColorType: 6
     Color: {r: 1, g: 0.3754716, b: 0.96345836, a: 1}
-  - ColorType: 0
+  - ColorType: 7
     Color: {r: 1, g: 1, b: 1, a: 1}
-  - ColorType: 0
+  - ColorType: 8
     Color: {r: 0.7490196, g: 0, b: 0.47867563, a: 1}
-  - ColorType: 0
+  - ColorType: 9
     Color: {r: 0.6320754, g: 0.77701545, b: 1, a: 1}
-  - ColorType: 0
+  - ColorType: 10
     Color: {r: 1, g: 0.6646571, b: 0.34528297, a: 1}
-  - ColorType: 0
+  - ColorType: 11
     Color: {r: 0, g: 0, b: 0, a: 1}
-  - ColorType: 0
+  - ColorType: 12
     Color: {r: 1, g: 1, b: 1, a: 1}

@@ -49,26 +49,27 @@ public abstract class MyObject
         }
     }
 
-    protected void SubscribeLifeCycle()
+    protected virtual void SubscribeLifeCycle()
     {
         Vux.Core.OnUpdate += OnUpdate;
         Vux.Core.OnLateUpdate += OnLateUpdate;
         Vux.Core.OnFixedUpdate += OnFixedUpdate;
     }
 
-    protected void UnSubscribeLifeCycle()
+    protected virtual void UnSubscribeLifeCycle()
     {
         Vux.Core.OnUpdate -= OnUpdate;
         Vux.Core.OnLateUpdate -= OnLateUpdate;
         Vux.Core.OnFixedUpdate -= OnFixedUpdate;
     }
 
-    public MyObject()
+    public MyObject(bool isActive = true)
     {
         // Every MyObject must have the transform component
         Transform = new RelativeTransform();
 
-        SubscribeLifeCycle();
+        IsActive = isActive;
+        if (isActive) OnStart?.Invoke();
     }
 
     public virtual bool RegisterComponent(MyComponent component)

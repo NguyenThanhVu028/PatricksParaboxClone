@@ -14,7 +14,7 @@ public enum TextureName
     Cube_Wall_InnerBottomRight,
     Cube_Wall_InnerTopRight,
 
-    Cube_SimpleCube,
+    Cube_SolidCube,
 
     Cube_ContainerCube_Floor,
 

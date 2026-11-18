@@ -1,7 +1,7 @@
 public enum CubeType
 {
     Container,
-    Simple,
+    Solid,
     Clone,
     PlayerButton,
     NormalButton

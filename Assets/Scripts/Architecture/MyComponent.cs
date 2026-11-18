@@ -1,11 +1,11 @@
 public class MyComponent
 {
-    protected MyObject _object;
+    protected MyObject _thisObject;
     protected bool _isActive = true;
 
-    public MyObject Object
+    public MyObject ThisObject
     {
-        get => _object;
+        get => _thisObject;
     }
 
     public bool IsActive
@@ -36,39 +36,39 @@ public class MyComponent
     public bool RegisterObject(MyObject myObject)
     {
         UnSubscribeObjectLifeCycle();
-        _object = myObject;
+        _thisObject = myObject;
         SubscribeObjectLifeCycle();
         return true;
     }
 
-    protected void SubscribeObjectLifeCycle()
+    protected virtual void SubscribeObjectLifeCycle()
     {
-        if (_object == null)
+        if (_thisObject == null)
         {
             return;
         }
 
-        _object.OnEnable += OnEnable;
-        _object.OnDisable += OnDisable;
-        _object.OnStart += OnStart;
-        _object.OnUpdate += OnUpdate;
-        _object.OnLateUpdate += OnLateUpdate;
-        _object.OnFixedUpdate += OnFixedUpdate;
+        _thisObject.OnEnable += OnEnable;
+        _thisObject.OnDisable += OnDisable;
+        _thisObject.OnStart += OnStart;
+        _thisObject.OnUpdate += OnUpdate;
+        _thisObject.OnLateUpdate += OnLateUpdate;
+        _thisObject.OnFixedUpdate += OnFixedUpdate;
     }
 
-    protected void UnSubscribeObjectLifeCycle()
+    protected virtual void UnSubscribeObjectLifeCycle()
     {
-        if (_object == null)
+        if (_thisObject == null)
         {
             return;
         }
 
-        _object.OnEnable -= OnEnable;
-        _object.OnDisable -= OnDisable;
-        _object.OnStart -= OnStart;
-        _object.OnUpdate -= OnUpdate;
-        _object.OnLateUpdate -= OnLateUpdate;
-        _object.OnFixedUpdate -= OnFixedUpdate;
+        _thisObject.OnEnable -= OnEnable;
+        _thisObject.OnDisable -= OnDisable;
+        _thisObject.OnStart -= OnStart;
+        _thisObject.OnUpdate -= OnUpdate;
+        _thisObject.OnLateUpdate -= OnLateUpdate;
+        _thisObject.OnFixedUpdate -= OnFixedUpdate;
     }
     protected virtual void OnEnable() { }
     protected virtual void OnDisable() { }

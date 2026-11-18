@@ -2,5 +2,7 @@ public enum ResourceType
 {
     Prefabs,
     ScriptableObjects,
-    LevelDesigns
+    LevelDesigns,
+    Meshes,
+    Materials
 }

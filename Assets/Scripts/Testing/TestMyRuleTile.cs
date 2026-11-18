@@ -18,7 +18,7 @@ public class TestMyRuleTile : MonoBehaviour
             {new OtherObject(), new OtherObject(), new OtherObject(), new TestWall(), new TestWall()}
         };
 
-        TexturePack texturePack = ResourcesUtils.Load<TexturePack>(ResourceType.ScriptableObjects, GameConfigs.MainTexturePack);
+        TexturePack texturePack = ResourcesUtils.Load<TexturePack>(ResourceType.ScriptableObjects, GameConfigs.MainTexturePackName);
 
         testRuleTile.SetOutput("Top Left", texturePack.GetTexture(TextureName.Cube_Wall_TopLeft).GetTexture());
         testRuleTile.SetOutput("Left", texturePack.GetTexture(TextureName.Cube_Wall_Left).GetTexture());
