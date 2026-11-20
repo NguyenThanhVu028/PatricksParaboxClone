@@ -18,10 +18,15 @@ public enum TextureName
 
     Cube_ContainerCube_Floor,
 
+    Cube_NormalButton,
+    Cube_PlayerButton,
+
     Effect_Mirror,
     Effect_Clone,
     Effect_Shinny,
 
     Symbol_Infinity,
-    Symbol_Epsilon
+    Symbol_Epsilon,
+    Symbol_PlayerFace,
+    Symbol_PossessableFace
 }

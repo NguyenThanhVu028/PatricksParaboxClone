@@ -47,8 +47,8 @@ public class LevelDetails
 
 public class CubeDetails
 {
-    private string _cubeID;
-    private CubeType _cubeType;
+    private string _cubeID; // Used to init
+    private CubeType _cubeType; // Used to init
     private string _colorID;
     private bool _isPlayer;
     private bool _isFlipped;

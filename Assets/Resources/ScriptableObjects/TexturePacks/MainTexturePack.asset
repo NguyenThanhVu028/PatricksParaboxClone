@@ -59,7 +59,7 @@ MonoBehaviour:
     Texture:
       _texture: {fileID: 2800000, guid: 02ace0b2ae698254b9ec0db27a6deea9, type: 3}
   _animatedTexture:
-  - TextureName: 15
+  - TextureName: 17
     Texture:
       _autoStart: 1
       _frames:
@@ -91,7 +91,7 @@ MonoBehaviour:
         Texture: {fileID: 2800000, guid: 8356b7d4ee537ea4d9ecc6455624859d, type: 3}
       - Duration: 0.1
         Texture: {fileID: 2800000, guid: 4a746868eef08e54ba9041274c41dda6, type: 3}
-  - TextureName: 16
+  - TextureName: 18
     Texture:
       _autoStart: 1
       _frames:
@@ -111,7 +111,7 @@ MonoBehaviour:
         Texture: {fileID: 2800000, guid: c82cb6d4b0e03784c95f19453b997450, type: 3}
       - Duration: 0.25
         Texture: {fileID: 2800000, guid: bc2bf1fad51436e4db3dc8e22ce1a7ba, type: 3}
-  - TextureName: 17
+  - TextureName: 19
     Texture:
       _autoStart: 1
       _frames:
